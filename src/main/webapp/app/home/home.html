@@ -1,0 +1,39 @@
+<div ng-cloak>
+    <div class="row">
+        <div class="col-md-4">
+            <!--<span class="hipster img-responsive img-rounded"></span>-->
+        </div>
+        <div class="col-md-8">
+            <h1>Welcome!</h1>
+            <p class="lead">Plagiarism Detection using Blockchain.</p>
+
+            <div ng-switch="vm.isAuthenticated()">
+                <div class="alert alert-success" ng-switch-when="true">
+                    You are logged in as user "{{vm.account.login}}".
+                </div>
+
+                <div class="alert alert-warning" ng-switch-when="false">
+                    If you want to <a class="alert-link" href="" ng-click="vm.login()">sign in</a>, you can try the default accounts:<br/>- Administrator (login="admin" and password="admin") <br/>- User (login="user" and password="user").
+                </div>
+
+                <div class="alert alert-warning" ng-switch-when="false">
+                    You don't have an account yet? <a class="alert-link" ui-sref="register">Register a new account</a>
+                </div>
+            </div>
+
+            <p>
+                You can:
+            </p>
+
+            <ul>
+                <li>Check for plagiarism in a document (Min-Hash Algorithm).</li>
+                <li>Upload a document hash for timestamping using Bitcoin Blockchain.</li>
+                <li>
+                    <ul>
+                        <li>By uploading more document hashes, you help to expand look-up database, which will in turn improve plagiarism detection.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
