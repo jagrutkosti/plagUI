@@ -38,4 +38,10 @@ public class PlagchainService {
         }
         return extractedText.toString();
     }
+
+    public String cleanText(String uncleanText) {
+        StringJoiner cleanedText = new StringJoiner(" ");
+
+        return cleanedText.toString();
+    }
 }
