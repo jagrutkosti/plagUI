@@ -30,6 +30,10 @@ spring:
         password:
     thymeleaf:
         cache: true
+    http:
+        multipart:
+            max-file-size: 50MB
+            max-request-size: 100MB
 
 # ===================================================================
 # To enable SSL, generate a certificate using:

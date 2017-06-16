@@ -1,10 +1,14 @@
 package com.plagui.modules.UploadDocs;
 
+import com.plagui.config.Constants;
 import com.plagui.modules.GenericResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Jagrut on 07-06-2017.
@@ -37,11 +41,16 @@ public class UploadDocsREST {
         GenericResponse response = new GenericResponse();
         if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
             String textFromPdf = plagchainService.parsePdf(pdfFile);
-            System.out.println(textFromPdf);
+            List<String> extractedSentences = plagchainService.cleanText(textFromPdf);
+            List<String> allShingles = new ArrayList<>();
+            allShingles.addAll(plagchainService.createShingles(Constants.SHINGLE_LENGTH, extractedSentences));
+            int[] minHashFromShingles = plagchainService.generateMinHashSignature(allShingles);
+            System.out.println("Size: " + minHashFromShingles.length);
+            for(int i : minHashFromShingles)
+                System.out.println(i);
             response.setSuccess("Text extracted, hashed and transacted on 'plagchain' successfully");
         } else
             response.setError("File format not supported");
-
         return response;
     }
 

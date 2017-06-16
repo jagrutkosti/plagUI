@@ -31,7 +31,10 @@
                 if(response.success) {
                     vm.fileData.success = response.success;
                 } else {
-                    vm.fileData.error = response;
+                    if(response.error)
+                        vm.fileData.error = response.error;
+                    else
+                        vm.fileData.error = response;
                     AlertService.error(vm.fileData.error);
                 }
             });
