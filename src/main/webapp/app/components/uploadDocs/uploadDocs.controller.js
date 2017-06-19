@@ -15,7 +15,7 @@
     function UploadDocsController(UploadDocsService, AlertService){
         var vm = this;
         /**
-         * fileData: {'fileToHash', 'textToHash', 'ispublished', 'success', 'error'}
+         * fileData: {'fileToHash', 'textToHash', 'isunpublished', 'success', 'error'}
          */
         vm.fileData = {};
         vm.uploadDocForBlockchain = uploadDocForBlockchain;
@@ -26,8 +26,8 @@
          * Handle the response from the server and redirecting accordingly.
          * @param fileToHash the file from user to send to server
          */
-        function uploadDocForBlockchain(fileToHash) {
-            UploadDocsService.uploadDocForBlockchain(fileToHash).then(function(response){
+        function uploadDocForBlockchain() {
+            UploadDocsService.uploadDocForBlockchain(vm.fileData).then(function(response){
                 if(response.success) {
                     vm.fileData.success = response.success;
                 } else {

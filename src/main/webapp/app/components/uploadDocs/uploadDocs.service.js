@@ -18,12 +18,12 @@
 
         /**
          * Call UploadDocsREST.java#uploadDoc(fileToHash) and handle the callbacks
-         * @param fileToHash the file received from controller
+         * @param fileData the file data received from controller
          */
-        service.uploadDocForBlockchain = function(fileToHash) {
+        service.uploadDocForBlockchain = function(fileData) {
             return Upload.upload({
                 url: API_URL + 'uploadDoc',
-                data: {fileToHash: fileToHash}
+                data: {fileToHash: fileData.fileToHash, isunpublished: fileData.isunpublished}
             }).then(function(response) {
                 return response.data;
             }, function(response) {

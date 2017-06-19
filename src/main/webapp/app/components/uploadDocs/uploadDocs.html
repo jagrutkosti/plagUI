@@ -10,7 +10,7 @@
                         <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                     </div>
                 </div>
-                <form class="form-horizontal" ng-model="pdfUpload" role="form" ng-submit="vm.uploadDocForBlockchain(vm.fileData.fileToHash)"
+                <form class="form-horizontal" ng-model="pdfUpload" role="form" ng-submit="vm.uploadDocForBlockchain()"
                       method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="fileToHash" class="col-sm-2 control-label"></label>
@@ -30,7 +30,7 @@
                         <div class="col-sm-offset-2 col-sm-10">
                             <div class="checkbox">
                                 <label>
-                                    <input id="ispublished" ng-model="vm.fileData.ispublished" type="checkbox"> Has the document already been published?
+                                    <input id="ispublished" ng-model="vm.fileData.isunpublished" type="checkbox"> Is this an unpublished document?
                                 </label>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                         <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                     </div>
                 </div>
-                <form class="form-horizontal" role="form" ng-submit="vm.uploadTextForBlockchain(vm.fileData.textToHash)"
+                <form class="form-horizontal" role="form" ng-submit="vm.uploadTextForBlockchain()"
                       method="POST">
                     <div class="form-group">
                         <label for="plainText" class="col-sm-2 control-label"></label>

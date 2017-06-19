@@ -1,14 +1,8 @@
 package com.plagui.modules.UploadDocs;
 
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
-import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
-import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 import com.plagui.config.Constants;
-import opennlp.tools.sentdetect.SentenceDetectorME;
-import opennlp.tools.sentdetect.SentenceModel;
+import com.plagui.modules.UtilService;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,159 +18,97 @@ import java.util.*;
 @Service
 public class PlagchainService {
     private final Logger log = LoggerFactory.getLogger(PlagchainService.class);
-    private final int[] randomNumbers = new int[Constants.NUMBER_OF_RANDOM_NUMBERS];
+    private UtilService utilService;
+
+
+    public PlagchainService(UtilService utilService) {
+        this.utilService = utilService;
+    }
 
     /**
-     * !!!DO NOT MODIFY random-number.txt FILE EVER, after deployment!!!
-     *
-     * Initialize random numbers from file. The random numbers used should always be the same for all documents for
-     * MinHash algorithm to work. So, if you delete the random-number.txt file, you need to re-index all documents.
+     * Calls other methods to process the document and submit it to block chain.
+     * @param pdfFile the Multipart file received from user
+     * @param contactInfo contact info of the user, if provided
+     * @return true, if everything was successful, exception otherwise
      */
-    public PlagchainService() {
-        File randomNumbersFiles = new File(Constants.RANDOM_NUMBERS_FILE);
+    public boolean processAndTimestampDoc(MultipartFile pdfFile, String contactInfo, boolean unpublishedWork) {
+        log.info("Processing the pdf file for time stamping");
+        //Calculate sha256 hash for document to be used as key
+        List<String> sha256DocHash = new ArrayList<>();
         try {
-            if(!randomNumbersFiles.exists())
-                writeRandomNumbersToFile();
-            populateRandomNumbers();
+            sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(pdfFile.getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //Parse pdf file for text and generate min hash
+        String textFromPdf = utilService.parsePdf(pdfFile);
+        List<String> extractedSentences = utilService.cleanText(textFromPdf);
+        List<String> allShingles = new ArrayList<>();
+        allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, extractedSentences));
+        int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);
+
+        //Parse pdf file for images and generate sha256 hash
+        List<byte[]> imagesFromPdfAsByte = utilService.extractImageFromPdfFile(pdfFile);
+        List<String> sha256HashOfImages = utilService.generateSHA256HashFromObjects(imagesFromPdfAsByte);
+
+        //Transform to Hex string format and submit to plagchain
+        String hexData = utilService.formatDataToHex(Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), sha256HashOfImages, contactInfo);
+        if(unpublishedWork)
+            utilService.submitToPlagchain(Constants.UNPUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
+        else
+            utilService.submitToPlagchain(Constants.PUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
+        return true;
     }
 
     /**
-     * Extracts text from Multipart file using iText library
-     * @param pdfFile the multipart file from the user
-     * @return {String} Extracted text from the PDF file
+     * Calls other methods to process the text and submit it to block chain.
+     * @param textToHash the text submitted by user
+     * @param contactInfo contact info of the user, if provided
+     * @return true, if everything was successful, exception otherwise
      */
-    public String parsePdf(MultipartFile pdfFile) {
-        log.info("Extracting text from pdf: {}", pdfFile.getOriginalFilename());
-        StringJoiner extractedText = new StringJoiner(" ");
+    public boolean processAndTimestampText(String textToHash, String contactInfo, boolean unpublishedWork) {
+        log.info("Processing text for time stamping");
+        //Calculate sha256 hash for document to be used as key
+        List<String> sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(textToHash.getBytes()));
+
+        //Parse the text and generate min hash
+        List<String> extractedSentences = utilService.cleanText(textToHash);
+        List<String> allShingles = new ArrayList<>();
+        allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, extractedSentences));
+        int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);
+
+        //Transform to Hex string format and submit to plagchain
+        String hexData = utilService.formatDataToHex(Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), null, contactInfo);
+        if(unpublishedWork)
+            utilService.submitToPlagchain(Constants.UNPUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
+        else
+            utilService.submitToPlagchain(Constants.PUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
+
+        return true;
+    }
+
+    /**
+     * Calls other methods to process the image and submit it to block chain.
+     * @param image the Multipart image file received from user
+     * @param contactInfo contact info of the user, if provided
+     * @return true, if everything was successful, exception otherwise
+     */
+    public boolean processAndTimestampImage(MultipartFile image, String contactInfo) {
+        log.info("Processing image for timestamping");
+        //Calculate sha256 hash for document to be used as key
+        List<String> sha256DocHash = new ArrayList<>();
         try {
-            PdfReader reader = new PdfReader(pdfFile.getInputStream());
-            PdfReaderContentParser parser = new PdfReaderContentParser(reader);
-            TextExtractionStrategy strategy;
-            for(int i = 1; i <= reader.getNumberOfPages(); i++) {
-                strategy = parser.processContent(i, new SimpleTextExtractionStrategy());
-                extractedText.add(strategy.getResultantText());
-            }
-            reader.close();
+            sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(image.getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return extractedText.toString();
+
+        //Transform to Hex string format and submit to plagchain
+        String hexData = utilService.formatDataToHex(null, sha256DocHash, contactInfo);
+        utilService.submitToPlagchain(Constants.UNPUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
+        return true;
     }
 
-    /**
-     * Removes the hyphens added by the iText library. Removes any new line character.
-     * Convert all characters to lowercase. Break the text into sentences.
-     * @param uncleanText the text that needs to be cleaned
-     * @return {List<String>} containing separate sentences extracted from pdf file.
-     */
-    public List<String> cleanText(String uncleanText) {
-        log.info("Cleaning text.");
-        List<String> stringArrToList = new ArrayList<>();
 
-        uncleanText = uncleanText.replaceAll("-\n","");
-        uncleanText = uncleanText.replaceAll("[\n]"," ");
-        uncleanText = StringUtils.normalizeSpace(uncleanText);
-        uncleanText = uncleanText.toLowerCase();
-        try {
-            InputStream modelIn = new FileInputStream(Constants.EN_SENTENCE_BIN_LOC);
-            SentenceModel model = new SentenceModel(modelIn);
-            SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
-            Collections.addAll(stringArrToList, sentenceDetector.sentDetect(uncleanText));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stringArrToList;
-    }
-
-    /**
-     * Create word shingles of specified length from a sentence.
-     * @param shingleLength the fixed length of all shingles
-     * @param extractedSentences the list of sentences from which shingles need to be extracted
-     * @return {List<String>} list containing word shingles from the sentence
-     */
-    public List<String> createShingles(int shingleLength, List<String> extractedSentences) {
-        log.info("Creating shingles of length: {}", shingleLength);
-        List<String> shinglesFromSentences = new ArrayList<>();
-        for(String sentence : extractedSentences) {
-            int firstIndex = 0;
-            int lastIndex = sentence.indexOf(" ");
-            for(int i = 1; i < shingleLength; i++) {
-                lastIndex = sentence.indexOf(" ", lastIndex + 1);
-            }
-            while(lastIndex < sentence.length() && lastIndex > 0) {
-                shinglesFromSentences.add(sentence.substring(firstIndex, lastIndex));
-                firstIndex = sentence.indexOf(" ", firstIndex + 1);
-                lastIndex = sentence.indexOf(" ", lastIndex + 1);
-            }
-        }
-        return shinglesFromSentences;
-    }
-
-    /**
-     * Generates MinHash signature from the given document's shingles. Initial hash value is of Java's hashcode.
-     * After that, that hashValue is XORed with random numbers fetched from the files.
-     * @param docShingles all shingles created from the document/text
-     * @return {int[]} array of MinHash values for the document/text
-     */
-    public int[] generateMinHashSignature(List<String> docShingles) {
-        int[] minHash = new int[Constants.NUMBER_OF_RANDOM_NUMBERS + 1];
-
-        int[] hashcodes = new int[docShingles.size()];
-        for(int i = 0; i < docShingles.size(); i++) {
-            hashcodes[i] = docShingles.get(i).hashCode();
-        }
-        minHash[0] = Collections.min(Arrays.asList(ArrayUtils.toObject(hashcodes)));
-
-        for(int  i = 1; i <= Constants.NUMBER_OF_RANDOM_NUMBERS; i++) {
-            int[] tempAllHashValues = new int[docShingles.size()];
-            for(int j = 0; j < docShingles.size(); j++) {
-                    tempAllHashValues[j] = hashcodes[j] ^ randomNumbers[i - 1];
-            }
-            minHash[i] = Collections.min(Arrays.asList(ArrayUtils.toObject(tempAllHashValues)));
-        }
-        return minHash;
-    }
-
-    /**
-     * Read the random number file and populate the randomNumbers int array.
-     * @throws IOException
-     */
-    public void populateRandomNumbers() throws IOException {
-        BufferedReader bufferedReader;
-        FileReader fileReader;
-        String number;
-        int i = 0;
-        fileReader = new FileReader(Constants.RANDOM_NUMBERS_FILE);
-        bufferedReader = new BufferedReader(fileReader);
-        while((number = bufferedReader.readLine()) != null) {
-            randomNumbers[i] = Integer.parseInt(number);
-            i++;
-        }
-        bufferedReader.close();
-        fileReader.close();
-    }
-
-    /**
-     * Generate random int numbers and store in a file.
-     * @throws IOException
-     */
-    public void writeRandomNumbersToFile() throws IOException{
-        BufferedWriter bufferedWriter;
-        FileWriter fileWriter;
-        StringJoiner randomNumFile = new StringJoiner("\n");
-        Random randomNumGenerator = new Random();
-        for(int i = 0; i < Constants.NUMBER_OF_RANDOM_NUMBERS; i++) {
-            randomNumFile.add(((Integer) randomNumGenerator.nextInt()).toString());
-        }
-
-        fileWriter = new FileWriter(Constants.RANDOM_NUMBERS_FILE);
-        bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.write(randomNumFile.toString());
-
-        bufferedWriter.close();
-        fileWriter.close();
-    }
 }

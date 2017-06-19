@@ -16,6 +16,9 @@ public final class Constants {
     public static final String EN_SENTENCE_BIN_LOC = "src/main/resources/en-sent.bin";
     public static final String RANDOM_NUMBERS_FILE = "src/main/resources/random-numbers.txt";
     public static final int NUMBER_OF_RANDOM_NUMBERS = 199;
+    public static final String CHAIN_NAME="plagchain";
+    public static final String PUBLISHED_WORK_STREAM_NAME = "publishedwork";
+    public static final String UNPUBLISHED_WORK_STREAM_NAME = "unpublishedwork";
 
     private Constants() {
     }
