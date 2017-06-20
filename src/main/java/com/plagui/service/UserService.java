@@ -11,6 +11,10 @@ import com.plagui.security.SecurityUtils;
 import com.plagui.service.util.RandomUtil;
 import com.plagui.service.dto.UserDTO;
 
+import multichain.command.AddressCommand;
+import multichain.command.ChainCommand;
+import multichain.command.MultichainException;
+import multichain.object.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -102,11 +106,19 @@ public class UserService {
         newUser.setImageUrl(imageUrl);
         newUser.setLangKey(langKey);
         // new user is not active
-        newUser.setActivated(false);
+        newUser.setActivated(true);
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         authorities.add(authority);
         newUser.setAuthorities(authorities);
+
+        //Generate wallet address for this user
+        Address walletAddress = generateNewPlagchainAddress();
+        if(walletAddress.getAddress().length() > 0) {
+            newUser.setPlagchainWalletAddress(walletAddress.getAddress());
+            newUser.setPlagchainWalletPubkey(walletAddress.getPubkey());
+        }
+
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
@@ -136,6 +148,13 @@ public class UserService {
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
         user.setActivated(true);
+
+        //Generate wallet address for this user
+        Address walletAddress = generateNewPlagchainAddress();
+        if(walletAddress.getAddress().length() > 0) {
+            user.setPlagchainWalletAddress(walletAddress.getAddress());
+            user.setPlagchainWalletPubkey(walletAddress.getPubkey());
+        }
         userRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;
@@ -259,5 +278,19 @@ public class UserService {
      */
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
+    }
+
+    /**
+     * Generates a new wallet address and corresponding public key for plagchin that can be associated with a user.
+     * @return Address Multichain object containing public key and wallet address information
+     */
+    public Address generateNewPlagchainAddress() {
+        Address newPlagchainAddress = new Address();
+        try {
+            newPlagchainAddress = AddressCommand.getNewAddress();
+        } catch (MultichainException e) {
+            e.printStackTrace();
+        }
+        return newPlagchainAddress;
     }
 }

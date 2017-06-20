@@ -216,18 +216,17 @@ public class UtilService {
     /**
      * Initializes the chain and submits the transaction into plagchain with document sha256 hash as key and  hexdata as
      * value (derived from ChainData)
+     * @param walletAddress the wallet address of the logged in user
      * @param streamName the name of the stream to publish to
      * @param keyAsDocHash the sha256 hash of the whole document
      * @param hexData the data to be submitted in hex string format
      * @return {String} Transaction id
      */
-    public String submitToPlagchain(String streamName, String keyAsDocHash, String hexData) {
+    public String submitToPlagchain(String walletAddress, String streamName, String keyAsDocHash, String hexData) {
         log.info("Submitting data to plagchain");
         String response = null;
-        ChainCommand.initializeChain(Constants.CHAIN_NAME);
         try {
-            response = StreamCommand.publishStream(streamName, keyAsDocHash, hexData);
-            System.out.println(response);
+            response = StreamCommand.publishFromStream(walletAddress, streamName, keyAsDocHash, hexData);
             log.info("Transaction response: {}", response);
         } catch (MultichainException e) {
             e.printStackTrace();
@@ -298,29 +297,4 @@ public class UtilService {
         bufferedWriter.close();
         fileWriter.close();
     }
-
-   /* *//**
-     * Serializes java object to byte array
-     * @param obj any java object
-     * @return byte[] of the java object
-     * @throws IOException if stream not available
-     *//*
-    public byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
-    }
-
-    *//**
-     * Deserializes byte array to java object
-     * @param data any byte array
-     * @return Object java object
-     * @throws IOException if stream not available
-     *//*
-    public Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
-    }*/
 }

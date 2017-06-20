@@ -1,10 +1,12 @@
 package com.plagui;
 
 import com.plagui.config.ApplicationProperties;
+import com.plagui.config.Constants;
 import com.plagui.config.DefaultProfileUtil;
 
 import io.github.jhipster.config.JHipsterConstants;
 
+import multichain.command.ChainCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -52,6 +54,8 @@ public class PlagUiApp {
             log.error("You have misconfigured your application! It should not" +
                 "run with both the 'dev' and 'cloud' profiles at the same time.");
         }
+
+        ChainCommand.initializeChain(Constants.CHAIN_NAME);
     }
 
     /**

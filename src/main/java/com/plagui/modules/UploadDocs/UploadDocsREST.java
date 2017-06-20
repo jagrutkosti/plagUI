@@ -1,6 +1,8 @@
 package com.plagui.modules.UploadDocs;
 
+import com.plagui.domain.User;
 import com.plagui.modules.GenericResponse;
+import com.plagui.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +15,17 @@ import org.springframework.web.multipart.MultipartFile;
  */
 
 @RestController
-@RequestMapping("/api/plagchain")
+@RequestMapping("/api/plagchain/upload")
 public class UploadDocsREST {
 
     private final Logger log = LoggerFactory.getLogger(UploadDocsREST.class);
 
-    private final PlagchainService plagchainService;
+    private final PlagchainUploadService plagchainUploadService;
+    private final UserService userService;
 
-    public UploadDocsREST(PlagchainService plagchainService) {
-        this.plagchainService = plagchainService;
+    public UploadDocsREST(PlagchainUploadService plagchainUploadService, UserService userService) {
+        this.plagchainUploadService = plagchainUploadService;
+        this.userService = userService;
     }
 
     /**
@@ -38,8 +42,9 @@ public class UploadDocsREST {
                                      @RequestParam(required = false, value = "isunpublished")boolean isunpublished) {
         log.info("REST request to timestamp PDF file");
         GenericResponse response = new GenericResponse();
+        User currentUser = userService.getUserWithAuthorities();
         if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
-            if(plagchainService.processAndTimestampDoc(pdfFile, contactInfo, isunpublished))
+            if(plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, isunpublished))
                 response.setSuccess("Text extracted, hashed and transacted on 'plagchain' successfully");
             else
                 response.setError("Problem in processing file or during transaction");
@@ -62,7 +67,8 @@ public class UploadDocsREST {
                                       @RequestParam(required = false, value = "isunpublished")boolean isunpublished) {
         log.info("REST request to timestamp some text");
         GenericResponse response = new GenericResponse();
-        if(plagchainService.processAndTimestampText(textToHash, contactInfo, isunpublished))
+        User currentUser = userService.getUserWithAuthorities();
+        if(plagchainUploadService.processAndTimestampText(currentUser.getPlagchainWalletAddress(), textToHash, contactInfo, isunpublished))
             response.setSuccess("Text received successfully");
         else
             response.setError("Problem in processing file or during transaction");
@@ -82,7 +88,8 @@ public class UploadDocsREST {
                                       @RequestParam(required = false, value = "contactInfo")String contactInfo) {
         log.info("REST request to timestamp image");
         GenericResponse response = new GenericResponse();
-        if(plagchainService.processAndTimestampImage(imageFile, contactInfo))
+        User currentUser = userService.getUserWithAuthorities();
+        if(plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainWalletAddress(), imageFile, contactInfo))
             response.setSuccess("Text received successfully");
         else
             response.setError("Problem in processing file or during transaction");

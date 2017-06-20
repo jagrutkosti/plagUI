@@ -1,6 +1,6 @@
 <div style="margin-left: 40px;">
     <uib-tabset active="active">
-        <uib-tab index="0" heading="Submit PDF">
+        <uib-tab index="0" heading="PDF">
             <br>
             <div>
                 <p align="center"><b>Submit PDF file to generate Min Hash and Timestamp</b></p><br>
@@ -10,12 +10,11 @@
                         <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                     </div>
                 </div>
-                <form class="form-horizontal" ng-model="pdfUpload" role="form" ng-submit="vm.uploadDocForBlockchain()"
+                <form class="form-horizontal" ng-model="pdfUpload" name="pdfForm" role="form" ng-submit="vm.uploadDocForBlockchain()"
                       method="POST" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="fileToHash" class="col-sm-2 control-label"></label>
-                        <div class="col-sm-10">
-                            <p>* Mandatory Fields</p>
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <label>* Mandatory Fields</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -37,14 +36,14 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" ng-disabled="pdfForm.$invalid" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                 </form>
             </div>
         </uib-tab>
 
-        <uib-tab index="1" heading="Submit Plain Text">
+        <uib-tab index="1" heading="Text">
             <br>
             <div>
                 <p align="center"><b>Submit plain text to generate Min Hash and Timestamp</b></p><br>
@@ -53,12 +52,11 @@
                         <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                     </div>
                 </div>
-                <form class="form-horizontal" role="form" ng-submit="vm.uploadTextForBlockchain()"
+                <form class="form-horizontal" role="form" name="textForm" ng-submit="vm.uploadTextForBlockchain()"
                       method="POST">
                     <div class="form-group">
-                        <label for="plainText" class="col-sm-2 control-label"></label>
-                        <div class="col-sm-10">
-                            <p>* Mandatory Fields</p>
+                        <div class="col-sm-offset-2 col-sm-10">
+                                <label>* Mandatory Fields</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -70,7 +68,41 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" ng-disabled="textForm.$invalid" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </uib-tab>
+
+        <uib-tab index="2" heading="Image">
+            <br>
+            <div>
+                <p align="center"><b>Submit image file to generate SHA-256 Hash and Timestamp</b></p><br>
+
+                <div class="col-sm-offset-3 col-sm-5">
+                    <div ng-if="vm.fileData.error">
+                        <jhi-alert>{{vm.fileData.error}}</jhi-alert>
+                    </div>
+                </div>
+                <form class="form-horizontal" ng-model="imageUpload" name="imageForm" role="form" ng-submit="vm.uploadImageForBlockchain()"
+                      method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <label>* Mandatory Fields</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="imageToHash" class="col-sm-2 control-label">Image: *</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="imageToHash" ng-model="vm.fileData.imageToHash"
+                                   type="file" accept=".jpg,.png,.tiff,.jpeg,.gif" ngf-select ngf-max-size="50MB" required>
+                            <p class="help-block">Please upload .jpg, .png, .gif or .tiff file.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" ng-disabled="imageForm.$invalid" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                 </form>

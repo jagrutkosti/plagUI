@@ -13,7 +13,7 @@
     UploadDocsService.$inject = ['$http', '$timeout', 'Upload'];
 
     function UploadDocsService($http, $timeout, Upload) {
-        const API_URL = '/api/plagchain/';
+        const API_URL = '/api/plagchain/upload/';
         var service = {};
 
         /**
@@ -35,12 +35,31 @@
 
         /**
          * Call UploadDocsREST.java#uploadText(textToHash) and handle the callbacks
-         * @param textToHash the file received from controller
+         * @param fileData the file data received from controller
          */
-        service.uploadTextForBlockchain = function(textToHash) {
+        service.uploadTextForBlockchain = function(fileData) {
             var formData = new FormData();
-            formData.append('textToHash', textToHash);
+            formData.append('textToHash', fileData.textToHash);
             return $http.post(API_URL + 'uploadText', formData, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            }).then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            });
+        };
+
+        /**
+         * Call UploadDocsREST.java#uploadImage(imageToHash) and handle the callbacks
+         * @param fileData the file data received from controller
+         */
+        service.uploadImageForBlockchain = function(fileData) {
+            var formData = new FormData();
+            formData.append('imageToHash', fileData.imageToHash);
+            return $http.post(API_URL + 'uploadImage', formData, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
             }).then(function(response) {

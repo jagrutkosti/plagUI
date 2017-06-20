@@ -80,6 +80,12 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
 
+    @Field("plagchain_wallet_address")
+    private String plagchainWalletAddress;
+
+    @Field("plagchain_wallet_pubkey")
+    private String plagchainWalletPubkey;
+
     public String getId() {
         return id;
     }
@@ -184,6 +190,22 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.authorities = authorities;
     }
 
+    public String getPlagchainWalletAddress() {
+        return plagchainWalletAddress;
+    }
+
+    public void setPlagchainWalletAddress(String plagchainWalletAddress) {
+        this.plagchainWalletAddress = plagchainWalletAddress;
+    }
+
+    public String getPlagchainWalletPubkey() {
+        return plagchainWalletPubkey;
+    }
+
+    public void setPlagchainWalletPubkey(String plagchainWalletPubkey) {
+        this.plagchainWalletPubkey = plagchainWalletPubkey;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -214,6 +236,8 @@ public class User extends AbstractAuditingEntity implements Serializable {
             ", activated='" + activated + '\'' +
             ", langKey='" + langKey + '\'' +
             ", activationKey='" + activationKey + '\'' +
+            ", plagchainWalletAddress='" + plagchainWalletAddress + '\'' +
+            ", plagchainWalletPubkey='" + plagchainWalletPubkey + '\'' +
             "}";
     }
 }
