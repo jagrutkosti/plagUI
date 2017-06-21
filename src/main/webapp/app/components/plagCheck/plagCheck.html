@@ -1,0 +1,39 @@
+<div>
+    <p align="center"><b>Submit PDF file for checking plagiarism using MinHash algorithm.</b></p><br>
+
+    <div class="col-sm-offset-3 col-sm-5">
+        <div ng-if="vm.data.error">
+            <jhi-alert>{{vm.data.error}}</jhi-alert>
+        </div>
+    </div>
+    <form class="form-horizontal" ng-model="pdfPlagCheck" name="pdfPlagCheck" role="form" ng-submit="vm.checkForPlagiarism()"
+          method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <label>* Mandatory Fields</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="plagCheckDoc" class="col-sm-2 control-label">File: *</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="plagCheckDoc" ng-model="vm.data.plagCheckDoc"
+                       type="file" accept=".pdf" ngf-select ngf-max-size="50MB" required>
+                <p class="help-block">Please upload only .pdf file.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                    <label>
+                        <input id="checkUnpublishedWork" ng-model="vm.data.checkUnpublishedWork" type="checkbox"> Check for plagiarism in <b>unpublished</b> work stream.
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" ng-disabled="pdfPlagCheck.$invalid" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>

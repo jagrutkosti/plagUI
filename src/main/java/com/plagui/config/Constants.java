@@ -19,6 +19,7 @@ public final class Constants {
     public static final String CHAIN_NAME="plagchain";
     public static final String PUBLISHED_WORK_STREAM_NAME = "publishedwork";
     public static final String UNPUBLISHED_WORK_STREAM_NAME = "unpublishedwork";
+    public static final String PLAGDETECTION_URL = "http://localhost:8090/plagcheck/runMinHashAlgo";
 
     private Constants() {
     }
