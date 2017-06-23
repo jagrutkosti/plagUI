@@ -11,6 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -39,6 +40,14 @@ public class PlagCheckService {
         this.utilService = utilService;
     }
 
+    /**
+     * Breaks down the PDF file into plain text, cleans the text and generates minhash. Calls callPlagDetectionModule()
+     * to get results from plagdetection module.
+     * @param plagCheckDoc pdf file to check for plagiarism
+     * @param checkUnpublishedWork if true, check unpublished work stream
+     * @return {PlagCheckResultDTO} containing the result in JSON string. Will contain all matched along with
+     *                              Jaccard similarity
+     */
     public PlagCheckResultDTO plagCheckForDoc(MultipartFile plagCheckDoc, boolean checkUnpublishedWork) {
         log.info("Processing the pdf file for plagiarism check");
         //Calculate sha256 hash for document
@@ -50,9 +59,9 @@ public class PlagCheckService {
         }
         //Parse pdf file for text and generate min hash
         String textFromPdf = utilService.parsePdf(plagCheckDoc);
-        List<String> extractedSentences = utilService.cleanText(textFromPdf);
+        String cleanedText = utilService.cleanText(textFromPdf);
         List<String> allShingles = new ArrayList<>();
-        allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, extractedSentences));
+        allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, cleanedText));
         int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);
 
         //Parse pdf file for images and generate sha256 hash
@@ -61,8 +70,18 @@ public class PlagCheckService {
         return callPlagDetectionModule(sha256DocHash.get(0), Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), sha256HashOfImages, checkUnpublishedWork);
     }
 
+    /**
+     * Makes HTTP call to Plag detection module to fetch similar documents existing in the plagchain
+     * @param docHash the sha-256 document hash
+     * @param minHashList the min hash generated from the test file
+     * @param imageHashList the list of sha-256 hash of the images
+     * @param checkUnpublishedWork if true, check unpublished work stream
+     * @return {PlagCheckResultDTO} containing the result in JSON string. Will contain all matched along with
+     *                              Jaccard similarity
+     */
     public PlagCheckResultDTO callPlagDetectionModule(String docHash, List<Integer> minHashList, List<String> imageHashList, boolean checkUnpublishedWork) {
         log.info("Making HTTP call to Plagdetection module");
+        PlagCheckResultDTO responseFromPlagdetection = new PlagCheckResultDTO();
         Gson gson = new GsonBuilder().create();
         String minHashListAsString = gson.toJson(minHashList);
         HttpClient httpClient = HttpClients.createDefault();
@@ -84,10 +103,12 @@ public class PlagCheckService {
             String line;
             while((line = bufferedReader.readLine()) != null)
                 result.append(line);
-            System.out.println(result.toString());
+            responseFromPlagdetection.setResultJsonString(result.toString());
+        } catch (HttpHostConnectException e) {
+            responseFromPlagdetection.setError("Plag detection server not available");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return responseFromPlagdetection;
     }
 }

@@ -43,11 +43,12 @@ public class UploadDocsREST {
         log.info("REST request to timestamp PDF file");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
+        String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, isunpublished);
         if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
-            if(plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, isunpublished))
-                response.setSuccess("Text extracted, hashed and transacted on 'plagchain' successfully");
+            if(!result.contains(" "))
+                response.setSuccess("success");
             else
-                response.setError("Problem in processing file or during transaction");
+                response.setError(result);
         } else
             response.setError("File format not supported");
         return response;
@@ -63,15 +64,17 @@ public class UploadDocsREST {
     @PostMapping("/uploadText")
     @ResponseBody
     public GenericResponse uploadText(@RequestParam("textToHash")String textToHash,
+                                      @RequestParam("fileName") String fileName,
                                       @RequestParam(required = false, value = "contactInfo")String contactInfo,
                                       @RequestParam(required = false, value = "isunpublished")boolean isunpublished) {
         log.info("REST request to timestamp some text");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
-        if(plagchainUploadService.processAndTimestampText(currentUser.getPlagchainWalletAddress(), textToHash, contactInfo, isunpublished))
-            response.setSuccess("Text received successfully");
+        String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainWalletAddress(), textToHash, contactInfo, isunpublished);
+        if(!result.contains(" "))
+            response.setSuccess("success");
         else
-            response.setError("Problem in processing file or during transaction");
+            response.setError(result);
         return response;
     }
 
@@ -89,10 +92,11 @@ public class UploadDocsREST {
         log.info("REST request to timestamp image");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
-        if(plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainWalletAddress(), imageFile, contactInfo))
-            response.setSuccess("Text received successfully");
+        String result = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainWalletAddress(), imageFile, contactInfo);
+        if(!result.contains(" "))
+            response.setSuccess("success");
         else
-            response.setError("Problem in processing file or during transaction");
+            response.setError(result);
         return response;
     }
 }

@@ -19,6 +19,14 @@ public class PlagCheckREST {
         this.plagCheckService = plagCheckService;
     }
 
+    /**
+     * REST request to handle plagiarism check for a document. Sub-calls made to plag detection module to run the
+     * algorithm and return the result.
+     * @param plagCheckDoc the document to check for plagiarism
+     * @param checkUnpublishedWork if true, check unpublished work stream
+     * @return {PlagCheckResultDTO} containing the result in JSON string. Will contain all matched along with
+     *                              Jaccard similarity
+     */
     @PostMapping("/plagCheckDoc")
     @ResponseBody
     public PlagCheckResultDTO plagCheckForDoc(@RequestParam("plagCheckDoc")MultipartFile plagCheckDoc,
@@ -26,18 +34,20 @@ public class PlagCheckREST {
         PlagCheckResultDTO response;
         if(plagCheckDoc.getOriginalFilename().endsWith(".pdf")) {
             response = plagCheckService.plagCheckForDoc(plagCheckDoc, checkUnpublishedWork);
-            if(response != null)
-                response.setSuccess("Performed calculations successfully");
-            else{
+            //Different kinds of error handling
+            if(response != null && response.getError() == null)
+                response.setSuccess("success");
+            else if(response != null && response.getError() == null) {
                 response = new PlagCheckResultDTO();
                 response.setError("Server error. Problems while submitting to plag-detection module.");
+            } else if(response == null){
+                response = new PlagCheckResultDTO();
+                response.setError("No result received from plag detection server.");
             }
-
         } else {
             response = new PlagCheckResultDTO();
             response.setError("File format not supported");
         }
-
         return response;
     }
 }

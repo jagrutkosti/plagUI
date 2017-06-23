@@ -11,11 +11,9 @@ import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 import com.plagui.config.Constants;
 import com.plagui.modules.StreamFormats.ChainData;
-import multichain.command.ChainCommand;
 import multichain.command.MultichainException;
 import multichain.command.StreamCommand;
-import opennlp.tools.sentdetect.SentenceDetectorME;
-import opennlp.tools.sentdetect.SentenceModel;
+import multichain.object.StreamItem;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -114,45 +112,32 @@ public class UtilService {
      * @param uncleanText the text that needs to be cleaned
      * @return {List<String>} containing separate sentences extracted from pdf file.
      */
-    public List<String> cleanText(String uncleanText) {
+    public String cleanText(String uncleanText) {
         log.info("Cleaning text.");
-        List<String> stringArrToList = new ArrayList<>();
-
+        //For text extracted from pdf has unnecessary line breaks and hyphen(when line break occurs in words)
         uncleanText = uncleanText.replaceAll("-\n","");
+        //For removing all line breaks
         uncleanText = uncleanText.replaceAll("[\n]"," ");
-        uncleanText = StringUtils.normalizeSpace(uncleanText);
+        //For removing all punctuations
+        uncleanText = uncleanText.replaceAll("\\p{P}", "");
+        //Convert everything to lowercase
         uncleanText = uncleanText.toLowerCase();
-        try {
-            InputStream modelIn = new FileInputStream(Constants.EN_SENTENCE_BIN_LOC);
-            SentenceModel model = new SentenceModel(modelIn);
-            SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
-            Collections.addAll(stringArrToList, sentenceDetector.sentDetect(uncleanText));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stringArrToList;
+        //remove all white spaces as identified by Java
+        uncleanText = StringUtils.deleteWhitespace(uncleanText);
+        return uncleanText;
     }
 
     /**
      * Create word shingles of specified length from a sentence.
      * @param shingleLength the fixed length of all shingles
-     * @param extractedSentences the list of sentences from which shingles need to be extracted
+     * @param cleanedText the list of sentences from which shingles need to be extracted
      * @return {List<String>} list containing word shingles from the sentence
      */
-    public List<String> createShingles(int shingleLength, List<String> extractedSentences) {
+    public Set<String> createShingles(int shingleLength, String cleanedText) {
         log.info("Creating shingles of length: {}", shingleLength);
-        List<String> shinglesFromSentences = new ArrayList<>();
-        for(String sentence : extractedSentences) {
-            int firstIndex = 0;
-            int lastIndex = sentence.indexOf(" ");
-            for(int i = 1; i < shingleLength; i++) {
-                lastIndex = sentence.indexOf(" ", lastIndex + 1);
-            }
-            while(lastIndex < sentence.length() && lastIndex > 0) {
-                shinglesFromSentences.add(sentence.substring(firstIndex, lastIndex));
-                firstIndex = sentence.indexOf(" ", firstIndex + 1);
-                lastIndex = sentence.indexOf(" ", lastIndex + 1);
-            }
+        Set<String> shinglesFromSentences = new HashSet<>();
+        for(int i = 0; i < cleanedText.length() - shingleLength + 1; i++) {
+            shinglesFromSentences.add(cleanedText.substring(i, i + shingleLength));
         }
         return shinglesFromSentences;
     }
@@ -226,6 +211,9 @@ public class UtilService {
         log.info("Submitting data to plagchain");
         String response = null;
         try {
+            List<StreamItem> alreadyExistingKeys = StreamCommand.listStreamKeyItems(streamName, keyAsDocHash);
+            if(alreadyExistingKeys != null && alreadyExistingKeys.size() > 0)
+                return "Document already exists.";
             response = StreamCommand.publishFromStream(walletAddress, streamName, keyAsDocHash, hexData);
             log.info("Transaction response: {}", response);
         } catch (MultichainException e) {
@@ -242,9 +230,11 @@ public class UtilService {
      * @param contactInfo the contact info as string
      * @return String data transformed into Hex String representation
      */
-    public String formatDataToHex(List<Integer> minHashList, List<String> imageHashList, String contactInfo) {
+    public String formatDataToHex(String fileName, List<Integer> minHashList, List<String> imageHashList, String contactInfo) {
         log.info("Formatting data to Hex string");
         ChainData chainData = new ChainData();
+        if(fileName != null && fileName.length() > 0)
+            chainData.setFileName(fileName);
         if(minHashList != null && minHashList.size() > 0)
             chainData.setTextMinHash(minHashList);
         if(imageHashList != null && imageHashList.size() > 0)
