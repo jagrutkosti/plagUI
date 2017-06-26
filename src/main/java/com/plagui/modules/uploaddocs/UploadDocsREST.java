@@ -1,4 +1,4 @@
-package com.plagui.modules.UploadDocs;
+package com.plagui.modules.uploaddocs;
 
 import com.plagui.domain.User;
 import com.plagui.modules.GenericResponse;
@@ -43,8 +43,8 @@ public class UploadDocsREST {
         log.info("REST request to timestamp PDF file");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
-        String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, isunpublished);
         if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
+            String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, isunpublished);
             if(!result.contains(" "))
                 response.setSuccess("success");
             else

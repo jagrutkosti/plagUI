@@ -1,4 +1,4 @@
-package com.plagui.modules.PlagCheck;
+package com.plagui.modules.plagcheck;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

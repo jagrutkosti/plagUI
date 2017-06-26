@@ -10,7 +10,7 @@ import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 import com.plagui.config.Constants;
-import com.plagui.modules.StreamFormats.ChainData;
+import com.plagui.modules.streamformats.ChainData;
 import multichain.command.MultichainException;
 import multichain.command.StreamCommand;
 import multichain.object.StreamItem;

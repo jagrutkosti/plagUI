@@ -1,4 +1,4 @@
-package com.plagui.modules.UploadDocs;
+package com.plagui.modules.uploaddocs;
 
 import com.plagui.config.Constants;
 import com.plagui.modules.UtilService;

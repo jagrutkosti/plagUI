@@ -1,4 +1,4 @@
-package com.plagui.modules.PlagCheck;
+package com.plagui.modules.plagcheck;
 
 import com.plagui.modules.GenericResponse;
 

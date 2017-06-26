@@ -10,9 +10,9 @@
         .module('plagUiApp')
         .factory('UploadDocsService', UploadDocsService);
 
-    UploadDocsService.$inject = ['$http', '$timeout', 'Upload'];
+    UploadDocsService.$inject = ['Upload'];
 
-    function UploadDocsService($http, $timeout, Upload) {
+    function UploadDocsService(Upload) {
         const API_URL = '/api/plagchain/upload/';
         var service = {};
 
@@ -23,7 +23,11 @@
         service.uploadDocForBlockchain = function(fileData) {
             return Upload.upload({
                 url: API_URL + 'uploadDoc',
-                data: {fileToHash: fileData.fileToHash, isunpublished: fileData.isunpublished}
+                data: {
+                    fileToHash: fileData.fileToHash,
+                    contactInfo: fileData.contactInfo,
+                    isunpublished: fileData.isunpublished
+                }
             }).then(function(response) {
                 return response.data;
             }, function(response) {
@@ -38,11 +42,14 @@
          * @param fileData the file data received from controller
          */
         service.uploadTextForBlockchain = function(fileData) {
-            var formData = new FormData();
-            formData.append('textToHash', fileData.textToHash);
-            return $http.post(API_URL + 'uploadText', formData, {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
+            return Upload.upload({
+                url: API_URL + 'uploadText',
+                data: {
+                    textToHash: fileData.textToHash,
+                    fileName: fileData.fileName,
+                    contactInfo: fileData.contactInfo,
+                    isunpublished: fileData.isunpublished
+                }
             }).then(function(response) {
                 return response.data;
             }, function(response) {
@@ -57,11 +64,12 @@
          * @param fileData the file data received from controller
          */
         service.uploadImageForBlockchain = function(fileData) {
-            var formData = new FormData();
-            formData.append('imageToHash', fileData.imageToHash);
-            return $http.post(API_URL + 'uploadImage', formData, {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
+            return Upload.upload({
+                url : API_URL + 'uploadImage',
+                data: {
+                    imageToHash: fileData.imageToHash,
+                    contactInfo: fileData.contactInfo
+                }
             }).then(function(response) {
                 return response.data;
             }, function(response) {

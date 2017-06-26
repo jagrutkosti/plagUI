@@ -1,113 +1,168 @@
-<div style="margin-left: 40px;">
-    <uib-tabset active="active">
-        <uib-tab index="0" heading="PDF">
-            <br>
-            <div>
-                <p align="center"><b>Submit PDF file to generate Min Hash and Timestamp</b></p><br>
-
-                <div class="col-sm-offset-3 col-sm-5">
-                    <div ng-if="vm.fileData.error">
-                        <jhi-alert>{{vm.fileData.error}}</jhi-alert>
-                    </div>
+<uib-tabset active="active">
+    <uib-tab index="0" heading="PDF">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h4 align="center">Timestamp PDF</h4>
+                <div ng-if="vm.fileData.error">
+                    <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                 </div>
-                <form class="form-horizontal" ng-model="pdfUpload" name="pdfForm" role="form" ng-submit="vm.uploadDocForBlockchain()"
-                      method="POST" enctype="multipart/form-data">
+                <div class="col-sm-10">
+                    <p align="left">* Mandatory Fields</p>
+                </div>
+            </div>
+            <div class="col-md-8 col-md-offset-2">
+                <form name="pdfForm" role="form" novalidate ng-submit="vm.uploadDocForBlockchain()" show-validation>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <label>* Mandatory Fields</label>
+                        <label class="control-label" for="fileToHash">File * : </label>
+                        <input type="file" class="form-control" id="fileToHash" name="fileToHash" ng-model="vm.fileData.fileToHash"
+                               accept=".pdf" ngf-select ngf-max-size="50MB" required>
+                        <p class="help-block">Supported formats- .pdf</p>
+                        <div ng-show="pdfForm.fileToHash.$dirty && pdfForm.fileToHash.$invalid">
+                            <p class="help-block" ng-show="pdfForm.fileToHash.$error.required">Please select a pdf file.</p>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="fileToHash" class="col-sm-2 control-label">File: *</label>
-                        <div class="col-sm-10">
-                            <input class="form-control" id="fileToHash" ng-model="vm.fileData.fileToHash"
-                                   type="file" accept=".pdf" ngf-select ngf-max-size="50MB" required>
-                            <p class="help-block">Please upload only .pdf file.</p>
+                        <label class="control-label" for="contactInfo">Contact Info: </label>
+                        <input type="email" class="form-control" id="contactInfo" name="contactInfo" ng-model="vm.fileData.contactInfo"
+                               ng-minlength=5 ng-maxlength=100 placeholder="Your email">
+                        <div ng-show="pdfForm.contactInfo.$dirty && pdfForm.contactInfo.$invalid">
+                            <p class="help-block"
+                               ng-show="pdfForm.contactInfo.$error.email">
+                                Your email is invalid.
+                            </p>
+                            <p class="help-block"
+                               ng-show="pdfForm.contactInfo.$error.minlength">
+                                Your email is required to be at least 5 characters.
+                            </p>
+                            <p class="help-block"
+                               ng-show="pdfForm.contactInfo.$error.maxlength">
+                                Your email cannot be longer than 100 characters.
+                            </p>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <div class="checkbox">
-                                <label>
-                                    <input id="ispublished" ng-model="vm.fileData.isunpublished" type="checkbox"> Is this an unpublished document?
-                                </label>
-                            </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="ispublished" name="ispublished" ng-model="vm.fileData.isunpublished" type="checkbox"> Is this an unpublished document?
+                            </label>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" ng-disabled="pdfForm.$invalid" class="btn btn-primary">Submit</button>
-                        </div>
-                    </div>
+                    <button type="submit" ng-disabled="pdfForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>
             </div>
-        </uib-tab>
+        </div>
+    </uib-tab>
 
-        <uib-tab index="1" heading="Text">
-            <br>
-            <div>
-                <p align="center"><b>Submit plain text to generate Min Hash and Timestamp</b></p><br>
-                <div class="col-sm-offset-3 col-sm-5">
-                    <div ng-if="vm.fileData.error">
-                        <jhi-alert>{{vm.fileData.error}}</jhi-alert>
-                    </div>
+    <uib-tab index="1" heading="Text">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h4 align="center">Timestamp Text</h4><br>
+                <div ng-if="vm.fileData.error">
+                    <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                 </div>
-                <form class="form-horizontal" role="form" name="textForm" ng-submit="vm.uploadTextForBlockchain()"
-                      method="POST">
+                <div class="col-sm-10">
+                    <p align="left">* Mandatory Fields</p>
+                </div>
+            </div>
+            <div class="col-md-8 col-md-offset-2">
+                <form role="form" name="textForm" novalidate ng-submit="vm.uploadTextForBlockchain()" show-validation>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                                <label>* Mandatory Fields</label>
+                        <label for="plainText" class="control-label">Text: *</label>
+                        <textarea class="form-control" name="plainText" id="plainText" ng-model="vm.fileData.textToHash" ng-minlength=50 required></textarea>
+                        <p class="help-block">Please enter text to hash and submit to Blockchain.</p>
+                        <div ng-show="textForm.plainText.$dirty && textForm.plainText.$invalid">
+                            <p class="help-block" ng-show="textForm.plainText.$error.minlength">
+                                Your text is required to be at least 50 characters.
+                            </p>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="plainText" class="col-sm-2 control-label">Text: *</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" id="plainText" ng-model="vm.fileData.textToHash" required></textarea>
-                            <p class="help-block">Please enter text to hash and submit to Blockchain.</p>
+                        <label for="fileName" class="control-label">File name: *</label>
+                        <input ng-model="vm.fileData.fileName" type="text" class="form-control" id="fileName" name="fileName" ng-minlength=5
+                               placeholder="Please enter file name.." required>
+                        <div ng-show="textForm.fileName.$dirty && textForm.fileName.$invalid">
+                            <p class="help-block" ng-show="textForm.fileName.$error.minlength">
+                                Your file name is required to be at least 5 characters.
+                            </p>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" ng-disabled="textForm.$invalid" class="btn btn-primary">Submit</button>
+                        <label class="control-label" for="contactInfoText">Contact Info: </label>
+                        <input type="email" class="form-control" id="contactInfoText" name="contactInfo" ng-model="vm.fileData.contactInfo"
+                               ng-minlength=5 ng-maxlength=100 placeholder="Your email">
+                        <div ng-show="textForm.contactInfo.$dirty && textForm.contactInfo.$invalid">
+                            <p class="help-block"
+                               ng-show="textForm.contactInfo.$error.email">
+                                Your email is invalid.
+                            </p>
+                            <p class="help-block"
+                               ng-show="textForm.contactInfo.$error.minlength">
+                                Your email is required to be at least 5 characters.
+                            </p>
+                            <p class="help-block"
+                               ng-show="textForm.contactInfo.$error.maxlength">
+                                Your email cannot be longer than 100 characters.
+                            </p>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input id="ispublishedText" name="ispublished" ng-model="vm.fileData.isunpublished" type="checkbox"> Is this an unpublished document?
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" ng-disabled="textForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>
             </div>
-        </uib-tab>
+        </div>
+    </uib-tab>
 
-        <uib-tab index="2" heading="Image">
-            <br>
-            <div>
-                <p align="center"><b>Submit image file to generate SHA-256 Hash and Timestamp</b></p><br>
-
-                <div class="col-sm-offset-3 col-sm-5">
-                    <div ng-if="vm.fileData.error">
-                        <jhi-alert>{{vm.fileData.error}}</jhi-alert>
-                    </div>
+    <uib-tab index="2" heading="Image">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h4 align="center">Timestamp Image</h4><br>
+                <div ng-if="vm.fileData.error">
+                    <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                 </div>
-                <form class="form-horizontal" ng-model="imageUpload" name="imageForm" role="form" ng-submit="vm.uploadImageForBlockchain()"
-                      method="POST" enctype="multipart/form-data">
+                <div class="col-sm-10">
+                    <p align="left">* Mandatory Fields</p>
+                </div>
+            </div>
+            <div class="col-md-8 col-md-offset-2">
+                <form name="imageForm" role="form" novalidate ng-submit="vm.uploadImageForBlockchain()" show-validation>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <label>* Mandatory Fields</label>
+                        <label for="imageToHash" class="control-label">Image: *</label>
+                        <input class="form-control" id="imageToHash" name="imageToHash" ng-model="vm.fileData.imageToHash"
+                               type="file" accept=".jpg,.png,.tiff,.jpeg,.gif" ngf-select ngf-max-size="50MB" required>
+                        <p class="help-block">Please upload .jpg, .png, .gif or .tiff file.</p>
+                        <div ng-show="imageForm.imageToHash.$dirty && imageForm.imageToHash.$invalid">
+                            <p class="help-block" ng-show="imageForm.imageToHash.$error.required">Please select an image file.</p>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="imageToHash" class="col-sm-2 control-label">Image: *</label>
-                        <div class="col-sm-10">
-                            <input class="form-control" id="imageToHash" ng-model="vm.fileData.imageToHash"
-                                   type="file" accept=".jpg,.png,.tiff,.jpeg,.gif" ngf-select ngf-max-size="50MB" required>
-                            <p class="help-block">Please upload .jpg, .png, .gif or .tiff file.</p>
+                        <label class="control-label" for="contactInfoImage">Contact Info: </label>
+                        <input type="email" class="form-control" id="contactInfoImage" name="contactInfo" ng-model="vm.fileData.contactInfo"
+                               ng-minlength=5 ng-maxlength=100 placeholder="Your email">
+                        <div ng-show="imageForm.contactInfo.$dirty && imageForm.contactInfo.$invalid">
+                            <p class="help-block"
+                               ng-show="imageForm.contactInfo.$error.email">
+                                Your email is invalid.
+                            </p>
+                            <p class="help-block"
+                               ng-show="imageForm.contactInfo.$error.minlength">
+                                Your email is required to be at least 5 characters.
+                            </p>
+                            <p class="help-block"
+                               ng-show="imageForm.contactInfo.$error.maxlength">
+                                Your email cannot be longer than 100 characters.
+                            </p>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" ng-disabled="imageForm.$invalid" class="btn btn-primary">Submit</button>
-                        </div>
-                    </div>
+                    <button type="submit" ng-disabled="imageForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>
             </div>
-        </uib-tab>
+        </div>
+    </uib-tab>
 
-    </uib-tabset>
-</div>
+</uib-tabset>

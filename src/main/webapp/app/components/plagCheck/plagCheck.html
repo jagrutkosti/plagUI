@@ -1,39 +1,32 @@
-<div>
-    <p align="center"><b>Submit PDF file for checking plagiarism using MinHash algorithm.</b></p><br>
-
-    <div class="col-sm-offset-3 col-sm-5">
-        <div ng-if="vm.data.error">
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h4 align="center">Check Plagiarism</h4>
+        <div ng-if="vm.fileData.error">
             <jhi-alert>{{vm.data.error}}</jhi-alert>
         </div>
-    </div>
-    <form class="form-horizontal" ng-model="pdfPlagCheck" name="pdfPlagCheck" role="form" ng-submit="vm.checkForPlagiarism()"
-          method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <label>* Mandatory Fields</label>
-            </div>
+        <div class="col-sm-10">
+            <p align="left">* Mandatory Fields</p>
         </div>
-        <div class="form-group">
-            <label for="plagCheckDoc" class="col-sm-2 control-label">File: *</label>
-            <div class="col-sm-10">
-                <input class="form-control" id="plagCheckDoc" ng-model="vm.data.plagCheckDoc"
+    </div>
+    <div class="col-md-8 col-md-offset-2">
+        <form name="pdfPlagCheck" role="form" novalidate ng-submit="vm.checkForPlagiarism()" show-validation>
+            <div class="form-group">
+                <label for="plagCheckDoc" class="control-label">File: *</label>
+                <input class="form-control" name="plagCheckDoc" id="plagCheckDoc" ng-model="vm.data.plagCheckDoc"
                        type="file" accept=".pdf" ngf-select ngf-max-size="50MB" required>
                 <p class="help-block">Please upload only .pdf file.</p>
+                <div ng-show="pdfPlagCheck.plagCheckDoc.$dirty && pdfPlagCheck.plagCheckDoc.$invalid">
+                    <p class="help-block" ng-show="pdfPlagCheck.plagCheckDoc.$error.required">Please select a pdf file.</p>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input id="checkUnpublishedWork" ng-model="vm.data.checkUnpublishedWork" type="checkbox"> Check for plagiarism in <b>unpublished</b> work stream.
+                        <input id="checkUnpublishedWork" name="checkUnpublishedWork" ng-model="vm.data.checkUnpublishedWork" type="checkbox"> Check for plagiarism in <b>unpublished</b> work stream.
                     </label>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" ng-disabled="pdfPlagCheck.$invalid" class="btn btn-primary">Submit</button>
-            </div>
-        </div>
-    </form>
+            <button type="submit" ng-disabled="pdfPlagCheck.$invalid" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </div>

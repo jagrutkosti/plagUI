@@ -1,4 +1,4 @@
-package com.plagui.modules.StreamFormats;
+package com.plagui.modules.streamformats;
 
 import java.util.List;
 
