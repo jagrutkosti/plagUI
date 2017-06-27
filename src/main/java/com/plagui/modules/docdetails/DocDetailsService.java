@@ -72,8 +72,9 @@ public class DocDetailsService {
         for(StreamItem streamItem : streamItems) {
             DocDetails docItem = new DocDetails();
             //Populate from stream item itself
-            docItem.setSubmissionTimeToPlagchain(streamItem.getBlocktime());
+            docItem.setSubmissionTimeToPlagchain(streamItem.getTime().toString() + "000");
             docItem.setFileName(utilService.transformDataFromHexToObject(streamItem.getData()).getFileName());
+            docItem.setFileHash(streamItem.getKey());
             try {
                 String responseStringFromPDModule = getSeedSubmissionDetailsForHash(streamItem.getKey());
 
@@ -141,7 +142,7 @@ public class DocDetailsService {
     public List<StreamItem> getUserItemsFromStream(String streamName, String walletAddress) {
         log.info("Getting all user items for address: {}, from stream: {}", walletAddress, streamName);
         try {
-            return StreamCommand.listStreamPublisherItems(streamName, walletAddress);
+            return StreamCommand.listStreamPublisherItems(streamName, walletAddress, "true");
         } catch (MultichainException e) {
             e.printStackTrace();
             return null;

@@ -14,6 +14,7 @@
 
     function DocDetailsController(DocDetailsService, AlertService, docDetails){
         var vm = this;
-        vm.docDetails = angular.toJson(docDetails);
+        vm.docDetails = docDetails;
+        console.log(vm.docDetails);
     }
 })();

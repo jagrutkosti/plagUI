@@ -6,6 +6,7 @@ package com.plagui.modules.docdetails;
  */
 public class DocDetails {
     private String fileName;
+    private String fileHash;
     private String plagchainSeed;
     private String originstampSeed;
     /*
@@ -20,7 +21,7 @@ public class DocDetails {
     private boolean fetchedByPDModule;
     private String transactionAddress;
     private String confirmationTime;
-    private long submissionTimeToPlagchain;
+    private String submissionTimeToPlagchain;
 
     public String getFileName() {
         return fileName;
@@ -28,6 +29,14 @@ public class DocDetails {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getFileHash() {
+        return fileHash;
+    }
+
+    public void setFileHash(String fileHash) {
+        this.fileHash = fileHash;
     }
 
     public String getPlagchainSeed() {
@@ -78,11 +87,11 @@ public class DocDetails {
         this.confirmationTime = confirmationTime;
     }
 
-    public long getSubmissionTimeToPlagchain() {
+    public String getSubmissionTimeToPlagchain() {
         return submissionTimeToPlagchain;
     }
 
-    public void setSubmissionTimeToPlagchain(long submissionTimeToPlagchain) {
+    public void setSubmissionTimeToPlagchain(String submissionTimeToPlagchain) {
         this.submissionTimeToPlagchain = submissionTimeToPlagchain;
     }
 }

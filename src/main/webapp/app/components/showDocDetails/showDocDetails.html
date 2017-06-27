@@ -1,3 +1,25 @@
-<div>
-    Document details!
+<div align="center">
+    <h4>Your documents</h4>
 </div>
+<uib-accordion close-others="true">
+    <div uib-accordion-group class="panel-primary" heading="Documents in Published Work stream" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
+        <table class="table table-striped">
+            <tr ng-repeat="publishedItem in vm.docDetails.publishedWorkDocs">
+                <td>
+                    <p>Filename:<strong> {{publishedItem.fileName}}</strong></p>
+                    <p>SHA-256 Hash: {{publishedItem.fileHash}}</p>
+                    <p>Submitted on: {{publishedItem.submissionTimeToPlagchain | date:'dd-MM-yy HH:mm:ss Z'}}</p>
+                    <p>Confirmed at: {{publishedItem.confirmationTime | date:'dd-MM-yy HH:mm:ss Z'}}</p>
+                </td>
+                <td align="center">
+                    <uib-progressbar class="progress-striped active" value="dynamic" type="warning"><i>Some Text</i></uib-progressbar>
+                    <button class="btn btn-info" type="submit">Download Originstamp Seed</button>
+                    <button class="btn btn-info" type="submit">Download Plagchain Seed</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div uib-accordion-group class="panel-primary" heading="Documents in Unpublished Work stream">
+        This content is straight in the template.
+    </div>
+</uib-accordion>
