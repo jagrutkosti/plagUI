@@ -20,6 +20,7 @@ public final class Constants {
     public static final String PUBLISHED_WORK_STREAM_NAME = "publishedwork";
     public static final String UNPUBLISHED_WORK_STREAM_NAME = "unpublishedwork";
     public static final String PLAGDETECTION_URL = "http://localhost:8090/plagcheck/runMinHashAlgo";
+    public static final String SEED_DETAILS_FOR_HASH_URL = "http://localhost:8090/plagcheck/getHashSeed";
 
     private Constants() {
     }

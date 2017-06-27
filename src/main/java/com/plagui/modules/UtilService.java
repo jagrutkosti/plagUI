@@ -287,4 +287,15 @@ public class UtilService {
         bufferedWriter.close();
         fileWriter.close();
     }
+
+    /**
+     * Transforms the data from Hex-String to ChainData object
+     * @param dataInHex the data in the form of hexadecimal string
+     * @return {ChainData} object containing relevant information
+     */
+    public ChainData transformDataFromHexToObject(String dataInHex) {
+        String dataInString = new String(DatatypeConverter.parseHexBinary(dataInHex));
+        Gson gson = new Gson();
+        return gson.fromJson(dataInString,ChainData.class);
+    }
 }

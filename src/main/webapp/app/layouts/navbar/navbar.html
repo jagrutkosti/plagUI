@@ -31,8 +31,15 @@
 
                 <li ui-sref-active="active" ng-switch-when="true">
                     <a ui-sref="plagCheck" ng-click="vm.collapseNavbar()">
-                        <span class="glyphicon glyphicon-duplicate"></span>
+                        <span class="glyphicon glyphicon-search"></span>
                         <span class="hidden-sm">Check Plagiarism</span>
+                    </a>
+                </li>
+
+                <li ui-sref-active="active" ng-switch-when="true">
+                    <a ui-sref="showDocDetails" ng-click="vm.collapseNavbar()">
+                        <span class="glyphicon glyphicon-duplicate"></span>
+                        <span class="hidden-sm">My Docs</span>
                     </a>
                 </li>
                 <li ng-class="{active: vm.$state.includes('account')}" uib-dropdown class="dropdown pointer">
