@@ -83,7 +83,7 @@ public class DocDetailsService {
                     //For each hash, get the information from plag-detection module
                     JSONObject responseFromPDModule = new JSONObject(responseStringFromPDModule);
                     //If the stream item was identified by Plag-detection module, populate it, else do nothing
-                    if(responseFromPDModule.get("seedDetails") == null) {
+                    if(!(responseFromPDModule.get("seedDetails") instanceof JSONObject)) {
                         docItem.setFetchedByPDModule(false);
                     } else {
                         JSONObject seedDetails = responseFromPDModule.getJSONObject("seedDetails");

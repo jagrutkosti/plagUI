@@ -16,6 +16,7 @@
     function PlagCheckController(PlagCheckService, AlertService) {
         var vm = this;
         vm.checkForPlagiarism = checkForPlagiarism;
+        vm.results = {};
         /**
          * 'plagCheckDoc', 'checkUnpublishedWork'
          */
@@ -24,6 +25,7 @@
         function checkForPlagiarism() {
             PlagCheckService.checkForPlagiarism(vm.data).then(function(response) {
                 if(response.success) {
+                    vm.results = angular.fromJson(response.resultJsonString);
                     vm.data.success = response.success;
                 } else {
                     if(response.error)

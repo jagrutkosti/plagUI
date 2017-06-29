@@ -30,3 +30,54 @@
         </form>
     </div>
 </div>
+<br><br>
+<div class="row" ng-show="vm.results.success">
+    <div class="col-md-8 col-md-offset-2">
+        <uib-accordion close-others="true">
+            <div ng-show="vm.results.listOfSimilarPublishedWork.length > 0">
+                <div uib-accordion-group class="panel-primary" heading="Similar Documents in Published Work stream" is-open="true">
+                    <div class="panel panel-default">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Similar Documents in Published Work Stream</th>
+                                    <th>Similarity Score (Jaccard Score)</th>
+                                    <th>Contact Info</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="simDoc in vm.results.listOfSimilarPublishedWork">
+                                    <td>{{simDoc.fileName}}</td>
+                                    <td>{{simDoc.similarityScore}}</td>
+                                    <td>{{simDoc.contactInfo}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="vm.results.listOfSimilarUnpublishedWork.length > 0">
+                <div uib-accordion-group class="panel-primary" heading="Similar Documents in Unpublished Work stream" is-open="true">
+                    <div class="panel panel-default">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Similar Documents in unpublished Work Stream</th>
+                                <th>Similarity Score (Jaccard Score)</th>
+                                <th>Contact Info</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="simDoc in vm.results.listOfSimilarUnpublishedWork">
+                                <td>{{simDoc.fileName}}</td>
+                                <td>{{simDoc.value}}</td>
+                                <td>{{simDoc.contactInfo}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
+    </div>
+</div>

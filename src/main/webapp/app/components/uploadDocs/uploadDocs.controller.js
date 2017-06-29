@@ -10,9 +10,9 @@
         .module('plagUiApp')
         .controller('UploadDocsController', UploadDocsController);
 
-    UploadDocsController.$inject = ['UploadDocsService', 'AlertService'];
+    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state'];
 
-    function UploadDocsController(UploadDocsService, AlertService){
+    function UploadDocsController(UploadDocsService, AlertService, $state){
         var vm = this;
         /**
          * fileData: {'fileToHash', 'textToHash', 'imageToHash', 'isunpublished', 'contactInfo', 'fileName', 'success', 'error'}
@@ -30,6 +30,7 @@
             UploadDocsService.uploadDocForBlockchain(vm.fileData).then(function(response){
                 if(response.success) {
                     vm.fileData.success = response.success;
+                    $state.go('showDocDetails');
                 } else {
                     if(response.error)
                         vm.fileData.error = response.error;
@@ -48,6 +49,7 @@
             UploadDocsService.uploadTextForBlockchain(vm.fileData).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
+                    $state.go('showDocDetails');
                 } else {
                     if(response.error)
                         vm.fileData.error = response.error;
@@ -66,6 +68,7 @@
             UploadDocsService.uploadImageForBlockchain(vm.fileData).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
+                    $state.go('showDocDetails');
                 } else {
                     if(response.error)
                         vm.fileData.error = response.error;
