@@ -16,9 +16,27 @@
         var vm = this;
         vm.docDetails = docDetails;
         vm.url = '';
-        vm.iconTitles = ['Submitted to Plagchain', 'Submitted to Originstamp', 'Submitted to Bitcoin', 'Included in a block on Bitcoin', 'Timestamped successfully on Blockchain!'];
         vm.downloadSeed = downloadSeed;
-
+        vm.progressOptions = {
+            scale: {
+                enabled: true,
+                type: 'dots',
+                color: 'gray',
+                width: 2,
+                quantity: 5
+            },
+            size: 90,
+            trackWidth: 9,
+            barWidth: 9,
+            barCap: 10,
+            step: 1,
+            min:0,
+            max:5,
+            displayInput: false,
+            readOnly: true,
+            trackColor: 'rgba(52,152,219,.1)',
+            barColor: 'rgba(255,193,7,1)'
+        };
         /**
          * To download the seed as a text file.
          * @param seed the seed to download. Plagchain seed or Originstamp seed.

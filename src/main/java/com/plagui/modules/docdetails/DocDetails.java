@@ -19,7 +19,8 @@ public class DocDetails {
      */
     private int confirmation;
     private boolean fetchedByPDModule;
-    private String transactionAddress;
+    private String bitcoinAddress;
+    private String transactionHash;
     private String confirmationTime;
     private String submissionTimeToPlagchain;
 
@@ -71,14 +72,6 @@ public class DocDetails {
         this.fetchedByPDModule = fetchedByPDModule;
     }
 
-    public String getTransactionAddress() {
-        return transactionAddress;
-    }
-
-    public void setTransactionAddress(String transactionAddress) {
-        this.transactionAddress = transactionAddress;
-    }
-
     public String getConfirmationTime() {
         return confirmationTime;
     }
@@ -93,5 +86,21 @@ public class DocDetails {
 
     public void setSubmissionTimeToPlagchain(String submissionTimeToPlagchain) {
         this.submissionTimeToPlagchain = submissionTimeToPlagchain;
+    }
+
+    public String getBitcoinAddress() {
+        return bitcoinAddress;
+    }
+
+    public void setBitcoinAddress(String bitcoinAddress) {
+        this.bitcoinAddress = bitcoinAddress;
+    }
+
+    public String getTransactionHash() {
+        return transactionHash;
+    }
+
+    public void setTransactionHash(String transactionHash) {
+        this.transactionHash = transactionHash;
     }
 }

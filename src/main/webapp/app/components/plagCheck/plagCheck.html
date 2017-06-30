@@ -41,14 +41,14 @@
                             <thead>
                                 <tr>
                                     <th>Similar Documents in Published Work Stream</th>
-                                    <th>Similarity Score (Jaccard Score)</th>
+                                    <th>Similarity Percentage</th>
                                     <th>Contact Info</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="simDoc in vm.results.listOfSimilarPublishedWork">
                                     <td>{{simDoc.fileName}}</td>
-                                    <td>{{simDoc.similarityScore}}</td>
+                                    <td>{{simDoc.similarityScore * 100}}%</td>
                                     <td>{{simDoc.contactInfo}}</td>
                                 </tr>
                             </tbody>
@@ -63,14 +63,14 @@
                             <thead>
                             <tr>
                                 <th>Similar Documents in unpublished Work Stream</th>
-                                <th>Similarity Score (Jaccard Score)</th>
+                                <th>Similarity Percentage</th>
                                 <th>Contact Info</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="simDoc in vm.results.listOfSimilarUnpublishedWork">
                                 <td>{{simDoc.fileName}}</td>
-                                <td>{{simDoc.value}}</td>
+                                <td>{{simDoc.similarityScore * 100}}%</td>
                                 <td>{{simDoc.contactInfo}}</td>
                             </tr>
                             </tbody>

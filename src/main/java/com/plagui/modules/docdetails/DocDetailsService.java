@@ -88,7 +88,8 @@ public class DocDetailsService {
                     } else {
                         JSONObject seedDetails = responseFromPDModule.getJSONObject("seedDetails");
                         docItem.setPlagchainSeed(seedDetails.getString("plagchainSeed"));
-                        docItem.setTransactionAddress(seedDetails.getString("originstampBtcAddress"));
+                        docItem.setBitcoinAddress(seedDetails.getString("originstampBtcAddress"));
+                        docItem.setTransactionHash(seedDetails.getString("originstampTransactionHash"));
                         docItem.setOriginstampSeed(seedDetails.getString("originstampSeed"));
                         docItem.setConfirmation(seedDetails.getInt("originstampConfirmed"));
                         docItem.setConfirmationTime(seedDetails.getString("originstampBitcoinConfirmTime"));
