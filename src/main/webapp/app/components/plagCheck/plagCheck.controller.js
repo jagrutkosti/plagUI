@@ -16,6 +16,7 @@
     function PlagCheckController(PlagCheckService, AlertService, vcRecaptchaService) {
         var vm = this;
         vm.checkForPlagiarism = checkForPlagiarism;
+        vm.createPlagCheckRequest = createPlagCheckRequest;
         vm.setResponse = setResponse;
         vm.setWidgetId = setWidgetId;
         vm.cbExpiration = cbExpiration;
@@ -40,8 +41,6 @@
                     vm.results = angular.fromJson(response.resultJsonString);
                     vm.plagCheckDocFileName = response.plagCheckDocFileName;
                     vm.data.success = response.success;
-                    console.log(vm.results);
-                    console.log(vm.plagCheckDocFileName);
                 } else {
                     vm.data = {};
                     if(response.error)
@@ -52,6 +51,27 @@
                 }
                 vcRecaptchaService.reload(vm.recaptcha.widgetId);
             });
+        }
+
+        /**
+         * Create a request for the author to view by calling the backend from service
+         * @param simDocDetails the details of the document for which the request needs to be created
+         */
+        function createPlagCheckRequest(simDoc) {
+            PlagCheckService.createPlagCheckRequest(simDoc, vm.plagCheckDocFileName).then(function(response) {
+                if(response.success) {
+                    simDoc.disabled = true;
+                    AlertService.success("Request sent successfully!");
+                    console.log(response);
+                } else {
+                    vm.data = {};
+                    if(response.error)
+                        vm.data.error = response.error;
+                    else
+                        vm.data.error = response;
+                    AlertService.error(vm.data.error);
+                }
+            })
         }
 
         /**

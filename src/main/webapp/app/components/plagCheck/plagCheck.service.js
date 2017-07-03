@@ -17,7 +17,7 @@
         var service = {};
 
         /**
-         * Call PlagCheckREST#plagCheckForDoc and handle the call backs
+         * Call PlagCheckREST#plagCheckForDoc() and handle the call backs
          * @param data the data to be transferred, contains uploaded file and stream name to check
          * @param gRecaptchaResponse user response for google recaptcha
          */
@@ -36,6 +36,27 @@
                     return response.status + ':' + response.statusText;
                 }
             });
+        };
+
+        /**
+         * Call PlagCheckRequestsREST#createPlagCheckRequest() and handle the call backs
+         * @param simDocDetails the details of the document for which to generate the request
+         * @param plagCheckDocFileName the name of the document for which the request was generated
+         */
+        service.createPlagCheckRequest = function(simDocDetails, plagCheckDocFileName) {
+            return Upload.upload({
+                url : API_URL + 'createPlagCheckRequest',
+                data : {
+                    simDocDetails : angular.toJson(simDocDetails),
+                    plagCheckDocFileName : plagCheckDocFileName
+                }
+            }).then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            })
         };
 
         return service;
