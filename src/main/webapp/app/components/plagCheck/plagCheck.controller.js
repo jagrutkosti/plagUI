@@ -38,6 +38,7 @@
                 if(response.success) {
                     vm.results = angular.fromJson(response.resultJsonString);
                     vm.data.success = response.success;
+                    console.log(vm.results);
                 } else {
                     vm.data = {};
                     if(response.error)

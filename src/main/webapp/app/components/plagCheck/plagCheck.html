@@ -78,6 +78,9 @@
                     </div>
                 </div>
             </div>
+            <div ng-show="vm.results.listOfSimilarPublishedWork.length === 0 && vm.results.listOfSimilarUnpublishedWork.length ===0" class="alert alert-info">
+                <p align="center">No similar documents found!</p>
+            </div>
         </uib-accordion>
     </div>
 </div>
