@@ -47,6 +47,7 @@
                             </label>
                         </div>
                     </div>
+                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <button type="submit" ng-disabled="pdfForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>
             </div>
@@ -112,6 +113,7 @@
                             </label>
                         </div>
                     </div>
+                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <button type="submit" ng-disabled="textForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>
             </div>
@@ -159,6 +161,7 @@
                             </p>
                         </div>
                     </div>
+                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <button type="submit" ng-disabled="imageForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>
             </div>

@@ -10,32 +10,42 @@
         .module('plagUiApp')
         .controller('UploadDocsController', UploadDocsController);
 
-    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state'];
+    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state', 'vcRecaptchaService'];
 
-    function UploadDocsController(UploadDocsService, AlertService, $state){
+    function UploadDocsController(UploadDocsService, AlertService, $state, vcRecaptchaService){
         var vm = this;
+        vm.uploadDocForBlockchain = uploadDocForBlockchain;
+        vm.uploadTextForBlockchain = uploadTextForBlockchain;
+        vm.uploadImageForBlockchain = uploadImageForBlockchain;
+        vm.setResponse = setResponse;
+        vm.setWidgetId = setWidgetId;
+        vm.cbExpiration = cbExpiration;
         /**
          * fileData: {'fileToHash', 'textToHash', 'imageToHash', 'isunpublished', 'contactInfo', 'fileName', 'success', 'error'}
          */
         vm.fileData = {};
-        vm.uploadDocForBlockchain = uploadDocForBlockchain;
-        vm.uploadTextForBlockchain = uploadTextForBlockchain;
-        vm.uploadImageForBlockchain = uploadImageForBlockchain;
+        vm.recaptcha = {
+            key: '6LfGcycUAAAAAAn3Aanri79ijQSwust7kH_BH9Bd',
+            response: null,
+            widgetId: null
+        };
 
         /**
          * Redirect the request to angular service after receiving the file from UI.
          * Handle the response from the server and redirect accordingly.
          */
         function uploadDocForBlockchain() {
-            UploadDocsService.uploadDocForBlockchain(vm.fileData).then(function(response){
+            UploadDocsService.uploadDocForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response){
                 if(response.success) {
                     vm.fileData.success = response.success;
                     $state.go('showDocDetails');
                 } else {
+                    vm.fileData = {};
                     if(response.error)
                         vm.fileData.error = response.error;
                     else
                         vm.fileData.error = response;
+                    vcRecaptchaService.reload(vm.recaptcha.widgetId);
                     AlertService.error(vm.fileData.error);
                 }
             });
@@ -46,7 +56,7 @@
          * Handle the response from the server and redirect accordingly.
          */
         function uploadTextForBlockchain() {
-            UploadDocsService.uploadTextForBlockchain(vm.fileData).then(function(response) {
+            UploadDocsService.uploadTextForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
                     $state.go('showDocDetails');
@@ -55,6 +65,7 @@
                         vm.fileData.error = response.error;
                     else
                         vm.fileData.error = response;
+                    vcRecaptchaService.reload(vm.recaptcha.widgetId);
                     AlertService.error(vm.fileData.error);
                 }
             });
@@ -65,7 +76,7 @@
          * Handle the response from the server and redirect accordingly.
          */
         function uploadImageForBlockchain() {
-            UploadDocsService.uploadImageForBlockchain(vm.fileData).then(function(response) {
+            UploadDocsService.uploadImageForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
                     $state.go('showDocDetails');
@@ -74,9 +85,34 @@
                         vm.fileData.error = response.error;
                     else
                         vm.fileData.error = response;
+                    vcRecaptchaService.reload(vm.recaptcha.widgetId);
                     AlertService.error(vm.fileData.error);
                 }
             });
+        }
+
+        /**
+         * Setter for Google recaptcha response
+         * @param response user response for recaptcha
+         */
+        function setResponse(response) {
+            vm.recaptcha.response = response;
+        }
+
+        /**
+         * Setter for widget
+         * @param widgetId widgetId of one recaptcha entity
+         */
+        function setWidgetId(widgetId) {
+            vm.recaptcha.setWidgetId = widgetId;
+        }
+
+        /**
+         * Reload the Google recaptcha in case of bad/false response
+         */
+        function cbExpiration() {
+            vcRecaptchaService.reload(vm.recaptcha.widgetId);
+            vm.recaptcha.response = null;
         }
     }
 })();

@@ -2,6 +2,8 @@ package com.plagui.modules.uploaddocs;
 
 import com.plagui.domain.User;
 import com.plagui.modules.GenericResponse;
+import com.plagui.modules.UtilService;
+import com.plagui.modules.plagcheck.PlagCheckResultDTO;
 import com.plagui.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +24,12 @@ public class UploadDocsREST {
 
     private final PlagchainUploadService plagchainUploadService;
     private final UserService userService;
+    private final UtilService utilService;
 
-    public UploadDocsREST(PlagchainUploadService plagchainUploadService, UserService userService) {
+    public UploadDocsREST(PlagchainUploadService plagchainUploadService, UserService userService, UtilService utilService) {
         this.plagchainUploadService = plagchainUploadService;
         this.userService = userService;
+        this.utilService = utilService;
     }
 
     /**
@@ -38,19 +42,26 @@ public class UploadDocsREST {
     @PostMapping("/uploadDoc")
     @ResponseBody
     public GenericResponse uploadDoc(@RequestParam("fileToHash")MultipartFile pdfFile,
+                                     @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
                                      @RequestParam(required = false, value = "contactInfo")String contactInfo,
                                      @RequestParam(required = false, value = "isunpublished")boolean isunpublished) {
         log.info("REST request to timestamp PDF file");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
-        if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
-            String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, isunpublished);
-            if(!result.contains(" "))
-                response.setSuccess("success");
-            else
-                response.setError(result);
-        } else
-            response.setError("File format not supported");
+        boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
+        if(recaptchaResponse) {
+            if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
+                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, isunpublished);
+                if(!result.contains(" "))
+                    response.setSuccess("success");
+                else
+                    response.setError(result);
+            } else
+                response.setError("File format not supported.");
+        } else {
+            response = new PlagCheckResultDTO();
+            response.setError("Incorrect Google Recaptcha! Please try again.");
+        }
         return response;
     }
 
@@ -65,16 +76,23 @@ public class UploadDocsREST {
     @ResponseBody
     public GenericResponse uploadText(@RequestParam("textToHash")String textToHash,
                                       @RequestParam("fileName") String fileName,
+                                      @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
                                       @RequestParam(required = false, value = "contactInfo")String contactInfo,
                                       @RequestParam(required = false, value = "isunpublished")boolean isunpublished) {
         log.info("REST request to timestamp some text");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
-        String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainWalletAddress(), textToHash, contactInfo, isunpublished);
-        if(!result.contains(" "))
-            response.setSuccess("success");
-        else
-            response.setError(result);
+        boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
+        if(recaptchaResponse) {
+            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainWalletAddress(), textToHash, contactInfo, isunpublished);
+            if(!result.contains(" "))
+                response.setSuccess("success");
+            else
+                response.setError(result);
+        } else {
+            response = new PlagCheckResultDTO();
+            response.setError("Incorrect Google Recaptcha! Please try again.");
+        }
         return response;
     }
 
@@ -88,15 +106,22 @@ public class UploadDocsREST {
     @PostMapping("/uploadImage")
     @ResponseBody
     public GenericResponse uploadImage(@RequestParam("imageToHash")MultipartFile imageFile,
-                                      @RequestParam(required = false, value = "contactInfo")String contactInfo) {
+                                       @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
+                                       @RequestParam(required = false, value = "contactInfo")String contactInfo) {
         log.info("REST request to timestamp image");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
-        String result = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainWalletAddress(), imageFile, contactInfo);
-        if(!result.contains(" "))
-            response.setSuccess("success");
-        else
-            response.setError(result);
+        boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
+        if(recaptchaResponse) {
+            String result = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainWalletAddress(), imageFile, contactInfo);
+            if(!result.contains(" "))
+                response.setSuccess("success");
+            else
+                response.setError(result);
+        } else {
+            response = new PlagCheckResultDTO();
+            response.setError("Incorrect Google Recaptcha! Please try again.");
+        }
         return response;
     }
 }

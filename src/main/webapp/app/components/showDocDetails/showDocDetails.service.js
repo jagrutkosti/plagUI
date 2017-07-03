@@ -16,6 +16,9 @@
         const API_URL = '/api/plagchain/';
         var service = {};
 
+        /**
+         * Call DocDetailsREST#getDocsDetailsForUser() to get all documents associated with a given user
+         */
         service.getDocDetails = function() {
             return $http.get(API_URL + 'getDocs').then(function(response) {
                return response.data;

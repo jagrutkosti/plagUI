@@ -16,10 +16,19 @@
         const API_URL = '/api/plagchain/';
         var service = {};
 
-        service.checkForPlagiarism = function(data) {
+        /**
+         * Call PlagCheckREST#plagCheckForDoc and handle the call backs
+         * @param data the data to be transferred, contains uploaded file and stream name to check
+         * @param gRecaptchaResponse user response for google recaptcha
+         */
+        service.checkForPlagiarism = function(data, gRecaptchaResponse) {
             return Upload.upload({
                 url : API_URL + 'plagCheckDoc',
-                data : {plagCheckDoc: data.plagCheckDoc, checkUnpublishedWork: data.checkUnpublishedWork}
+                data : {
+                    plagCheckDoc: data.plagCheckDoc,
+                    checkUnpublishedWork: data.checkUnpublishedWork,
+                    gRecaptchaResponse: gRecaptchaResponse
+                }
             }).then(function(response) {
                 return response.data;
             }, function(response) {

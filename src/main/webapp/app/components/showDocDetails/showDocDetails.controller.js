@@ -14,9 +14,9 @@
 
     function DocDetailsController(DocDetailsService, AlertService, docDetails, $window){
         var vm = this;
+        vm.downloadSeed = downloadSeed;
         vm.docDetails = docDetails;
         vm.url = '';
-        vm.downloadSeed = downloadSeed;
         vm.progressOptions = {
             scale: {
                 enabled: true,

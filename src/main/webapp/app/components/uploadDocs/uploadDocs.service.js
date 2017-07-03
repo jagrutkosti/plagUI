@@ -19,14 +19,16 @@
         /**
          * Call UploadDocsREST.java#uploadDoc(fileToHash) and handle the callbacks
          * @param fileData the file data received from controller
+         * @param gRecaptchaResponse user response for recaptcha
          */
-        service.uploadDocForBlockchain = function(fileData) {
+        service.uploadDocForBlockchain = function(fileData, gRecaptchaResponse) {
             return Upload.upload({
                 url: API_URL + 'uploadDoc',
                 data: {
                     fileToHash: fileData.fileToHash,
                     contactInfo: fileData.contactInfo,
-                    isunpublished: fileData.isunpublished
+                    isunpublished: fileData.isunpublished,
+                    gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {
                 return response.data;
@@ -40,15 +42,17 @@
         /**
          * Call UploadDocsREST.java#uploadText(textToHash) and handle the callbacks
          * @param fileData the file data received from controller
+         * @param gRecaptchaResponse user response for recaptcha
          */
-        service.uploadTextForBlockchain = function(fileData) {
+        service.uploadTextForBlockchain = function(fileData, gRecaptchaResponse) {
             return Upload.upload({
                 url: API_URL + 'uploadText',
                 data: {
                     textToHash: fileData.textToHash,
                     fileName: fileData.fileName,
                     contactInfo: fileData.contactInfo,
-                    isunpublished: fileData.isunpublished
+                    isunpublished: fileData.isunpublished,
+                    gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {
                 return response.data;
@@ -62,13 +66,15 @@
         /**
          * Call UploadDocsREST.java#uploadImage(imageToHash) and handle the callbacks
          * @param fileData the file data received from controller
+         * @param gRecaptchaResponse user response for recaptcha
          */
-        service.uploadImageForBlockchain = function(fileData) {
+        service.uploadImageForBlockchain = function(fileData, gRecaptchaResponse) {
             return Upload.upload({
                 url : API_URL + 'uploadImage',
                 data: {
                     imageToHash: fileData.imageToHash,
-                    contactInfo: fileData.contactInfo
+                    contactInfo: fileData.contactInfo,
+                    gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {
                 return response.data;

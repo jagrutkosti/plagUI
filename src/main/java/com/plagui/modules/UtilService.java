@@ -16,6 +16,16 @@ import multichain.command.StreamCommand;
 import multichain.object.StreamItem;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -297,5 +307,35 @@ public class UtilService {
         String dataInString = new String(DatatypeConverter.parseHexBinary(dataInHex));
         Gson gson = new Gson();
         return gson.fromJson(dataInString,ChainData.class);
+    }
+
+    /**
+     * Check the user response for Google recaptcha if it is correct or not.
+     * @param gRecaptchaResponse user response as a string
+     * @return boolean true, if the solved captcha was correct, false otherwise
+     */
+    public boolean checkGoogleRecaptcha(String gRecaptchaResponse) {
+        HttpClient httpClient = HttpClients.createDefault();
+        HttpPost postRequest = new HttpPost(Constants.GOOGLE_RECAPTCHA_URL);
+        List<NameValuePair> paramList = new ArrayList<>();
+        paramList.add(new BasicNameValuePair("secret", Constants.GOOGLE_RECAPTCHA_SECRET));
+        paramList.add(new BasicNameValuePair("response", gRecaptchaResponse));
+
+        try {
+            postRequest.setEntity(new UrlEncodedFormEntity(paramList, "UTF-8"));
+            HttpResponse response = httpClient.execute(postRequest);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            StringBuilder result = new StringBuilder();
+            String line;
+            while((line = bufferedReader.readLine()) != null)
+                result.append(line);
+            JSONObject responseString = new JSONObject(result.toString());
+            return responseString.getBoolean("success");
+        } catch (HttpHostConnectException e) {
+            return false;
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
