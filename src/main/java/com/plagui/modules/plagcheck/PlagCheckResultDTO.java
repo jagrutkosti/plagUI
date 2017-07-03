@@ -8,6 +8,7 @@ import com.plagui.modules.GenericResponse;
  */
 public class PlagCheckResultDTO extends GenericResponse {
     private String resultJsonString;
+    private String plagCheckDocFileName;
 
     public String getResultJsonString() {
         return resultJsonString;
@@ -15,5 +16,13 @@ public class PlagCheckResultDTO extends GenericResponse {
 
     public void setResultJsonString(String resultJsonString) {
         this.resultJsonString = resultJsonString;
+    }
+
+    public String getPlagCheckDocFileName() {
+        return plagCheckDocFileName;
+    }
+
+    public void setPlagCheckDocFileName(String plagCheckDocFileName) {
+        this.plagCheckDocFileName = plagCheckDocFileName;
     }
 }

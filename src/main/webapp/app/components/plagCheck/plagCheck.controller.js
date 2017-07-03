@@ -20,6 +20,7 @@
         vm.setWidgetId = setWidgetId;
         vm.cbExpiration = cbExpiration;
         vm.results = {};
+        vm.plagCheckDocFileName = '';
         vm.recaptcha = {
             key: '6LfGcycUAAAAAAn3Aanri79ijQSwust7kH_BH9Bd',
             response: null,
@@ -37,8 +38,10 @@
             PlagCheckService.checkForPlagiarism(vm.data, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.results = angular.fromJson(response.resultJsonString);
+                    vm.plagCheckDocFileName = response.plagCheckDocFileName;
                     vm.data.success = response.success;
                     console.log(vm.results);
+                    console.log(vm.plagCheckDocFileName);
                 } else {
                     vm.data = {};
                     if(response.error)

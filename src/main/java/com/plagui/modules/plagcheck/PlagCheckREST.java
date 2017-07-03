@@ -56,7 +56,7 @@ public class PlagCheckREST {
             }
         } else {
             response = new PlagCheckResultDTO();
-            response.setError("Incorrect Google Recaptcha! Please try again.");
+            response.setError("Incorrect Recaptcha! Please try again.");
         }
 
         return response;

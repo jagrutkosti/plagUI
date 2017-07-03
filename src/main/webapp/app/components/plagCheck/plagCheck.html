@@ -24,7 +24,7 @@
                     </label>
                 </div>
             </div>
-            <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
+            <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(pdfPlagCheck)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
             <br/>
             <button type="submit" ng-disabled="pdfPlagCheck.$invalid" class="btn btn-primary">Submit</button>
         </form>

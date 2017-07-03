@@ -60,7 +60,7 @@ public class UploadDocsREST {
                 response.setError("File format not supported.");
         } else {
             response = new PlagCheckResultDTO();
-            response.setError("Incorrect Google Recaptcha! Please try again.");
+            response.setError("Incorrect Recaptcha! Please try again.");
         }
         return response;
     }
@@ -91,7 +91,7 @@ public class UploadDocsREST {
                 response.setError(result);
         } else {
             response = new PlagCheckResultDTO();
-            response.setError("Incorrect Google Recaptcha! Please try again.");
+            response.setError("Incorrect Recaptcha! Please try again.");
         }
         return response;
     }
@@ -120,7 +120,7 @@ public class UploadDocsREST {
                 response.setError(result);
         } else {
             response = new PlagCheckResultDTO();
-            response.setError("Incorrect Google Recaptcha! Please try again.");
+            response.setError("Incorrect Recaptcha! Please try again.");
         }
         return response;
     }

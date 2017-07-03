@@ -65,7 +65,9 @@ public class PlagCheckService {
         //Parse pdf file for images and generate sha256 hash
         List<byte[]> imagesFromPdfAsByte = utilService.extractImageFromPdfFile(plagCheckDoc);
         List<String> sha256HashOfImages = utilService.generateSHA256HashFromObjects(imagesFromPdfAsByte);
-        return callPlagDetectionModule(sha256DocHash.get(0), Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), sha256HashOfImages, checkUnpublishedWork);
+        PlagCheckResultDTO response = callPlagDetectionModule(sha256DocHash.get(0), Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), sha256HashOfImages, checkUnpublishedWork);
+        response.setPlagCheckDocFileName(plagCheckDoc.getOriginalFilename());
+        return response;
     }
 
     /**
