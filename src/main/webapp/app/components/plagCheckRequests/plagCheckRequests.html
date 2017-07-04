@@ -1,0 +1,82 @@
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <div align="center">
+            <h4>Plagiarism Check Requests</h4>
+            <jhi-alert></jhi-alert>
+        </div>
+        <uib-accordion close-others="false">
+            <div uib-accordion-group class="panel-primary" ng-show="vm.allRequests.requestsToUser.length > 0"
+                 heading="From other users" is-open="true" is-disabled="false">
+                <div class="panel panel-default">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>For Your Document</th>
+                                <th>MinHash similarity</th>
+                                <th>SHA similarity</th>
+                                <th>Accept/Reject</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="request in vm.allRequests.requestsToUser"
+                                ng-class="request.status === 0 ? 'warning' : (request.status === 1 ? 'info' : (request.status === 2 ? 'danger' : 'success'))">
+                                <td>{{request.userLoginId}}</td>
+                                <td>{{request.authorFileName}}</td>
+                                <td>{{request.minHashSimScore * 100}}%</td>
+                                <td>{{request.simScore}}</td>
+                                <td>
+                                    <div ng-if="request.status === 0">
+                                        <button class="btn btn-primary" ng-click="vm.acceptRequest(request)">
+                                            <span class="glyphicon glyphicon-ok"></span>
+                                        </button>
+                                        <button class="btn btn-default" ng-click="vm.rejectRequest(request)">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </button>
+                                    </div>
+                                    <span ng-if="request.status === 1">Accepted</span>
+                                    <span ng-if="request.status === 2">Rejected</span>
+                                    <span ng-if="request.status === 3">Completed</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br/>
+            <div uib-accordion-group class="panel-primary" ng-show="vm.allRequests.requestsFromUser.length > 0"
+                 heading="From me" is-open="true" is-disabled="false">
+                <div class="panel panel-default">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Your Document</th>
+                            <th>MinHash similarity</th>
+                            <th>SHA similarity</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="request in vm.allRequests.requestsFromUser"
+                            ng-class="request.status === 0 ? 'warning' : (request.status === 1 ? 'info' : (request.status === 2 ? 'danger' : 'success'))">
+                            <td>{{request.userFileName}}</td>
+                            <td>{{request.minHashSimScore * 100}}%</td>
+                            <td>{{request.simScore}}</td>
+                            <td>
+                                <span ng-if="request.status === 0">Pending</span>
+                                <span ng-if="request.status === 1">Accepted</span>
+                                <span ng-if="request.status === 2">Rejected</span>
+                                <span ng-if="request.status === 3">Completed</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+        </uib-accordion>
+        <div class="alert alert-info" ng-show="vm.allRequests.requestsFromUser.length <= 0 && vm.allRequests.requestsToUser.length <= 0">
+            <p align="center">You have no requests!</p>
+        </div>
+    </div>
+</div>

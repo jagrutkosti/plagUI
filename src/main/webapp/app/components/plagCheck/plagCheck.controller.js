@@ -62,7 +62,6 @@
                 if(response.success) {
                     simDoc.disabled = true;
                     AlertService.success("Request sent successfully!");
-                    console.log(response);
                 } else {
                     vm.data = {};
                     if(response.error)

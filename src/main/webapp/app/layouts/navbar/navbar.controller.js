@@ -5,13 +5,14 @@
         .module('plagUiApp')
         .controller('NavbarController', NavbarController);
 
-    NavbarController.$inject = ['$state', 'Auth', 'Principal', 'ProfileService', 'LoginService'];
+    NavbarController.$inject = ['$state', 'Auth', 'Principal', 'ProfileService', 'LoginService', 'numOfPendingRequests'];
 
-    function NavbarController ($state, Auth, Principal, ProfileService, LoginService) {
+    function NavbarController ($state, Auth, Principal, ProfileService, LoginService, numOfPendingRequests) {
         var vm = this;
 
         vm.isNavbarCollapsed = true;
         vm.isAuthenticated = Principal.isAuthenticated;
+        vm.numOfPendingRequests = numOfPendingRequests;
 
         ProfileService.getProfileInfo().then(function(response) {
             vm.inProduction = response.inProduction;

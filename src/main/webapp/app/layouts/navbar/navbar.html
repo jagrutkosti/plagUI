@@ -42,6 +42,15 @@
                         <span class="hidden-sm">My Docs</span>
                     </a>
                 </li>
+
+                <li ui-sref-active="active" ng-switch-when="true">
+                    <a ui-sref="plagCheckRequests" ng-click="vm.collapseNavbar()">
+                        <span class="badge">{{vm.numOfPendingRequests}} </span>
+                        <span class="hidden-sm">Requests</span>
+
+                    </a>
+                </li>
+
                 <li ng-class="{active: vm.$state.includes('account')}" uib-dropdown class="dropdown pointer">
                     <a class="dropdown-toggle" uib-dropdown-toggle href="" id="account-menu">
                         <span>

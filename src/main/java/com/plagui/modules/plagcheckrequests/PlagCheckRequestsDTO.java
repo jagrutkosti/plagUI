@@ -10,7 +10,8 @@ import java.util.List;
  */
 public class PlagCheckRequestsDTO extends GenericResponse{
     private PlagCheckRequests singleRequestObject;
-    private List<PlagCheckRequests> multipleRequestObject;
+    private List<PlagCheckRequests> requestsFromUser;
+    private List<PlagCheckRequests> requestsToUser;
 
     public PlagCheckRequests getSingleRequestObject() {
         return singleRequestObject;
@@ -20,11 +21,19 @@ public class PlagCheckRequestsDTO extends GenericResponse{
         this.singleRequestObject = singleRequestObject;
     }
 
-    public List<PlagCheckRequests> getMultipleRequestObject() {
-        return multipleRequestObject;
+    public List<PlagCheckRequests> getRequestsFromUser() {
+        return requestsFromUser;
     }
 
-    public void setMultipleRequestObject(List<PlagCheckRequests> multipleRequestObject) {
-        this.multipleRequestObject = multipleRequestObject;
+    public void setRequestsFromUser(List<PlagCheckRequests> requestsFromUser) {
+        this.requestsFromUser = requestsFromUser;
+    }
+
+    public List<PlagCheckRequests> getRequestsToUser() {
+        return requestsToUser;
+    }
+
+    public void setRequestsToUser(List<PlagCheckRequests> requestsToUser) {
+        this.requestsToUser = requestsToUser;
     }
 }

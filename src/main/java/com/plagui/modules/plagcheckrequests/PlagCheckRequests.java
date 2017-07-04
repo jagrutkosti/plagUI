@@ -28,6 +28,10 @@ public class PlagCheckRequests implements Serializable {
     private String userWalletAddress;
 
     @NotNull
+    @Field("user_login_id")
+    private String userLoginId;
+
+    @NotNull
     @Indexed
     @Field("author_wallet_address")
     private String authorWalletAddress;
@@ -45,6 +49,10 @@ public class PlagCheckRequests implements Serializable {
 
     @Field("author_hashes")
     private List<String> authorHashes;
+
+    @NotNull
+    @Field("status")
+    private int status; /* 0-pending, 1-accept, 2-reject, 3-finished*/
 
     @NotNull
     @Field("minhash_simscore")
@@ -67,6 +75,14 @@ public class PlagCheckRequests implements Serializable {
 
     public void setUserWalletAddress(String userWalletAddress) {
         this.userWalletAddress = userWalletAddress;
+    }
+
+    public String getUserLoginId() {
+        return userLoginId;
+    }
+
+    public void setUserLoginId(String userLoginId) {
+        this.userLoginId = userLoginId;
     }
 
     public String getAuthorWalletAddress() {
@@ -107,6 +123,14 @@ public class PlagCheckRequests implements Serializable {
 
     public void setAuthorHashes(List<String> authorHashes) {
         this.authorHashes = authorHashes;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public double getMinHashSimScore() {

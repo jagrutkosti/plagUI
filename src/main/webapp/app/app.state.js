@@ -22,7 +22,10 @@
                     function (Auth) {
                         return Auth.authorize();
                     }
-                ]
+                ],
+                numOfPendingRequests : ['PlagCheckRequestsService', function(PlagCheckRequestsService) {
+                    return PlagCheckRequestsService.getNumberOfPendingRequests();
+                }]
             }
         });
     }
