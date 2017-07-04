@@ -33,7 +33,7 @@ public class DocDetailsREST {
     @ResponseBody
     public DocDetailsDTO getDocsDetailsForUser() {
         User currentUser = userService.getUserWithAuthorities();
-        log.info("REST request to get all document details for: {}", currentUser.getFirstName());
+        log.info("REST request to get all document details for: {}", currentUser.getLogin());
 
         return docDetailsService.getDocDetails(currentUser.getPlagchainWalletAddress());
     }

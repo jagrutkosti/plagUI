@@ -15,6 +15,7 @@
     function DocDetailsController(DocDetailsService, AlertService, docDetails, $window){
         var vm = this;
         vm.downloadSeed = downloadSeed;
+        vm.init = init;
         vm.docDetails = docDetails;
         vm.url = '';
         vm.progressOptions = {
@@ -37,6 +38,8 @@
             trackColor: 'rgba(52,152,219,.1)',
             barColor: 'rgba(255,193,7,1)'
         };
+        vm.init();
+
         /**
          * To download the seed as a text file.
          * @param seed the seed to download. Plagchain seed or Originstamp seed.
@@ -44,6 +47,11 @@
         function downloadSeed(seed) {
             var blob = new Blob([ seed ], { type : 'text/plain' });
             vm.url = (window.URL || window.webkitURL).createObjectURL( blob );
+        }
+
+        function init() {
+            if(vm.docDetails.error)
+                AlertService.error(vm.docDetails.error);
         }
     }
 })();
