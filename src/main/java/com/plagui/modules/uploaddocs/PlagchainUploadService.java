@@ -45,6 +45,7 @@ public class PlagchainUploadService {
         //Parse pdf file for text and generate min hash
         String textFromPdf = utilService.parsePdf(pdfFile);
         String cleanedText = utilService.cleanText(textFromPdf);
+        cleanedText = utilService.removeAllWhiteSpaces(cleanedText);
         List<String> allShingles = new ArrayList<>();
         allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, cleanedText));
         int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);
@@ -75,6 +76,7 @@ public class PlagchainUploadService {
 
         //Parse the text and generate min hash
         String cleanedText = utilService.cleanText(textToHash);
+        cleanedText = utilService.removeAllWhiteSpaces(cleanedText);
         List<String> allShingles = new ArrayList<>();
         allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, cleanedText));
         int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);

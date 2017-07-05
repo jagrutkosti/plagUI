@@ -1,13 +1,17 @@
 package com.plagui.modules.plagcheckrequests;
 
+import com.plagui.config.Constants;
 import com.plagui.domain.User;
+import com.plagui.modules.UtilService;
 import com.plagui.repository.PlagCheckRequestsRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,9 +23,11 @@ import java.util.Optional;
 public class PlagCheckRequestsService {
     private final Logger log = LoggerFactory.getLogger(PlagCheckRequestsService.class);
     private final PlagCheckRequestsRepository plagCheckRequestsRepository;
+    private final UtilService utilService;
 
-    public PlagCheckRequestsService(PlagCheckRequestsRepository plagCheckRequestsRepository) {
+    public PlagCheckRequestsService(PlagCheckRequestsRepository plagCheckRequestsRepository, UtilService utilService) {
         this.plagCheckRequestsRepository = plagCheckRequestsRepository;
+        this.utilService = utilService;
     }
 
     /**
@@ -48,7 +54,7 @@ public class PlagCheckRequestsService {
             request.setUserFileName(userFileName);
             request.setUserWalletAddress(currentUser.getPlagchainWalletAddress());
             request.setUserLoginId(currentUser.getLogin());
-            request.setStatus(0);
+            request.setStatus(Constants.REQUESTS_STATUS_PENDING);
             request.setMinHashSimScore(docDetails.getDouble("similarityScore"));
             return plagCheckRequestsRepository.save(request);
         } catch (JSONException e) {
@@ -112,13 +118,98 @@ public class PlagCheckRequestsService {
         log.info("Service method to reject the given request");
         PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
         PlagCheckRequests dbItem = plagCheckRequestsRepository.findOne(rejectObject.getId());
-        dbItem.setStatus(2);
+        dbItem.setStatus(Constants.REQUESTS_STATUS_REJECT);
         dbItem = plagCheckRequestsRepository.save(dbItem);
-        if(dbItem.getStatus() == 2)
+        if(dbItem.getStatus() == Constants.REQUESTS_STATUS_REJECT)
             response.setSuccess("Request rejected successfully!");
         else
             response.setError("Problems while updating DB item");
         response.setSingleRequestObject(dbItem);
         return response;
     }
+
+    /**
+     * Get hashes from document and update the DB item.
+     * @param acceptObject the request to update with status and hashes
+     * @param plagCheckDoc the document for which the request was generated
+     * @return PlagCheckRequestsDTO populated with relevant fields
+     */
+    public PlagCheckRequestsDTO acceptRequestWithDoc(PlagCheckRequests acceptObject, MultipartFile plagCheckDoc) {
+        log.info("Service method to update the db item with accept and generate and store hashes from file");
+        PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
+        List<String> sha256Hashes = getHashesFromDocument(plagCheckDoc);
+        try {
+            PlagCheckRequests dbItem = plagCheckRequestsRepository.findOne(acceptObject.getId());
+            dbItem.setStatus(Constants.REQUESTS_STATUS_ACCEPT);
+            dbItem.setAuthorHashes(sha256Hashes);
+            response.setSingleRequestObject(plagCheckRequestsRepository.save(dbItem));
+            response.setSuccess("Hashes generated successfully!");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            response.setError("Request does not exist anymore!");
+        }
+
+        return response;
+    }
+
+    /**
+     * Get hashes from document, calculate similarity and update the DB item.
+     * @param userObject the request to update with status and hashes
+     * @param plagCheckUserDoc the document for which the request was generated
+     * @return PlagCheckRequestsDTO populated with relevant fields
+     */
+    public PlagCheckRequestsDTO userDocRequest(PlagCheckRequests userObject, MultipartFile plagCheckUserDoc) {
+        log.info("Service method to update the db item, calculate similarity and update DB item");
+        PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
+        List<String> sha256Hashes = getHashesFromDocument(plagCheckUserDoc);
+        try {
+            PlagCheckRequests dbItem = plagCheckRequestsRepository.findOne(userObject.getId());
+            dbItem.setStatus(Constants.REQUESTS_STATUS_COMPLETE);
+            dbItem.setUserHashes(sha256Hashes);
+            dbItem.setSimScore(calculateJaccardCoefficient(dbItem));
+            response.setSingleRequestObject(plagCheckRequestsRepository.save(dbItem));
+            response.setSuccess("Hashes generated and similarity calculated successfully!");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            response.setError("Request does not exist anymore!");
+        }
+
+        return response;
+    }
+
+    /**
+     * Calculates the Jaccard Coefficient between two list of hashes of author document and user document
+     * @param plagRequest object containing list of hashes for user and author document
+     * @return double similarity score
+     */
+    public double calculateJaccardCoefficient(PlagCheckRequests plagRequest) {
+        int sameHashes = 0;
+        List<String> authorDocHashes = plagRequest.getAuthorHashes();
+        List<String> userDochashes = plagRequest.getUserHashes();
+        for(String hash : authorDocHashes) {
+            if(userDochashes.contains(hash))
+                sameHashes++;
+        }
+        return sameHashes / (double)(authorDocHashes.size() + userDochashes.size() - sameHashes);
+    }
+
+    /**
+     * Extract text from pdf, clean the text, generate hashes.
+     * @param plagCheckDoc the document from which to calculate SHA-256 hashes for shingles
+     * @return List<String> containing hashes for all shingles
+     */
+    public List<String> getHashesFromDocument(MultipartFile plagCheckDoc) {
+        //Get text from PDF and clean the text
+        String textFromPdf = utilService.parsePdf(plagCheckDoc);
+        textFromPdf = utilService.cleanText(textFromPdf);
+        //Generate word shingles from cleaned text
+        List<String> shingles = utilService.createWordShingles(Constants.WORD_SHINGLE_LENGTH, textFromPdf);
+        List<byte[]> byteArrayFromShingles = new ArrayList<>();
+        for(String shingle : shingles) {
+            byteArrayFromShingles.add(shingle.getBytes());
+        }
+        //Generate SHA-256 hash for each shingle and store in DB
+        return utilService.generateSHA256HashFromObjects(byteArrayFromShingles);
+    }
+
 }

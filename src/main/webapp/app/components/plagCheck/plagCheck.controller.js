@@ -41,6 +41,7 @@
                     vm.results = angular.fromJson(response.resultJsonString);
                     vm.plagCheckDocFileName = response.plagCheckDocFileName;
                     vm.data.success = response.success;
+                    vm.cbExpiration();
                 } else {
                     vm.data = {};
                     if(response.error)

@@ -10,16 +10,35 @@
         .module('plagUiApp')
         .controller('PlagCheckRequestsController', PlagCheckRequestsController);
 
-    PlagCheckRequestsController.$inject = ['PlagCheckRequestsService', 'AlertService', 'allRequests'];
+    PlagCheckRequestsController.$inject = ['PlagCheckRequestsService', 'AlertService', 'allRequests', '$uibModal'];
 
-    function PlagCheckRequestsController(PlagCheckRequestsService, AlertService, allRequests) {
+    function PlagCheckRequestsController(PlagCheckRequestsService, AlertService, allRequests, $uibModal) {
         var vm = this;
         vm.allRequests = allRequests;
         vm.acceptRequest = acceptRequest;
         vm.rejectRequest = rejectRequest;
-
-        function acceptRequest(request) {
-
+        vm.userPlagCheck = userPlagCheck;
+        var modalInstance = null;
+        
+        /**
+         * Opens a modal dialog to allow user to upload the same file and send to backend
+         * @param plagRequest the request to accept and corresponding document to upload
+         */
+        function acceptRequest(plagRequest) {
+            if (modalInstance !== null) return;
+            modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'app/components/plagCheckRequests/plagCheckRequestsAccept.html',
+                controller: 'PlagCheckRequestsModalController',
+                controllerAs: 'vm',
+                resolve: {
+                    requestDetails: plagRequest
+                }
+            }).result.then(function() {
+                plagRequest.status = 1;
+            }, function() {
+                modalInstance = null;
+            });
         }
 
         /**
@@ -35,6 +54,27 @@
                     AlertService.error(response.error);
                 else
                     AlertService.error(response);
+            });
+        }
+
+        /**
+         * Calls the service method to upload doc from user for the selected request and handles the call backs.
+         * @param plagRequest the request to reject
+         */
+        function userPlagCheck(plagRequest) {
+            if (modalInstance !== null) return;
+            modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'app/components/plagCheckRequests/plagCheckRequestsUserDoc.html',
+                controller: 'PlagCheckRequestsModalController',
+                controllerAs: 'vm',
+                resolve: {
+                    requestDetails: plagRequest
+                }
+            }).result.then(function() {
+                plagRequest.status = 3;
+            }, function() {
+                modalInstance = null;
             });
         }
     }

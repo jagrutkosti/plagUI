@@ -118,9 +118,9 @@ public class UtilService {
 
     /**
      * Removes the hyphens added by the iText library. Removes any new line character.
-     * Convert all characters to lowercase. Break the text into sentences.
+     * Convert all characters to lowercase. Removes all punctuations.
      * @param uncleanText the text that needs to be cleaned
-     * @return {List<String>} containing separate sentences extracted from pdf file.
+     * @return {List<String>} containing single sentence as whole text.
      */
     public String cleanText(String uncleanText) {
         log.info("Cleaning text.");
@@ -132,15 +132,22 @@ public class UtilService {
         uncleanText = uncleanText.replaceAll("\\p{P}", "");
         //Convert everything to lowercase
         uncleanText = uncleanText.toLowerCase();
-        //remove all white spaces as identified by Java
-        uncleanText = StringUtils.deleteWhitespace(uncleanText);
         return uncleanText;
     }
 
     /**
-     * Create word shingles of specified length from a sentence.
+     * Remove all white spaces as identified by Java
+     * @param stringWithWhiteSpaces string containing white spaces
+     * @return String without any white space
+     */
+    public String removeAllWhiteSpaces(String stringWithWhiteSpaces) {
+        return StringUtils.deleteWhitespace(stringWithWhiteSpaces);
+    }
+
+    /**
+     * Create character shingles of specified length from a sentence.
      * @param shingleLength the fixed length of all shingles
-     * @param cleanedText the list of sentences from which shingles need to be extracted
+     * @param cleanedText the sentence from which shingles need to be extracted
      * @return {List<String>} list containing word shingles from the sentence
      */
     public Set<String> createShingles(int shingleLength, String cleanedText) {
@@ -150,6 +157,25 @@ public class UtilService {
             shinglesFromSentences.add(cleanedText.substring(i, i + shingleLength));
         }
         return shinglesFromSentences;
+    }
+
+    /**
+     * Create a list of word shingles from a single string.
+     * @param shingleLength the length of each shingle
+     * @param cleanedText the text from which shingle is to be created
+     * @return List<String> containing all shingles
+     */
+    public List<String> createWordShingles(int shingleLength, String cleanedText) {
+        log.info("Creating word shingles of length: {}", shingleLength);
+        List<String> shinglesFromString = new ArrayList<>();
+        int firstIndex = -1;
+        int lastIndex = StringUtils.ordinalIndexOf(cleanedText," ", shingleLength);
+        while(lastIndex < cleanedText.length() && lastIndex > 0) {
+            shinglesFromString.add(cleanedText.substring(firstIndex + 1, lastIndex));
+            firstIndex = cleanedText.indexOf(" ", firstIndex + 1);
+            lastIndex = cleanedText.indexOf(" ", lastIndex + 1);
+        }
+        return shinglesFromString;
     }
 
     /**

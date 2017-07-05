@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -74,6 +75,11 @@ public class PlagCheckRequestsREST {
         return plagCheckRequestsService.getPendingNumberOfRequests(currentUser);
     }
 
+    /**
+     * REST request to set the status of the request to "Rejected"
+     * @param plagRequest the request whose status needs to be updated
+     * @return PlagCheckRequestsDTO populated with response from server
+     */
     @PostMapping("/rejectRequest")
     @ResponseBody
     public PlagCheckRequestsDTO rejectRequest(@RequestParam("plagRequest") String plagRequest) {
@@ -81,6 +87,46 @@ public class PlagCheckRequestsREST {
         Gson gson = new GsonBuilder().create();
         PlagCheckRequests rejectObject = gson.fromJson(plagRequest, PlagCheckRequests.class);
         return plagCheckRequestsService.rejectRequest(rejectObject);
+    }
+
+    /**
+     * REST request to update the status of a request to Accepted and update the hashes of the requested document
+     * @param plagRequest the request whose status and hashes needs to be updated
+     * @param plagCheckDoc the document from which to calculate the hashes
+     * @return PlagCheckRequestsDTO populated with response from server
+     */
+    @PostMapping("/acceptRequestWithDoc")
+    public PlagCheckRequestsDTO acceptRequestWithDoc(@RequestParam("plagRequest") String plagRequest,
+                                                     @RequestParam("plagCheckDoc")MultipartFile plagCheckDoc) {
+        log.info("REST request to update the request status to accepted and generate hashes from the document");
+        PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
+        if(!plagCheckDoc.getOriginalFilename().endsWith(".pdf")) {
+            response.setError("File format not supported. Please upload a PDF file");
+            return response;
+        }
+        Gson gson = new GsonBuilder().create();
+        PlagCheckRequests acceptObject = gson.fromJson(plagRequest, PlagCheckRequests.class);
+        return plagCheckRequestsService.acceptRequestWithDoc(acceptObject, plagCheckDoc);
+    }
+
+    /**
+     * REST request to compare the two document hashes and generate similarity score
+     * @param plagRequest the request whose status and hashes needs to be updated
+     * @param plagCheckUserDoc the document from which to calculate the hashes
+     * @return PlagCheckRequestsDTO populated with response from server
+     */
+    @PostMapping("/userDocRequest")
+    public PlagCheckRequestsDTO userDocRequest(@RequestParam("plagRequest") String plagRequest,
+                                               @RequestParam("plagCheckUserDoc")MultipartFile plagCheckUserDoc) {
+        log.info("REST request to compare the two document hashes and generate similarity score");
+        PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
+        if(!plagCheckUserDoc.getOriginalFilename().endsWith(".pdf")) {
+            response.setError("File format not supported. Please upload a PDF file");
+            return response;
+        }
+        Gson gson = new GsonBuilder().create();
+        PlagCheckRequests userObject = gson.fromJson(plagRequest, PlagCheckRequests.class);
+        return plagCheckRequestsService.userDocRequest(userObject, plagCheckUserDoc);
     }
 
 }

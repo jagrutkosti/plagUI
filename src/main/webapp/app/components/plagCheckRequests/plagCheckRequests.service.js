@@ -59,6 +59,48 @@
             });
         };
 
+        /**
+         * Call PlagCheckRequestsREST#acceptRequestWithDoc() to calculate the hashes of the doc and update the status and hashes.
+         * @param plagRequest the plagiarism check request to update
+         * @param plagCheckDoc the doc whose hashes to calculate. Must be the same doc as the request contains
+         */
+        service.acceptRequestWithDoc = function(plagRequest, plagCheckDoc) {
+            return Upload.upload({
+                url: API_URL + 'acceptRequestWithDoc',
+                data : {
+                    plagRequest: angular.toJson(plagRequest),
+                    plagCheckDoc: plagCheckDoc
+                }
+            }).then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            });
+        };
+
+        /**
+         * Call PlagCheckRequestsREST#userDocRequest() to calculate the hashes of the doc and generate similarity score
+         * @param plagRequest the plagiarism check request to update
+         * @param plagCheckUserDoc the doc whose hashes to calculate. Must be the same doc as the request contains
+         */
+        service.userDocRequest = function(plagRequest, plagCheckUserDoc) {
+            return Upload.upload({
+                url: API_URL + 'userDocRequest',
+                data : {
+                    plagRequest: angular.toJson(plagRequest),
+                    plagCheckUserDoc: plagCheckUserDoc
+                }
+            }).then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            });
+        };
+
         return service;
     }
 })();

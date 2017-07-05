@@ -58,6 +58,7 @@ public class PlagCheckService {
         //Parse pdf file for text and generate min hash
         String textFromPdf = utilService.parsePdf(plagCheckDoc);
         String cleanedText = utilService.cleanText(textFromPdf);
+        cleanedText = utilService.removeAllWhiteSpaces(cleanedText);
         List<String> allShingles = new ArrayList<>();
         allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, cleanedText));
         int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);

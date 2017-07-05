@@ -1,0 +1,33 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+            ng-click="vm.cancel()">&times;</button>
+    <h4 class="modal-title">Generate Hash From Document</h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <jhi-alert></jhi-alert>
+            <p class="alert alert-info">
+                Your file content will not be stored or visible to anyone.<br>
+                Please upload the same file: <strong>{{vm.requestDetails.userFileName}}</strong>
+            </p>
+            <p class="alert alert-warning" ng-if="!vm.sameFile">
+                The selected file name does not match the requested file name. Are you sure you want to continue?
+            </p>
+            <form name="userDocRequestDocForm" role="form" novalidate ng-submit="vm.sendUserDocument()" show-validation>
+                <div class="form-group">
+                    <label for="userDocRequest" class="control-label">File: *</label>
+                    <input class="form-control" id="userDocRequest" name="userDocRequest" ng-model="vm.userDocModalFormData.userDocRequest"
+                           type="file" ng-change="vm.requestDetails.userFileName === vm.userDocModalFormData.userDocRequest.name ? vm.sameFile=true : vm.sameFile=false" accept=".pdf" ngf-select ngf-max-size="50MB" required>
+                    <p class="help-block">Please select only .pdf file.</p>
+                    <div ng-show="userDocRequestDocForm.userDocRequest.$dirty && userDocRequestDocForm.userDocRequest.$invalid">
+                        <p class="help-block" ng-show="userDocRequestDocForm.userDocRequest.$error.required">Please select a PDF file.</p>
+                    </div>
+                </div>
+                <br/>
+                <button type="submit" ng-disabled="userDocRequestDocForm.$invalid" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-default" ng-click="vm.cancel()">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>

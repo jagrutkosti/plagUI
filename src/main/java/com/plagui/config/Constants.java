@@ -13,6 +13,7 @@ public final class Constants {
 
     //Constants used for plagiarism detection system
     public static final int SHINGLE_LENGTH = 9;
+    public static final int WORD_SHINGLE_LENGTH = 4;
     public static final String EN_SENTENCE_BIN_LOC = "src/main/resources/en-sent.bin";
     public static final String RANDOM_NUMBERS_FILE = "src/main/resources/random-numbers.txt";
     public static final int NUMBER_OF_RANDOM_NUMBERS = 199;
@@ -23,6 +24,11 @@ public final class Constants {
     public static final String SEED_DETAILS_FOR_HASH_URL = "http://localhost:8090/plagcheck/getHashSeed";
     public static final String GOOGLE_RECAPTCHA_SECRET = "6LfGcycUAAAAAPUaHNoU-jatYvdgj75mjGUeYTzk";
     public static final String GOOGLE_RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify";
+
+    public static final int REQUESTS_STATUS_PENDING = 0;
+    public static final int REQUESTS_STATUS_ACCEPT = 1;
+    public static final int REQUESTS_STATUS_REJECT = 2;
+    public static final int REQUESTS_STATUS_COMPLETE = 3;
 
     private Constants() {
     }

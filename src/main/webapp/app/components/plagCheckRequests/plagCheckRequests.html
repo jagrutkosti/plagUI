@@ -14,7 +14,7 @@
                                 <th>From</th>
                                 <th>For Your Document</th>
                                 <th>MinHash similarity</th>
-                                <th>SHA similarity</th>
+                                <th>SHA-256 similarity</th>
                                 <th>Accept/Reject</th>
                             </tr>
                         </thead>
@@ -52,7 +52,7 @@
                         <tr>
                             <th>Your Document</th>
                             <th>MinHash similarity</th>
-                            <th>SHA similarity</th>
+                            <th>SHA-256 similarity</th>
                             <th>Status</th>
                         </tr>
                         </thead>
@@ -64,7 +64,10 @@
                             <td>{{request.simScore}}</td>
                             <td>
                                 <span ng-if="request.status === 0">Pending</span>
-                                <span ng-if="request.status === 1">Accepted</span>
+                                <span ng-if="request.status === 1">
+                                    Accepted
+                                    <button type="button" class="btn btn-primary" ng-click="vm.userPlagCheck(request)">Submit Document</button>
+                                </span>
                                 <span ng-if="request.status === 2">Rejected</span>
                                 <span ng-if="request.status === 3">Completed</span>
                             </td>
