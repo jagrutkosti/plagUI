@@ -12,6 +12,8 @@ public class PlagCheckRequestsDTO extends GenericResponse{
     private PlagCheckRequests singleRequestObject;
     private List<PlagCheckRequests> requestsFromUser;
     private List<PlagCheckRequests> requestsToUser;
+    private String fullText;
+    private String keywords;
 
     public PlagCheckRequests getSingleRequestObject() {
         return singleRequestObject;
@@ -35,5 +37,21 @@ public class PlagCheckRequestsDTO extends GenericResponse{
 
     public void setRequestsToUser(List<PlagCheckRequests> requestsToUser) {
         this.requestsToUser = requestsToUser;
+    }
+
+    public String getFullText() {
+        return fullText;
+    }
+
+    public void setFullText(String fullText) {
+        this.fullText = fullText;
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 /**
  * Created by Jagrut on 03-07-2017.
@@ -137,11 +138,12 @@ public class PlagCheckRequestsService {
     public PlagCheckRequestsDTO acceptRequestWithDoc(PlagCheckRequests acceptObject, MultipartFile plagCheckDoc) {
         log.info("Service method to update the db item with accept and generate and store hashes from file");
         PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
-        List<String> sha256Hashes = getHashesFromDocument(plagCheckDoc);
+        List<String> shingles = createShinglesFromDoc(plagCheckDoc);
+        List<Integer> hashesFromDocument = generateHashesFromShingles(shingles);
         try {
             PlagCheckRequests dbItem = plagCheckRequestsRepository.findOne(acceptObject.getId());
             dbItem.setStatus(Constants.REQUESTS_STATUS_ACCEPT);
-            dbItem.setAuthorHashes(sha256Hashes);
+            dbItem.setAuthorHashes(hashesFromDocument);
             response.setSingleRequestObject(plagCheckRequestsRepository.save(dbItem));
             response.setSuccess("Hashes generated successfully!");
         } catch (NullPointerException e) {
@@ -154,62 +156,76 @@ public class PlagCheckRequestsService {
 
     /**
      * Get hashes from document, calculate similarity and update the DB item.
+     * Calculates the Jaccard Coefficient between two list of hashes of author document and user document
      * @param userObject the request to update with status and hashes
      * @param plagCheckUserDoc the document for which the request was generated
      * @return PlagCheckRequestsDTO populated with relevant fields
      */
     public PlagCheckRequestsDTO userDocRequest(PlagCheckRequests userObject, MultipartFile plagCheckUserDoc) {
-        log.info("Service method to update the db item, calculate similarity and update DB item");
+        log.info("Service method to get the db item, calculate similarity and update DB item");
         PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
-        List<String> sha256Hashes = getHashesFromDocument(plagCheckUserDoc);
+        List<Integer> authorDocHashes = userObject.getAuthorHashes();
+        List<Integer> userDochashes = new ArrayList<>();
+        int sameHashes = 0;
+        //Cannot call createShinglesFromDoc() as we need to show the user the text output, so need to store in DTO
+        String textFromPdf = utilService.parsePdf(plagCheckUserDoc);
+        textFromPdf = utilService.cleanText(textFromPdf);
+        response.setFullText(textFromPdf);
+
+        //Cannot call generateHashesFromShingles() as we need to do store keywords in DTO too.
+        List<String> shingles = utilService.createWordShingles(Constants.WORD_SHINGLE_LENGTH, textFromPdf);
+        StringJoiner keywords = new StringJoiner(",");
+        for(String shingle : shingles) {
+            int hash = (shingle.hashCode());
+            if(authorDocHashes.contains(hash)) {
+                sameHashes++;
+                userDochashes.add(hash);
+                keywords.add(shingle);
+            }
+        }
+        double simScore = sameHashes / (double)(authorDocHashes.size() + userDochashes.size() - sameHashes);
+        response.setKeywords(keywords.toString());
+
+        //Get the DB item and update it with relevant fields.
         try {
             PlagCheckRequests dbItem = plagCheckRequestsRepository.findOne(userObject.getId());
             dbItem.setStatus(Constants.REQUESTS_STATUS_COMPLETE);
-            dbItem.setUserHashes(sha256Hashes);
-            dbItem.setSimScore(calculateJaccardCoefficient(dbItem));
+            dbItem.setUserHashes(userDochashes);
+            dbItem.setSimScore(simScore);
+
             response.setSingleRequestObject(plagCheckRequestsRepository.save(dbItem));
             response.setSuccess("Hashes generated and similarity calculated successfully!");
         } catch (NullPointerException e) {
             e.printStackTrace();
             response.setError("Request does not exist anymore!");
         }
-
         return response;
     }
 
     /**
-     * Calculates the Jaccard Coefficient between two list of hashes of author document and user document
-     * @param plagRequest object containing list of hashes for user and author document
-     * @return double similarity score
+     * Extract text from pdf, clean the text, generate shingles
+     * @param plagCheckDoc the document to process
+     * @return List<String> containing shinlges from the given document
      */
-    public double calculateJaccardCoefficient(PlagCheckRequests plagRequest) {
-        int sameHashes = 0;
-        List<String> authorDocHashes = plagRequest.getAuthorHashes();
-        List<String> userDochashes = plagRequest.getUserHashes();
-        for(String hash : authorDocHashes) {
-            if(userDochashes.contains(hash))
-                sameHashes++;
-        }
-        return sameHashes / (double)(authorDocHashes.size() + userDochashes.size() - sameHashes);
-    }
-
-    /**
-     * Extract text from pdf, clean the text, generate hashes.
-     * @param plagCheckDoc the document from which to calculate SHA-256 hashes for shingles
-     * @return List<String> containing hashes for all shingles
-     */
-    public List<String> getHashesFromDocument(MultipartFile plagCheckDoc) {
+    public List<String> createShinglesFromDoc(MultipartFile plagCheckDoc) {
         //Get text from PDF and clean the text
         String textFromPdf = utilService.parsePdf(plagCheckDoc);
         textFromPdf = utilService.cleanText(textFromPdf);
         //Generate word shingles from cleaned text
-        List<String> shingles = utilService.createWordShingles(Constants.WORD_SHINGLE_LENGTH, textFromPdf);
-        List<byte[]> byteArrayFromShingles = new ArrayList<>();
+        return utilService.createWordShingles(Constants.WORD_SHINGLE_LENGTH, textFromPdf);
+    }
+
+    /**
+     * Generate hashes from list of shingles
+     * @param shingles list of shingles from which to calculate hashes
+     * @return List<String> containing hashes for all shingles
+     */
+    public List<Integer> generateHashesFromShingles(List<String> shingles) {
+        List<Integer> hashesFromShingles = new ArrayList<>();
         for(String shingle : shingles) {
-            byteArrayFromShingles.add(shingle.getBytes());
+            hashesFromShingles.add(shingle.hashCode());
         }
-        //Generate SHA-256 hash for each shingle and store in DB
-        return utilService.generateSHA256HashFromObjects(byteArrayFromShingles);
+        return hashesFromShingles;
     }
 
 }

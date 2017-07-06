@@ -13,7 +13,7 @@ public final class Constants {
 
     //Constants used for plagiarism detection system
     public static final int SHINGLE_LENGTH = 9;
-    public static final int WORD_SHINGLE_LENGTH = 4;
+    public static final int WORD_SHINGLE_LENGTH = 3;
     public static final String EN_SENTENCE_BIN_LOC = "src/main/resources/en-sent.bin";
     public static final String RANDOM_NUMBERS_FILE = "src/main/resources/random-numbers.txt";
     public static final int NUMBER_OF_RANDOM_NUMBERS = 199;

@@ -15,11 +15,12 @@
     function PlagCheckRequestsController(PlagCheckRequestsService, AlertService, allRequests, $uibModal) {
         var vm = this;
         vm.allRequests = allRequests;
+        vm.userPlagCheckResult = {};
         vm.acceptRequest = acceptRequest;
         vm.rejectRequest = rejectRequest;
         vm.userPlagCheck = userPlagCheck;
         var modalInstance = null;
-        
+
         /**
          * Opens a modal dialog to allow user to upload the same file and send to backend
          * @param plagRequest the request to accept and corresponding document to upload
@@ -36,6 +37,7 @@
                 }
             }).result.then(function() {
                 plagRequest.status = 1;
+                modalInstance = null;
             }, function() {
                 modalInstance = null;
             });
@@ -71,8 +73,10 @@
                 resolve: {
                     requestDetails: plagRequest
                 }
-            }).result.then(function() {
+            }).result.then(function(response) {
                 plagRequest.status = 3;
+                vm.userPlagCheckResult = response;
+                modalInstance = null;
             }, function() {
                 modalInstance = null;
             });

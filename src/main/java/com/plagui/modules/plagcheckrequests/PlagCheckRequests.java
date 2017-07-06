@@ -45,10 +45,13 @@ public class PlagCheckRequests implements Serializable {
     private String authorFileName;
 
     @Field("user_hashes")
-    private List<String> userHashes;
+    private List<Integer> userHashes;
 
     @Field("author_hashes")
-    private List<String> authorHashes;
+    private List<Integer> authorHashes;
+
+    @Field("bucket_size")
+    private int bucketSize;
 
     @NotNull
     @Field("status")
@@ -109,20 +112,28 @@ public class PlagCheckRequests implements Serializable {
         this.authorFileName = authorFileName;
     }
 
-    public List<String> getUserHashes() {
+    public List<Integer> getUserHashes() {
         return userHashes;
     }
 
-    public void setUserHashes(List<String> userHashes) {
+    public void setUserHashes(List<Integer> userHashes) {
         this.userHashes = userHashes;
     }
 
-    public List<String> getAuthorHashes() {
+    public List<Integer> getAuthorHashes() {
         return authorHashes;
     }
 
-    public void setAuthorHashes(List<String> authorHashes) {
+    public void setAuthorHashes(List<Integer> authorHashes) {
         this.authorHashes = authorHashes;
+    }
+
+    public int getBucketSize() {
+        return bucketSize;
+    }
+
+    public void setBucketSize(int bucketSize) {
+        this.bucketSize = bucketSize;
     }
 
     public int getStatus() {

@@ -51,8 +51,7 @@
         function sendUserDocument() {
             PlagCheckRequestsService.userDocRequest(vm.requestDetails, vm.userDocModalFormData.userDocRequest).then(function(response) {
                 if(response.success) {
-                    console.log(response);
-                    $uibModalInstance.close();
+                    $uibModalInstance.close(response);
                 } else if(response.error)
                     AlertService.error(response.error);
                 else

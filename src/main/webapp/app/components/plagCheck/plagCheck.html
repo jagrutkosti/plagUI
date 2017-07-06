@@ -49,7 +49,7 @@
                             <tbody>
                                 <tr ng-repeat="simDoc in vm.results.listOfSimilarPublishedWork">
                                     <td>{{simDoc.fileName}}</td>
-                                    <td>{{simDoc.similarityScore * 100}}%</td>
+                                    <td>{{simDoc.similarityScore * 100 | number : 2}}%</td>
                                     <td>{{simDoc.contactInfo}}</td>
                                     <td>
                                         <button class="btn btn-default" type="button" ng-click="vm.createPlagCheckRequest(simDoc)" ng-disabled="simDoc.disabled">
@@ -77,7 +77,7 @@
                             <tbody>
                             <tr ng-repeat="simDoc in vm.results.listOfSimilarUnpublishedWork">
                                 <td>{{simDoc.fileName}}</td>
-                                <td>{{simDoc.similarityScore * 100}}%</td>
+                                <td>{{simDoc.similarityScore * 100 | number : 2}}%</td>
                                 <td>{{simDoc.contactInfo}}</td>
                                 <td>
                                     <button class="btn btn-default" type="button" ng-click="vm.createPlagCheckRequest(simDoc)" ng-disabled="simDoc.disabled">
@@ -98,9 +98,9 @@
             <p align="justify">
                 <strong>* Request Author:</strong>
                 You can request the author of the document to upload more hashes of that particular document.
-                After the author has accepted your request, you will need to re-upload that particular document and we will check for similarity more precisely and give you the result.
+                After the author has accepted your request, you will need to re-upload that particular document and we will re-calculate the similar parts of the document.
                 You can track the status in <i>Requests</i> menu item.
-                Please note that we will not store the actual document of yours or of the author.
+                Please note that we will not store or use the actual document for comparison, of yours or of the author.
             </p>
         </div>
     </div>

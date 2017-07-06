@@ -14,7 +14,7 @@
                                 <th>From</th>
                                 <th>For Your Document</th>
                                 <th>MinHash similarity</th>
-                                <th>SHA-256 similarity</th>
+                                <th>Tri-gram Hash Similarity</th>
                                 <th>Accept/Reject</th>
                             </tr>
                         </thead>
@@ -23,8 +23,8 @@
                                 ng-class="request.status === 0 ? 'warning' : (request.status === 1 ? 'info' : (request.status === 2 ? 'danger' : 'success'))">
                                 <td>{{request.userLoginId}}</td>
                                 <td>{{request.authorFileName}}</td>
-                                <td>{{request.minHashSimScore * 100}}%</td>
-                                <td>{{request.simScore}}</td>
+                                <td >{{request.minHashSimScore * 100 | number : 2}}%</td>
+                                <td>{{request.simScore * 100 | number : 2}}%</td>
                                 <td>
                                     <div ng-if="request.status === 0">
                                         <button class="btn btn-primary" ng-click="vm.acceptRequest(request)">
@@ -51,8 +51,8 @@
                         <thead>
                         <tr>
                             <th>Your Document</th>
-                            <th>MinHash similarity</th>
-                            <th>SHA-256 similarity</th>
+                            <th>MinHash Similarity</th>
+                            <th>Tri-gram Hash Similarity</th>
                             <th>Status</th>
                         </tr>
                         </thead>
@@ -60,12 +60,11 @@
                         <tr ng-repeat="request in vm.allRequests.requestsFromUser"
                             ng-class="request.status === 0 ? 'warning' : (request.status === 1 ? 'info' : (request.status === 2 ? 'danger' : 'success'))">
                             <td>{{request.userFileName}}</td>
-                            <td>{{request.minHashSimScore * 100}}%</td>
-                            <td>{{request.simScore}}</td>
+                            <td>{{request.minHashSimScore * 100 | number : 2}}%</td>
+                            <td>{{request.simScore * 100 | number : 2}}%</td>
                             <td>
                                 <span ng-if="request.status === 0">Pending</span>
                                 <span ng-if="request.status === 1">
-                                    Accepted
                                     <button type="button" class="btn btn-primary" ng-click="vm.userPlagCheck(request)">Submit Document</button>
                                 </span>
                                 <span ng-if="request.status === 2">Rejected</span>
@@ -80,6 +79,12 @@
         </uib-accordion>
         <div class="alert alert-info" ng-show="vm.allRequests.requestsFromUser.length <= 0 && vm.allRequests.requestsToUser.length <= 0">
             <p align="center">You have no requests!</p>
+        </div>
+        <div ng-if="vm.userPlagCheckResult.success" class="panel panel-info panel-body">
+            <p align="center"><strong>Similar text from your document is highlighted below:</strong></p>
+            <p align="justify">
+                <div highlight="vm.userPlagCheckResult.fullText" keywords="vm.userPlagCheckResult.keywords"></div>
+            </p>
         </div>
     </div>
 </div>

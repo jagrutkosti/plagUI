@@ -328,3 +328,7 @@ ui bootstrap tweaks
 
 
 /* jhipster-needle-css-add-main JHipster will add new css style */
+.angular-highlight {
+    background-color:	rgba(142,109,155,0.4);
+    font-weight:		bold;
+}
