@@ -33,6 +33,20 @@
                         })
                     }]
                 }
-            });
+            })
+            .state('plagCheckRequestResult', {
+                parent: 'app',
+                url: "/plagCheckRequestResult/:plagCheckResult",
+                data: {
+                    pageTitle: 'Similarity Result'
+                },
+                views: {
+                    'content@': {
+                        templateUrl: 'app/components/plagCheckRequests/plagCheckRequestResult.html',
+                        controller: 'PlagCheckRequestResultController',
+                        controllerAs: 'vm'
+                    }
+                }
+            })
     }
 })();

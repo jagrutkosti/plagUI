@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-info panel-body">
+            <h4 align="center">Plagiarism Detection Result</h4>
+            <div class="alert alert-info">
+                <p align="justify">
+                    <strong>Please note:</strong> After closing this window, you will <strong>not be able to view this again</strong> as we do not store any text from your document. If you close this, you will need to request the document check from the author again.<br><br>
+                </p>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Your Document</th>
+                        <th>MinHash Similarity</th>
+                        <th>Tri-gram Hash Similarity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{vm.userPlagCheckResult.singleRequestObject.userFileName}}</td>
+                        <td>{{vm.userPlagCheckResult.singleRequestObject.minHashSimScore * 100 | number : 2}}%</td>
+                        <td>{{vm.userPlagCheckResult.singleRequestObject.simScore * 100 | number : 2}}%</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="alert alert-success" align="center">
+                <strong>Similar text from your document is highlighted below:</strong>
+            </p>
+            <p align="justify">
+            <div highlight="vm.userPlagCheckResult.fullText" keywords="vm.userPlagCheckResult.keywords"></div>
+            </p>
+        </div>
+    </div>
+</div>

@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Created by Jagrut on 03-07-2017.
- * Data transfer object for
+ * Data transfer object for Plagiarism Check Requests
  */
 public class PlagCheckRequestsDTO extends GenericResponse{
     private PlagCheckRequests singleRequestObject;

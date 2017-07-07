@@ -4,6 +4,11 @@
             <h4>Plagiarism Check Requests</h4>
             <jhi-alert></jhi-alert>
         </div>
+        <div ng-if="vm.allRequests.requestsFromUser.length > 0">
+            <p class="alert alert-info" align="center">
+                <strong>Note: </strong>Please allow pop-ups for this page before submitting your document. (Available after the author has accepted your request)
+            </p>
+        </div>
         <uib-accordion close-others="false">
             <div uib-accordion-group class="panel-primary" ng-show="vm.allRequests.requestsToUser.length > 0"
                  heading="From other users" is-open="true" is-disabled="false">
@@ -24,7 +29,10 @@
                                 <td>{{request.userLoginId}}</td>
                                 <td>{{request.authorFileName}}</td>
                                 <td >{{request.minHashSimScore * 100 | number : 2}}%</td>
-                                <td>{{request.simScore * 100 | number : 2}}%</td>
+                                <td>
+                                    <span ng-if="request.simScore === 0">N.A.</span>
+                                    <span ng-if="request.simScore !== 0">{{request.simScore * 100 | number : 2}}%</span>
+                                </td>
                                 <td>
                                     <div ng-if="request.status === 0">
                                         <button class="btn btn-primary" ng-click="vm.acceptRequest(request)">
@@ -61,7 +69,10 @@
                             ng-class="request.status === 0 ? 'warning' : (request.status === 1 ? 'info' : (request.status === 2 ? 'danger' : 'success'))">
                             <td>{{request.userFileName}}</td>
                             <td>{{request.minHashSimScore * 100 | number : 2}}%</td>
-                            <td>{{request.simScore * 100 | number : 2}}%</td>
+                            <td>
+                                <span ng-if="request.simScore === 0">N.A.</span>
+                                <span ng-if="request.simScore !== 0">{{request.simScore * 100 | number : 2}}%</span>
+                            </td>
                             <td>
                                 <span ng-if="request.status === 0">Pending</span>
                                 <span ng-if="request.status === 1">
@@ -76,15 +87,14 @@
                 </div>
             </div>
             <br>
+            <div ng-if="vm.allRequests.requestsFromUser.length > 0 || vm.allRequests.requestsToUser.length > 0">
+                <p class="alert alert-info">
+                    <strong>N.A.: </strong>Not Applicable. To calculate Tri-gram Hash similarity, both parties need to generate hash by submitting the document to the system, for that request.
+                </p>
+            </div>
         </uib-accordion>
         <div class="alert alert-info" ng-show="vm.allRequests.requestsFromUser.length <= 0 && vm.allRequests.requestsToUser.length <= 0">
             <p align="center">You have no requests!</p>
-        </div>
-        <div ng-if="vm.userPlagCheckResult.success" class="panel panel-info panel-body">
-            <p align="center"><strong>Similar text from your document is highlighted below:</strong></p>
-            <p align="justify">
-                <div highlight="vm.userPlagCheckResult.fullText" keywords="vm.userPlagCheckResult.keywords"></div>
-            </p>
         </div>
     </div>
 </div>

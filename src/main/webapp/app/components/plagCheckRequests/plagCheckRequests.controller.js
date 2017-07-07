@@ -10,16 +10,16 @@
         .module('plagUiApp')
         .controller('PlagCheckRequestsController', PlagCheckRequestsController);
 
-    PlagCheckRequestsController.$inject = ['PlagCheckRequestsService', 'AlertService', 'allRequests', '$uibModal'];
+    PlagCheckRequestsController.$inject = ['PlagCheckRequestsService', 'AlertService', 'allRequests', '$uibModal', '$state', '$window'];
 
-    function PlagCheckRequestsController(PlagCheckRequestsService, AlertService, allRequests, $uibModal) {
+    function PlagCheckRequestsController(PlagCheckRequestsService, AlertService, allRequests, $uibModal, $state, $window) {
         var vm = this;
         vm.allRequests = allRequests;
-        vm.userPlagCheckResult = {};
         vm.acceptRequest = acceptRequest;
         vm.rejectRequest = rejectRequest;
         vm.userPlagCheck = userPlagCheck;
         var modalInstance = null;
+        console.log(vm.allRequests);
 
         /**
          * Opens a modal dialog to allow user to upload the same file and send to backend
@@ -75,8 +75,9 @@
                 }
             }).result.then(function(response) {
                 plagRequest.status = 3;
-                vm.userPlagCheckResult = response;
                 modalInstance = null;
+                var url = $state.href('plagCheckRequestResult', {plagCheckResult: angular.toJson(response)});
+                $window.open(url, '_blank');
             }, function() {
                 modalInstance = null;
             });

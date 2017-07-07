@@ -46,7 +46,7 @@
          */
         function downloadSeed(seed) {
             var blob = new Blob([ seed ], { type : 'text/plain' });
-            vm.url = (window.URL || window.webkitURL).createObjectURL( blob );
+            vm.url = ($window.URL || $window.webkitURL).createObjectURL( blob );
         }
 
         function init() {

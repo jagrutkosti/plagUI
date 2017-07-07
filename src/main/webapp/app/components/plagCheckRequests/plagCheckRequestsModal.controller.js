@@ -52,6 +52,7 @@
             PlagCheckRequestsService.userDocRequest(vm.requestDetails, vm.userDocModalFormData.userDocRequest).then(function(response) {
                 if(response.success) {
                     $uibModalInstance.close(response);
+                    $state.reload();
                 } else if(response.error)
                     AlertService.error(response.error);
                 else
