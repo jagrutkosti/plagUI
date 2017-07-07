@@ -142,3 +142,4 @@ Desktop.ini
 # ESLint
 ######################
 .eslintcache
+/src/main/java/com/plagui/modules/TestMain.java
