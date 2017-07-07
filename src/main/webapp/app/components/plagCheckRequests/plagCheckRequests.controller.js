@@ -19,7 +19,6 @@
         vm.rejectRequest = rejectRequest;
         vm.userPlagCheck = userPlagCheck;
         var modalInstance = null;
-        console.log(vm.allRequests);
 
         /**
          * Opens a modal dialog to allow user to upload the same file and send to backend
