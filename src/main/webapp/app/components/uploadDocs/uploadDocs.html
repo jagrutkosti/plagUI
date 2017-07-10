@@ -41,10 +41,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                <input id="ispublished" name="ispublished" ng-model="vm.fileData.isunpublished" type="checkbox"> Is this an unpublished document?
-                            </label>
+                        <label class="control-label" for="streamName">Submit to Stream: </label>
+                        <select class="form-control" name="streamName" id="streamName" ng-options="option.streamName for option in vm.streamPermissions.allStreamPermissions" ng-model="vm.fileData.streamName" required></select>
+                        <div ng-show="pdfForm.streamName.$dirty && pdfForm.streamName.$invalid">
+                            <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>
                         </div>
                     </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
@@ -108,10 +108,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                <input id="ispublishedText" name="ispublished" ng-model="vm.fileData.isunpublished" type="checkbox"> Is this an unpublished document?
-                            </label>
+                        <label class="control-label" for="streamNameText">Submit to Stream: </label>
+                        <select class="form-control" name="streamName" id="streamNameText" ng-options="option.streamName for option in vm.streamPermissions.allStreamPermissions" ng-model="vm.fileData.streamName" required></select>
+                        <div ng-show="pdfForm.streamName.$dirty && pdfForm.streamName.$invalid">
+                            <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>
                         </div>
                     </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>

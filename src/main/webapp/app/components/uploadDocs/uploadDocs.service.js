@@ -10,9 +10,9 @@
         .module('plagUiApp')
         .factory('UploadDocsService', UploadDocsService);
 
-    UploadDocsService.$inject = ['Upload'];
+    UploadDocsService.$inject = ['Upload', '$http'];
 
-    function UploadDocsService(Upload) {
+    function UploadDocsService(Upload, $http) {
         const API_URL = '/api/plagchain/upload/';
         var service = {};
 
@@ -27,7 +27,7 @@
                 data: {
                     fileToHash: fileData.fileToHash,
                     contactInfo: fileData.contactInfo,
-                    isunpublished: fileData.isunpublished,
+                    streamName: fileData.streamName,
                     gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {
@@ -51,7 +51,7 @@
                     textToHash: fileData.textToHash,
                     fileName: fileData.fileName,
                     contactInfo: fileData.contactInfo,
-                    isunpublished: fileData.isunpublished,
+                    streamName: fileData.streamName,
                     gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {
@@ -83,6 +83,19 @@
                     return response.status + ':' + response.statusText;
                 }
             });
+        };
+
+        /**
+         * Call PermissionREST.java#getPermissionsForUser() and handle call backs
+         */
+        service.getPermissionsForUser = function() {
+            return $http.get('/api/plagchain/getPermissionsForUser').then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            })
         };
 
         return service;

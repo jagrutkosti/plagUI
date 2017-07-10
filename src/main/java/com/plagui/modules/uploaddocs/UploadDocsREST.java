@@ -44,14 +44,14 @@ public class UploadDocsREST {
     public GenericResponse uploadDoc(@RequestParam("fileToHash")MultipartFile pdfFile,
                                      @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
                                      @RequestParam(required = false, value = "contactInfo")String contactInfo,
-                                     @RequestParam(required = false, value = "isunpublished")boolean isunpublished) {
+                                     @RequestParam("streamName")String streamName) {
         log.info("REST request to timestamp PDF file");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
             if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
-                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, isunpublished);
+                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, streamName);
                 if(!result.contains(" "))
                     response.setSuccess("success");
                 else
@@ -78,13 +78,13 @@ public class UploadDocsREST {
                                       @RequestParam("fileName") String fileName,
                                       @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
                                       @RequestParam(required = false, value = "contactInfo")String contactInfo,
-                                      @RequestParam(required = false, value = "isunpublished")boolean isunpublished) {
+                                      @RequestParam("streamName")String streamName) {
         log.info("REST request to timestamp some text");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainWalletAddress(), textToHash, contactInfo, isunpublished);
+            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainWalletAddress(), textToHash, contactInfo, streamName);
             if(!result.contains(" "))
                 response.setSuccess("success");
             else

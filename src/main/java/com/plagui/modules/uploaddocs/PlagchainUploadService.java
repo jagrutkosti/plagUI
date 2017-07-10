@@ -32,7 +32,7 @@ public class PlagchainUploadService {
      * @param contactInfo contact info of the user, if provided
      * @return true, if everything was successful, exception otherwise
      */
-    public String processAndTimestampDoc(String walletAddress, MultipartFile pdfFile, String contactInfo, boolean unpublishedWork) {
+    public String processAndTimestampDoc(String walletAddress, MultipartFile pdfFile, String contactInfo, String streamName) {
         log.info("Processing the pdf file for time stamping");
         //Calculate sha256 hash for document to be used as key
         List<String> sha256DocHash = new ArrayList<>();
@@ -56,10 +56,7 @@ public class PlagchainUploadService {
 
         //Transform to Hex string format and submit to plagchain
         String hexData = utilService.formatDataToHex(pdfFile.getOriginalFilename(), Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), sha256HashOfImages, contactInfo);
-        if(unpublishedWork)
-            return utilService.submitToPlagchain(walletAddress, Constants.UNPUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
-        else
-            return utilService.submitToPlagchain(walletAddress, Constants.PUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
+        return utilService.submitToPlagchain(walletAddress, streamName, sha256DocHash.get(0), hexData);
     }
 
     /**
@@ -69,7 +66,7 @@ public class PlagchainUploadService {
      * @param contactInfo contact info of the user, if provided
      * @return true, if everything was successful, exception otherwise
      */
-    public String processAndTimestampText(String fileName, String walletAddress, String textToHash, String contactInfo, boolean unpublishedWork) {
+    public String processAndTimestampText(String fileName, String walletAddress, String textToHash, String contactInfo, String streamName) {
         log.info("Processing text for time stamping");
         //Calculate sha256 hash for document to be used as key
         List<String> sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(textToHash.getBytes()));
@@ -83,10 +80,7 @@ public class PlagchainUploadService {
 
         //Transform to Hex string format and submit to plagchain
         String hexData = utilService.formatDataToHex(fileName, Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), null, contactInfo);
-        if(unpublishedWork)
-            return utilService.submitToPlagchain(walletAddress, Constants.UNPUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
-        else
-            return utilService.submitToPlagchain(walletAddress, Constants.PUBLISHED_WORK_STREAM_NAME, sha256DocHash.get(0), hexData);
+        return utilService.submitToPlagchain(walletAddress, streamName, sha256DocHash.get(0), hexData);
     }
 
     /**
