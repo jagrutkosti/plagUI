@@ -25,6 +25,11 @@
                 ],
                 numOfPendingRequests : ['PlagCheckRequestsService', function(PlagCheckRequestsService) {
                     return PlagCheckRequestsService.getNumberOfPendingRequests();
+                }],
+                streamPermissions : ['PermissionsService', function(PermissionsService) {
+                    return PermissionsService.getPermissionsForUser().then(function(response) {
+                        return response;
+                    });
                 }]
             }
         });

@@ -27,11 +27,6 @@
                    }
                },
                resolve: {
-                   streamPermissions : ['UploadDocsService', function(UploadDocsService) {
-                       return UploadDocsService.getPermissionsForUser().then(function(response) {
-                           return response;
-                       });
-                   }]
                }
            });
     }
