@@ -1,0 +1,82 @@
+<div class="row">
+    <jhi-alert></jhi-alert>
+</div>
+<div ng-if="vm.streamPermissionsAndRequests.requestsForAdmin.length > 0" align="center">
+    <h4>Permission Requests</h4>
+</div>
+<div class="row" ng-if="vm.streamPermissionsAndRequests.requestsForAdmin.length > 0">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <table class="table table-striped">
+                <thead>
+                <tr class="info">
+                    <th>From</th>
+                    <th>For Stream</th>
+                    <th>Permission</th>
+                    <th>Accept/Reject</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="request in vm.streamPermissionsAndRequests.requestsForAdmin"
+                    ng-class="request.writeRequestStatus === 2 || request.adminRequestStatus === 2  ? 'success' : (request.writeRequestStatus === 3 || request.adminRequestStatus === 3 ? 'danger' : '')">
+                    <td>{{request.requesterLogin}}</td>
+                    <td>{{request.streamName}}</td>
+                    <td>
+                        <span ng-if="request.writeRequestStatus === 1">Write</span>
+                        <span ng-if="request.adminRequestStatus === 1">Admin</span>
+                    </td>
+                    <td>
+                        <div ng-if="request.writeRequestStatus === 1 || request.adminRequestStatus === 1">
+                            <button class="btn btn-primary" ng-click="vm.grantPermission(request)">
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </button>
+                            <button class="btn btn-default" ng-click="vm.rejectPermission(request)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <span ng-if="request.writeRequestStatus === 2 || request.adminRequestStatus === 2">Granted</span>
+                            <span ng-if="request.writeRequestStatus === 3 || request.adminRequestStatus === 3">Rejected</span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div align="center">
+    <h4>Your Stream Permissions</h4>
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <table class="table table-striped">
+                <thead>
+                <tr class="info">
+                    <th>Stream Name</th>
+                    <th>Publish</th>
+                    <th>Admin</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="stream in vm.streamPermissionsAndRequests.allStreamPermissionRequests">
+                    <td>{{stream.streamName}}</td>
+                    <td ng-class="stream.writeRequestStatus === 3 ? 'danger' : ''">
+                        <span ng-if="stream.write === true" class="glyphicon glyphicon-ok"> </span>
+                        <button type="button" ng-if="stream.write === false && stream.writeRequestStatus !== 3" class="btn btn-default" ng-click="vm.requestPermission(stream, 'write')" ng-disabled="stream.writeRequestStatus >= 1">
+                            <span ng-class="stream.writeRequestStatus >= 1 ? 'glyphicon glyphicon-time' : '' " aria-hidden="true"> {{stream.writeRequestStatus >= 1 ? 'Requested' : 'Request'}}</span>
+                        </button>
+                        <span ng-if="stream.writeRequestStatus === 3" class="glyphicon glyphicon-remove">&nbsp; Rejected</span>
+                    </td>
+                    <td ng-class="stream.adminRequestStatus === 3 ? 'danger' : ''">
+                        <span ng-if="stream.admin === true" class="glyphicon glyphicon-ok"> </span>
+                        <button type="button" ng-if="stream.admin === false && stream.adminRequestStatus !== 3" class="btn btn-default" ng-click="vm.requestPermission(stream, 'admin')" ng-disabled="stream.adminRequestStatus >= 1">
+                            <span ng-class="stream.adminRequestStatus >= 1 ? 'glyphicon glyphicon-time' : '' " aria-hidden="true"> {{stream.adminRequestStatus >= 1 ? 'Requested' : 'Request'}}</span>
+                        </button>
+                        <span ng-if="stream.adminRequestStatus === 3" class="glyphicon glyphicon-remove">&nbsp; Rejected</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

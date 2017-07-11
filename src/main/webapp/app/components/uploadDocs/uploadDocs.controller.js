@@ -10,9 +10,9 @@
         .module('plagUiApp')
         .controller('UploadDocsController', UploadDocsController);
 
-    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state', 'vcRecaptchaService', 'streamPermissions'];
+    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state', 'vcRecaptchaService', 'streamPermissionsAndRequests'];
 
-    function UploadDocsController(UploadDocsService, AlertService, $state, vcRecaptchaService, streamPermissions){
+    function UploadDocsController(UploadDocsService, AlertService, $state, vcRecaptchaService, streamPermissionsAndRequests){
         var vm = this;
         vm.uploadDocForBlockchain = uploadDocForBlockchain;
         vm.uploadTextForBlockchain = uploadTextForBlockchain;
@@ -24,7 +24,7 @@
          * fileData: {'fileToHash', 'textToHash', 'imageToHash', 'streamName', 'contactInfo', 'fileName', 'success', 'error'}
          */
         vm.fileData = {};
-        vm.streamPermissions = streamPermissions;
+        vm.streamPermissions = streamPermissionsAndRequests;
         vm.recaptcha = {
             key: '6LfGcycUAAAAAAn3Aanri79ijQSwust7kH_BH9Bd',
             response: null,

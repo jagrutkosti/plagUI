@@ -51,6 +51,7 @@
                 if(response.success) {
                     plagRequest.status = 2;
                     AlertService.success(response.success);
+                    $state.reload();
                 } else if(response.error)
                     AlertService.error(response.error);
                 else

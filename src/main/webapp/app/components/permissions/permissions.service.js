@@ -10,9 +10,9 @@
         .module('plagUiApp')
         .factory('PermissionsService', PermissionsService);
 
-    PermissionsService.$inject = ['$http'];
+    PermissionsService.$inject = ['$http', 'Upload'];
 
-    function PermissionsService($http) {
+    function PermissionsService($http, Upload) {
         const API_URL = '/api/plagchain/';
         var service = {};
 
@@ -21,6 +21,40 @@
          */
         service.getPermissionsForUser = function() {
             return $http.get(API_URL + 'getPermissionsForUser').then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            })
+        };
+
+        /**
+         * Call PermissionREST.java#getPermissionsAndRequestsForUser() and handle call backs
+         */
+        service.getPermissionsAndRequestsForUser = function() {
+            return $http.get(API_URL + 'getPermissionsAndRequestsForUser').then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            })
+        };
+
+        /**
+         * Call PermissionREST.java#requestPermissoin() and handle call backs.
+         * @param stream the stream item to request the permission for
+         * @param type permission type i.e. admin or write
+         */
+        service.requestPermission = function(stream, type) {
+            return Upload.upload({
+                url: API_URL + 'requestPermission',
+                data: {
+                    stream : angular.toJson(stream),
+                    type : type
+                }
+            }).then(function(response) {
                 return response.data;
             }, function(response) {
                 if(response.status > 0) {

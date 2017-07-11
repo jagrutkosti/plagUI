@@ -32,7 +32,7 @@
                 <li ui-sref-active="active" ng-switch-when="true">
                     <a ui-sref="plagCheck" ng-click="vm.collapseNavbar()">
                         <span class="glyphicon glyphicon-search"></span>
-                        <span class="hidden-sm">Check Plagiarism</span>
+                        <span class="hidden-sm">Check Similarity</span>
                     </a>
                 </li>
 
@@ -47,6 +47,15 @@
                     <a ui-sref="plagCheckRequests" ng-click="vm.collapseNavbar()">
                         <span class="badge">{{vm.numOfPendingRequests}} </span>
                         <span class="hidden-sm">Requests</span>
+
+                    </a>
+                </li>
+
+                <li ui-sref-active="active" ng-switch-when="true">
+                    <a ui-sref="permissionRequests" ng-click="vm.collapseNavbar()">
+                        <span ng-if="vm.streamPermissionsAndRequests.requestsForAdmin.length > 0" class="badge">{{vm.streamPermissionsAndRequests.requestsForAdmin.length}}</span>
+                        <span ng-if="vm.streamPermissionsAndRequests.requestsForAdmin === null" class="glyphicon glyphicon-lock"></span>
+                        <span class="hidden-sm">Permissions</span>
 
                     </a>
                 </li>
@@ -100,7 +109,7 @@
                         </li>
                     </ul>
                 </li>
-                <li ng-class="{active: vm.$state.includes('admin')}"  ng-switch-when="true" has-authority="ROLE_ADMIN" uib-dropdown class="dropdown pointer">
+                <!--<li ng-class="{active: vm.$state.includes('admin')}"  ng-switch-when="true" has-authority="ROLE_ADMIN" uib-dropdown class="dropdown pointer">
                     <a class="dropdown-toggle" uib-dropdown-toggle href="" id="admin-menu">
                         <span>
                             <span class="glyphicon glyphicon-tower"></span>
@@ -151,9 +160,9 @@
                                 <span>API</span>
                             </a>
                         </li>
-                        <!-- jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here -->
+                        &lt;!&ndash; jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here &ndash;&gt;
                     </ul>
-                </li>
+                </li>-->
             </ul>
         </div>
     </div>

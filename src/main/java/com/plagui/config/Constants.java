@@ -30,6 +30,12 @@ public final class Constants {
     public static final int REQUESTS_STATUS_REJECT = 2;
     public static final int REQUESTS_STATUS_COMPLETE = 3;
 
+    public static final int PERMISSION_REQUESTED = 1;
+    public static final int PERMISSION_GRANTED = 2;
+    public static final int PERMISSION_REJECTED = 3;
+
+    public static final float PERMISSION_CONSENSUS = 0.5f;
+
     private Constants() {
     }
 }

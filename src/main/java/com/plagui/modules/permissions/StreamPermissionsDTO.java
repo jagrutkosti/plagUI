@@ -9,13 +9,31 @@ import java.util.List;
  * Data transfer object for current user's stream permissions
  */
 public class StreamPermissionsDTO extends GenericResponse{
-    private List<StreamPermission> allStreamPermissions;
+    private List<StreamPermissionRequests> allStreamPermissionRequests;
+    private List<StreamPermissionRequests> requestsForAdmin;
+    private StreamPermissionRequests singleObject;
 
-    public List<StreamPermission> getAllStreamPermissions() {
-        return allStreamPermissions;
+    public List<StreamPermissionRequests> getAllStreamPermissionRequests() {
+        return allStreamPermissionRequests;
     }
 
-    public void setAllStreamPermissions(List<StreamPermission> allStreamPermissions) {
-        this.allStreamPermissions = allStreamPermissions;
+    public void setAllStreamPermissionRequests(List<StreamPermissionRequests> allStreamPermissionRequests) {
+        this.allStreamPermissionRequests = allStreamPermissionRequests;
+    }
+
+    public List<StreamPermissionRequests> getRequestsForAdmin() {
+        return requestsForAdmin;
+    }
+
+    public void setRequestsForAdmin(List<StreamPermissionRequests> requestsForAdmin) {
+        this.requestsForAdmin = requestsForAdmin;
+    }
+
+    public StreamPermissionRequests getSingleObject() {
+        return singleObject;
+    }
+
+    public void setSingleObject(StreamPermissionRequests singleObject) {
+        this.singleObject = singleObject;
     }
 }
