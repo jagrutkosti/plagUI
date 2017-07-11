@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Jagrut on 10-07-2017.
@@ -47,11 +49,11 @@ public class StreamPermissionRequests implements Serializable{
     @Field("total_admins")
     private int totalAdmins;
 
-    @Field("permission_granted")
-    private int permissionGranted;
+    @Field("permission_granted_by")
+    private List<String> permissionGrantedBy = new ArrayList<>();
 
-    @Field("permission_denied")
-    private int permissionDenied;
+    @Field("permission_rejected_by")
+    private List<String> permissionRejectedBy = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -125,20 +127,20 @@ public class StreamPermissionRequests implements Serializable{
         this.totalAdmins = totalAdmins;
     }
 
-    public int getPermissionGranted() {
-        return permissionGranted;
+    public List<String> getPermissionGrantedBy() {
+        return permissionGrantedBy;
     }
 
-    public void setPermissionGranted(int permissionGranted) {
-        this.permissionGranted = permissionGranted;
+    public void setPermissionGrantedBy(List<String> permissionGrantedBy) {
+        this.permissionGrantedBy = permissionGrantedBy;
     }
 
-    public int getPermissionDenied() {
-        return permissionDenied;
+    public List<String> getPermissionRejectedBy() {
+        return permissionRejectedBy;
     }
 
-    public void setPermissionDenied(int permissionDenied) {
-        this.permissionDenied = permissionDenied;
+    public void setPermissionRejectedBy(List<String> permissionRejectedBy) {
+        this.permissionRejectedBy = permissionRejectedBy;
     }
 
     @Override

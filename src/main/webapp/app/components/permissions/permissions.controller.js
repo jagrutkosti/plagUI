@@ -10,14 +10,16 @@
         .module('plagUiApp')
         .controller('PermissionsController', PermissionsController);
 
-    PermissionsController.$inject = ['PermissionsService', 'AlertService', 'streamPermissionsAndRequests'];
+    PermissionsController.$inject = ['$state', 'PermissionsService', 'AlertService', 'streamPermissionsAndRequests', 'currentUserWalletAddress'];
 
-    function PermissionsController(PermissionsService, AlertService, streamPermissionsAndRequests) {
+    function PermissionsController($state, PermissionsService, AlertService, streamPermissionsAndRequests, currentUserWalletAddress) {
         var vm = this;
         vm.streamPermissionsAndRequests = streamPermissionsAndRequests;
         vm.requestPermission = requestPermission;
         vm.grantPermission = grantPermission;
         vm.rejectPermission = rejectPermission;
+        vm.currentUserWalletAddress = currentUserWalletAddress;
+        vm.hasUserResponded = hasUserResponded;
 
         /**
          * Creates a permission request for the user of the mentioned type and stream
@@ -41,11 +43,50 @@
         }
 
         function grantPermission(streamRequest) {
-
+            PermissionsService.grantPermission(streamRequest).then(function(response) {
+                if(response.success) {
+                    if(stream.writeRequestStatus === 1)
+                        stream.writeRequestStatus = 2;
+                    if(stream.adminRequestStatus === 1)
+                        stream.adminRequestStatus = 2;
+                    $state.reload();
+                    AlertService.success('Request granted successfully!');
+                }
+                else if(response.error)
+                    AlertService.error(response.error);
+                else
+                    AlertService.error(response);
+            })
         }
 
+        /**
+         * Rejects permission for this logged in admin.
+         * @param streamRequest the permission stream request to reject.
+         */
         function rejectPermission(streamRequest) {
+            PermissionsService.rejectPermission(streamRequest).then(function(response) {
+                if(response.success) {
+                    if(streamRequest.writeRequestStatus === 1)
+                        streamRequest.writeRequestStatus = 3;
+                    if(streamRequest.adminRequestStatus === 1)
+                        streamRequest.adminRequestStatus = 3;
+                    $state.reload();
+                    AlertService.success('Request rejected successfully!');
+                }
+                else if(response.error)
+                    AlertService.error(response.error);
+                else
+                    AlertService.error(response);
+            })
+        }
 
+        /**
+         * Utility method to check if the user has responded or not.
+         * @param checkList the list to check
+         * @returns {boolean}
+         */
+        function hasUserResponded(checkList) {
+            return checkList.indexOf(vm.currentUserWalletAddress) !== -1;
         }
     }
 })();

@@ -116,18 +116,35 @@ public class PermissionService {
         log.info("Service method to create a request object");
         StreamPermissionsDTO response = new StreamPermissionsDTO();
         //Get total number of current admins. For UI purposes, we need to show how many have granted or rejected
-        List<Permission> permissionForStream = getPermissions(streamObject.getStreamName() + ".*", null);
-        int adminCount = 0;
-        for(Permission permission : permissionForStream) {
-            if(permission.getType().equalsIgnoreCase("admin"))
-                adminCount++;
-        }
-        streamObject.setTotalAdmins(adminCount);
+        streamObject.setTotalAdmins(getTotalNumberOfAdminsInStream(streamObject.getStreamName()));
+
         if(type.equalsIgnoreCase("admin"))
             streamObject.setAdminRequestStatus(Constants.PERMISSION_REQUESTED);
         else if(type.equalsIgnoreCase("write"))
             streamObject.setWriteRequestStatus(Constants.PERMISSION_REQUESTED);
         response.setSingleObject(streamPermissionRequestsRepository.save(streamObject));
+        response.setSuccess("success");
+        return response;
+    }
+
+    /**
+     * Rejects permission from the logged in admin. Updates total number of admins, as it can change over time.
+     * If rejections are more than the consensus threshold, set the reject flag, else only increment the counter.
+     * @param streamRequestObject the stream request to reject
+     * @return StreamPermissionsDTO with saved DB item and status
+     */
+    public StreamPermissionsDTO rejectPermission(StreamPermissionRequests streamRequestObject, String loggedInUserWalletAddress) {
+        log.info("Service method to reject stream permission request");
+        streamRequestObject.setTotalAdmins(getTotalNumberOfAdminsInStream(streamRequestObject.getStreamName()));
+        streamRequestObject.getPermissionRejectedBy().add(loggedInUserWalletAddress);
+
+        if(streamRequestObject.getPermissionRejectedBy().size() / streamRequestObject.getTotalAdmins() > Constants.PERMISSION_CONSENSUS)
+            if(Constants.PERMISSION_REQUESTED == streamRequestObject.getWriteRequestStatus())
+                streamRequestObject.setWriteRequestStatus(Constants.PERMISSION_REJECTED);
+            else
+                streamRequestObject.setAdminRequestStatus(Constants.PERMISSION_REJECTED);
+        StreamPermissionsDTO response = new StreamPermissionsDTO();
+        response.setSingleObject(streamPermissionRequestsRepository.save(streamRequestObject));
         response.setSuccess("success");
         return response;
     }
@@ -160,5 +177,21 @@ public class PermissionService {
             e.printStackTrace();
             return Collections.EMPTY_LIST;
         }
+    }
+
+    /**
+     * To get the updated number of admins every time.
+     * @param streamName the stream for which to get admins
+     * @return number of admins for current stream
+     */
+    public int getTotalNumberOfAdminsInStream(String streamName) {
+        log.info("Get current total number of admins");
+        List<Permission> permissionForStream = getPermissions(streamName + ".*", null);
+        int adminCount = 0;
+        for(Permission permission : permissionForStream) {
+            if(permission.getType().equalsIgnoreCase("admin"))
+                adminCount++;
+        }
+        return adminCount;
     }
 }

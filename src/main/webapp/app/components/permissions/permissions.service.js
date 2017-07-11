@@ -63,6 +63,25 @@
             })
         };
 
+        /**
+         * Calls PermissionREST.java#rejectPermission() and handle call backs
+         * @param streamRequest the stream request to reject
+         */
+        service.rejectPermission = function(streamRequest) {
+            return Upload.upload({
+                url: API_URL + 'rejectPermission',
+                data: {
+                    streamRequest : angular.toJson(streamRequest)
+                }
+            }).then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            })
+        };
+
         return service;
     }
 })();

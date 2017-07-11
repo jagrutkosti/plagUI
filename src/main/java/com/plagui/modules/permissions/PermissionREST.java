@@ -63,4 +63,14 @@ public class PermissionREST {
         StreamPermissionRequests streamObject = gson.fromJson(streamItem, StreamPermissionRequests.class);
         return permissionService.requestPermission(streamObject, type);
     }
+
+    @PostMapping("/rejectPermission")
+    @ResponseBody
+    public StreamPermissionsDTO rejectPermission(@RequestParam("streamRequest") String streamRequest) {
+        log.info("REST request to reject a permission");
+        User loggedInUser = userService.getUserWithAuthorities();
+        Gson gson = new GsonBuilder().create();
+        StreamPermissionRequests streamRequestObject = gson.fromJson(streamRequest, StreamPermissionRequests.class);
+        return permissionService.rejectPermission(streamRequestObject, loggedInUser.getPlagchainWalletAddress());
+    }
 }

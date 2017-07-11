@@ -16,4 +16,5 @@ public interface StreamPermissionRequestsRepository extends MongoRepository<Stre
 
     List<StreamPermissionRequests> findAllByStreamNameAndWriteRequestStatus(String streamName, int writeStatus);
     List<StreamPermissionRequests> findAllByStreamNameAndAdminRequestStatus(String streamName, int adminStatus);
+    List<StreamPermissionRequests> findAllByStreamNameOrderByWriteRequestStatus(String streamName);
 }

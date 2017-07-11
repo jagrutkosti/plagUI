@@ -27,6 +27,11 @@
                     }
                 },
                 resolve: {
+                    currentUserWalletAddress : ['Principal', function(Principal) {
+                        return Principal.identity().then(function(user) {
+                            return user.walletAddress;
+                        });
+                    }]
                 }
             });
     }

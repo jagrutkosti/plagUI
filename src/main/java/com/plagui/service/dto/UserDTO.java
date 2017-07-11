@@ -51,6 +51,8 @@ public class UserDTO {
 
     private Instant lastModifiedDate;
 
+    private String walletAddress;
+
     private Set<String> authorities;
 
     public UserDTO() {
@@ -60,7 +62,7 @@ public class UserDTO {
     public UserDTO(User user) {
         this(user.getId(), user.getLogin(), user.getFirstName(), user.getLastName(),
             user.getEmail(), user.getActivated(), user.getImageUrl(), user.getLangKey(),
-            user.getCreatedBy(), user.getCreatedDate(), user.getLastModifiedBy(), user.getLastModifiedDate(),
+            user.getCreatedBy(), user.getCreatedDate(), user.getLastModifiedBy(), user.getLastModifiedDate(), user.getPlagchainWalletAddress(),
             user.getAuthorities().stream().map(Authority::getName)
                 .collect(Collectors.toSet()));
     }
@@ -68,7 +70,7 @@ public class UserDTO {
     public UserDTO(String id, String login, String firstName, String lastName,
         String email, boolean activated, String imageUrl, String langKey,
         String createdBy, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate,
-        Set<String> authorities) {
+        String walletAddress, Set<String> authorities) {
 
         this.id = id;
         this.login = login;
@@ -83,6 +85,7 @@ public class UserDTO {
         this.lastModifiedBy = lastModifiedBy;
         this.lastModifiedDate = lastModifiedDate;
         this.authorities = authorities;
+        this.walletAddress = walletAddress;
     }
 
     public String getId() {
@@ -147,6 +150,10 @@ public class UserDTO {
 
     public Set<String> getAuthorities() {
         return authorities;
+    }
+
+    public String getWalletAddress() {
+        return walletAddress;
     }
 
     @Override
