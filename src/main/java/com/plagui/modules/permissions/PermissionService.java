@@ -168,15 +168,15 @@ public class PermissionService {
 
         StreamPermissionsDTO response = new StreamPermissionsDTO();
         if(plagchainResponse != null && !plagchainResponse.isEmpty()) {
+            if(Constants.PERMISSION_REQUESTED == streamRequestObject.getWriteRequestStatus()) {
+                streamRequestObject.setWriteRequestStatus(Constants.PERMISSION_GRANTED);
+                streamRequestObject.setWrite(true);
+            }
             streamRequestObject.getPermissionGrantedBy().add(loggedInUserWalletAddress);
-            if(streamRequestObject.getPermissionGrantedBy().size() >= Math.floor(streamRequestObject.getTotalAdmins() * Constants.PERMISSION_CONSENSUS))
-                if(Constants.PERMISSION_REQUESTED == streamRequestObject.getWriteRequestStatus()) {
-                    streamRequestObject.setWriteRequestStatus(Constants.PERMISSION_GRANTED);
-                    streamRequestObject.setWrite(true);
-                } else {
-                    streamRequestObject.setAdminRequestStatus(Constants.PERMISSION_GRANTED);
-                    streamRequestObject.setAdmin(true);
-                }
+            if(streamRequestObject.getPermissionGrantedBy().size() >= Math.floor(streamRequestObject.getTotalAdmins() * Constants.PERMISSION_CONSENSUS)) {
+                streamRequestObject.setAdminRequestStatus(Constants.PERMISSION_GRANTED);
+                streamRequestObject.setAdmin(true);
+            }
             response.setSingleObject(streamPermissionRequestsRepository.save(streamRequestObject));
             response.setSuccess("success");
         } else
