@@ -45,7 +45,7 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Similar Documents in Published Work Stream</th>
+                                    <th>Document</th>
                                     <th>Similarity Percentage</th>
                                     <th>Contact Info</th>
                                     <th>*Request Author</th>
@@ -57,9 +57,11 @@
                                     <td>{{simDoc.similarityScore * 100 | number : 2}}%</td>
                                     <td>{{simDoc.contactInfo}}</td>
                                     <td>
-                                        <button class="btn btn-default" type="button" ng-click="vm.createPlagCheckRequest(simDoc)" ng-disabled="simDoc.disabled">
+                                        <button class="btn btn-default" type="button" ng-click="vm.createPlagCheckRequest(simDoc)" ng-disabled="simDoc.disabled"
+                                            ng-if="vm.currentUserWalletAddress !== simDoc.publisherWalletAddress">
                                             <span ng-class="simDoc.disabled ? 'glyphicon glyphicon-time' : '' " aria-hidden="true"> {{simDoc.disabled ? 'Requested' : 'Request'}}</span>
                                         </button>
+                                        <span ng-if="vm.currentUserWalletAddress === simDoc.publisherWalletAddress">Self</span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -73,7 +75,7 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Similar Documents in unpublished Work Stream</th>
+                                <th>Document</th>
                                 <th>Similarity Percentage</th>
                                 <th>Contact Info</th>
                                 <th>*Request Author</th>

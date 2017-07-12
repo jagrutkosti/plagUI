@@ -33,20 +33,20 @@
                     <td>
                         <div ng-if="request.writeRequestStatus === 1 || request.adminRequestStatus === 1">
                             <div ng-if="vm.hasUser(request.permissionGrantedBy)">
-                                <button class="btn btn-primary" disabled>
+                                <button class="btn btn-primary btn-sm" disabled>
                                     <span class="glyphicon glyphicon-ok"></span>
                                 </button>
                             </div>
                             <div ng-if="vm.hasUser(request.permissionRejectedBy)">
-                                <button class="btn btn-default" disabled>
+                                <button class="btn btn-default btn-sm" disabled>
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </button>
                             </div>
                             <div ng-if="!vm.hasUser(request.permissionRejectedBy) && !vm.hasUser(request.permissionGrantedBy)">
-                                <button class="btn btn-primary" ng-click="vm.grantPermission(request)" ng-disabled="stream.writeRequestStatus > 1 || stream.adminRequestStatus > 1">
+                                <button class="btn btn-primary btn-sm" ng-click="vm.grantPermission(request)" ng-disabled="stream.writeRequestStatus > 1 || stream.adminRequestStatus > 1">
                                     <span class="glyphicon glyphicon-ok"></span>
-                                </button>
-                                <button class="btn btn-default" ng-click="vm.rejectPermission(request)" ng-disabled="stream.writeRequestStatus > 1 || stream.adminRequestStatus > 1">
+                                </button>&nbsp;&nbsp;
+                                <button class="btn btn-default btn-sm" ng-click="vm.rejectPermission(request)" ng-disabled="stream.writeRequestStatus > 1 || stream.adminRequestStatus > 1">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </button>
                             </div>

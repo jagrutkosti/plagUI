@@ -11,15 +11,16 @@
         .module('plagUiApp')
         .controller('PlagCheckController', PlagCheckController);
 
-    PlagCheckController.$inject = ['$scope', 'PlagCheckService', 'AlertService', 'vcRecaptchaService'];
+    PlagCheckController.$inject = ['$scope', 'PlagCheckService', 'AlertService', 'vcRecaptchaService', 'currentUserWalletAddress'];
 
-    function PlagCheckController($scope, PlagCheckService, AlertService, vcRecaptchaService) {
+    function PlagCheckController($scope, PlagCheckService, AlertService, vcRecaptchaService, currentUserWalletAddress) {
         var vm = this;
         vm.checkForPlagiarism = checkForPlagiarism;
         vm.createPlagCheckRequest = createPlagCheckRequest;
         vm.setResponse = setResponse;
         vm.setWidgetId = setWidgetId;
         vm.cbExpiration = cbExpiration;
+        vm.currentUserWalletAddress = currentUserWalletAddress;
         vm.results = {};
         vm.plagCheckDocFileName = '';
         vm.recaptcha = {
