@@ -1,20 +1,23 @@
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <h4 align="center">Check Document Similarity</h4>
-        <jhi-alert>{{vm.data.error}}</jhi-alert>
+        <jhi-alert></jhi-alert>
+        <div ng-if="vm.results.listOfSimilarPublishedWork.length === 0 && vm.results.listOfSimilarUnpublishedWork.length === 0" class="alert alert-info">
+            <p align="center">No similar documents found!</p>
+        </div>
         <div class="col-sm-10">
             <p align="left">* Mandatory Fields</p>
         </div>
     </div>
     <div class="col-md-8 col-md-offset-2">
-        <form name="pdfPlagCheck" role="form" novalidate ng-submit="vm.checkForPlagiarism()" show-validation>
+        <form name="pdfPlagCheck" id="pdfPlagCheck" role="form" novalidate ng-submit="vm.checkForPlagiarism()" show-validation>
             <div class="form-group">
                 <label for="plagCheckDoc" class="control-label">File: *</label>
                 <input class="form-control" name="plagCheckDoc" id="plagCheckDoc" ng-model="vm.data.plagCheckDoc"
                        type="file" accept=".pdf" ngf-select ngf-max-size="50MB" required>
                 <p class="help-block">Please upload only .pdf file.</p>
-                <div ng-show="pdfPlagCheck.plagCheckDoc.$dirty && pdfPlagCheck.plagCheckDoc.$invalid">
-                    <p class="help-block" ng-show="pdfPlagCheck.plagCheckDoc.$error.required">Please select a pdf file.</p>
+                <div ng-if="pdfPlagCheck.plagCheckDoc.$dirty && pdfPlagCheck.plagCheckDoc.$invalid">
+                    <p class="help-block" ng-if="pdfPlagCheck.plagCheckDoc.$error.required">Please select a pdf file.</p>
                 </div>
             </div>
             <div class="form-group">
@@ -30,11 +33,13 @@
         </form>
     </div>
 </div>
-<br><br>
-<div class="row" ng-show="vm.data.success">
+
+<br/><br/>
+
+<div class="row" ng-if="vm.results.listOfSimilarPublishedWork.length > 0 || vm.results.listOfSimilarUnpublishedWork.length > 0">
     <div class="col-md-8 col-md-offset-2">
         <uib-accordion close-others="false">
-            <div ng-show="vm.results.listOfSimilarPublishedWork.length > 0">
+            <div ng-if="vm.results.listOfSimilarPublishedWork.length > 0">
                 <div uib-accordion-group class="panel-primary" heading="Similar Documents in Published Work stream" is-open="true">
                     <div class="panel panel-default">
                         <table class="table table-striped">
@@ -62,7 +67,7 @@
                     </div>
                 </div>
             </div>
-            <div ng-show="vm.results.listOfSimilarUnpublishedWork.length > 0">
+            <div ng-if="vm.results.listOfSimilarUnpublishedWork.length > 0">
                 <div uib-accordion-group class="panel-primary" heading="Similar Documents in Unpublished Work stream" is-open="false">
                     <div class="panel panel-default">
                         <table class="table table-striped">
@@ -91,10 +96,7 @@
                 </div>
             </div>
         </uib-accordion>
-        <div ng-show="vm.results.listOfSimilarPublishedWork.length === 0 && vm.results.listOfSimilarUnpublishedWork.length === 0" class="alert alert-info">
-            <p align="center">No similar documents found!</p>
-        </div>
-        <div class="panel panel-info panel-body" ng-show="vm.results.listOfSimilarPublishedWork.length > 0 || vm.results.listOfSimilarUnpublishedWork.length > 0">
+        <div class="panel panel-info panel-body" ng-if="vm.results.listOfSimilarPublishedWork.length > 0 || vm.results.listOfSimilarUnpublishedWork.length > 0">
             <p align="justify">
                 <strong>* Request Author:</strong>
                 You can request the author of the document to upload more hashes of that particular document.

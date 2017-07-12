@@ -11,9 +11,9 @@
         .module('plagUiApp')
         .controller('PlagCheckController', PlagCheckController);
 
-    PlagCheckController.$inject = ['PlagCheckService', 'AlertService', 'vcRecaptchaService'];
+    PlagCheckController.$inject = ['$scope', 'PlagCheckService', 'AlertService', 'vcRecaptchaService'];
 
-    function PlagCheckController(PlagCheckService, AlertService, vcRecaptchaService) {
+    function PlagCheckController($scope, PlagCheckService, AlertService, vcRecaptchaService) {
         var vm = this;
         vm.checkForPlagiarism = checkForPlagiarism;
         vm.createPlagCheckRequest = createPlagCheckRequest;
@@ -40,8 +40,6 @@
                 if(response.success) {
                     vm.results = angular.fromJson(response.resultJsonString);
                     vm.plagCheckDocFileName = response.plagCheckDocFileName;
-                    vm.data.success = response.success;
-                    vm.cbExpiration();
                 } else {
                     vm.data = {};
                     if(response.error)
@@ -50,7 +48,9 @@
                         vm.data.error = response;
                     AlertService.error(vm.data.error);
                 }
-                vcRecaptchaService.reload(vm.recaptcha.widgetId);
+                vm.data = {};
+                $scope.pdfPlagCheck.$setPristine();
+                vm.cbExpiration();
             });
         }
 
