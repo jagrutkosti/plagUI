@@ -118,10 +118,13 @@ public class PermissionService {
         //Get total number of current admins. For UI purposes, we need to show how many have granted or rejected
         streamObject.setTotalAdmins(getTotalNumberOfAdminsInStream(streamObject.getStreamName()));
 
-        if(type.equalsIgnoreCase("admin"))
+        if(type.equalsIgnoreCase("admin")) {
             streamObject.setAdminRequestStatus(Constants.PERMISSION_REQUESTED);
-        else if(type.equalsIgnoreCase("write"))
+            streamObject.setWriteRequestStatus(0);
+        } else if(type.equalsIgnoreCase("write")) {
             streamObject.setWriteRequestStatus(Constants.PERMISSION_REQUESTED);
+            streamObject.setAdminRequestStatus(0);
+        }
         response.setSingleObject(streamPermissionRequestsRepository.save(streamObject));
         response.setSuccess("success");
         return response;
@@ -131,6 +134,7 @@ public class PermissionService {
      * Rejects permission from the logged in admin. Updates total number of admins, as it can change over time.
      * If rejections are more than the consensus threshold, set the reject flag, else only increment the counter.
      * @param streamRequestObject the stream request to reject
+     * @param loggedInUserWalletAddress the admin who will execute the query
      * @return StreamPermissionsDTO with saved DB item and status
      */
     public StreamPermissionsDTO rejectPermission(StreamPermissionRequests streamRequestObject, String loggedInUserWalletAddress) {
@@ -138,7 +142,7 @@ public class PermissionService {
         streamRequestObject.setTotalAdmins(getTotalNumberOfAdminsInStream(streamRequestObject.getStreamName()));
         streamRequestObject.getPermissionRejectedBy().add(loggedInUserWalletAddress);
 
-        if(streamRequestObject.getPermissionRejectedBy().size() / streamRequestObject.getTotalAdmins() > Constants.PERMISSION_CONSENSUS)
+        if(streamRequestObject.getPermissionRejectedBy().size() > Math.ceil(streamRequestObject.getTotalAdmins() * Constants.PERMISSION_CONSENSUS))
             if(Constants.PERMISSION_REQUESTED == streamRequestObject.getWriteRequestStatus())
                 streamRequestObject.setWriteRequestStatus(Constants.PERMISSION_REJECTED);
             else
@@ -146,6 +150,37 @@ public class PermissionService {
         StreamPermissionsDTO response = new StreamPermissionsDTO();
         response.setSingleObject(streamPermissionRequestsRepository.save(streamRequestObject));
         response.setSuccess("success");
+        return response;
+    }
+
+    /**
+     * Grants permission from the logged in user to the user who made the request. Updates total number of admins as it can change over time.
+     * If grants are more or equal to consensus threshold, set the grant flag, else increment the counter.
+     * @param streamRequestObject the stream request to grant
+     * @param loggedInUserWalletAddress the admin who will execute the query
+     * @return StreamPermissionsDTO with saved DB item and status
+     */
+    public StreamPermissionsDTO grantPermission(StreamPermissionRequests streamRequestObject, String loggedInUserWalletAddress) {
+        log.info("Service method to grant stream permission request");
+        streamRequestObject.setTotalAdmins(getTotalNumberOfAdminsInStream(streamRequestObject.getStreamName()));
+        String permissionType = Constants.PERMISSION_REQUESTED == streamRequestObject.getWriteRequestStatus() ? "write" : "*";
+        String plagchainResponse = grantPermissionInChain(loggedInUserWalletAddress, streamRequestObject.getRequesterWalletAddress(), streamRequestObject.getStreamName(), permissionType);
+
+        StreamPermissionsDTO response = new StreamPermissionsDTO();
+        if(plagchainResponse != null && !plagchainResponse.isEmpty()) {
+            streamRequestObject.getPermissionGrantedBy().add(loggedInUserWalletAddress);
+            if(streamRequestObject.getPermissionGrantedBy().size() >= Math.floor(streamRequestObject.getTotalAdmins() * Constants.PERMISSION_CONSENSUS))
+                if(Constants.PERMISSION_REQUESTED == streamRequestObject.getWriteRequestStatus()) {
+                    streamRequestObject.setWriteRequestStatus(Constants.PERMISSION_GRANTED);
+                    streamRequestObject.setWrite(true);
+                } else {
+                    streamRequestObject.setAdminRequestStatus(Constants.PERMISSION_GRANTED);
+                    streamRequestObject.setAdmin(true);
+                }
+            response.setSingleObject(streamPermissionRequestsRepository.save(streamRequestObject));
+            response.setSuccess("success");
+        } else
+            response.setError(plagchainResponse);
         return response;
     }
 
@@ -177,6 +212,24 @@ public class PermissionService {
             e.printStackTrace();
             return Collections.EMPTY_LIST;
         }
+    }
+
+    /**
+     * Grants permission to an address using admin address for given stream and permission type
+     * @param fromAddress admin wallet address to grant permission
+     * @param toAddress the address which requested the permission
+     * @param streamName stream for which permission request was made
+     * @param permissionType the type of permission i.e. admin, write
+     * @return String transaction ID if the process was successful
+     */
+    public String grantPermissionInChain(String fromAddress, String toAddress, String streamName, String permissionType) {
+        String response = "";
+        try {
+            response = GrantCommand.grantFrom(fromAddress, toAddress, streamName + "." + permissionType);
+        } catch (MultichainException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     /**

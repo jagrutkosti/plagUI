@@ -19,7 +19,7 @@
         vm.grantPermission = grantPermission;
         vm.rejectPermission = rejectPermission;
         vm.currentUserWalletAddress = currentUserWalletAddress;
-        vm.hasUserResponded = hasUserResponded;
+        vm.hasUser = hasUser;
 
         /**
          * Creates a permission request for the user of the mentioned type and stream
@@ -31,8 +31,10 @@
                 if(response.success) {
                     if(type === 'write')
                         stream.writeRequestStatus = 1;
-                    else if(type === 'admin')
+                    else if(type === 'admin') {
                         stream.adminRequestStatus = 1;
+                        stream.writeRequestStatus = 1;
+                    }
                     AlertService.success('Request sent successfully!');
                 }
                 else if(response.error)
@@ -42,13 +44,17 @@
             })
         }
 
+        /**
+         * Grants permission from logged in admin for a request
+         * @param streamRequest the permission request to grant
+         */
         function grantPermission(streamRequest) {
             PermissionsService.grantPermission(streamRequest).then(function(response) {
                 if(response.success) {
-                    if(stream.writeRequestStatus === 1)
-                        stream.writeRequestStatus = 2;
-                    if(stream.adminRequestStatus === 1)
-                        stream.adminRequestStatus = 2;
+                    if(streamRequest.writeRequestStatus === 1)
+                        streamRequest.writeRequestStatus = 2;
+                    if(streamRequest.adminRequestStatus === 1)
+                        streamRequest.adminRequestStatus = 2;
                     $state.reload();
                     AlertService.success('Request granted successfully!');
                 }
@@ -60,7 +66,7 @@
         }
 
         /**
-         * Rejects permission for this logged in admin.
+         * Rejects permission from logged in admin for a request.
          * @param streamRequest the permission stream request to reject.
          */
         function rejectPermission(streamRequest) {
@@ -85,7 +91,7 @@
          * @param checkList the list to check
          * @returns {boolean}
          */
-        function hasUserResponded(checkList) {
+        function hasUser(checkList) {
             return checkList.indexOf(vm.currentUserWalletAddress) !== -1;
         }
     }

@@ -82,6 +82,25 @@
             })
         };
 
+        /**
+         * Calls PermissionREST.java#grantPermission() and handle call backs
+         * @param streamRequest the stream request to reject
+         */
+        service.grantPermission = function(streamRequest) {
+            return Upload.upload({
+                url: API_URL + 'grantPermission',
+                data: {
+                    streamRequest : angular.toJson(streamRequest)
+                }
+            }).then(function(response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            })
+        };
+
         return service;
     }
 })();
