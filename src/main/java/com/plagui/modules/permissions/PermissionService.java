@@ -163,25 +163,23 @@ public class PermissionService {
     public StreamPermissionsDTO grantPermission(StreamPermissionRequests streamRequestObject, String loggedInUserWalletAddress) {
         log.info("Service method to grant stream permission request");
         streamRequestObject.setTotalAdmins(getTotalNumberOfAdminsInStream(streamRequestObject.getStreamName()));
-        String permissionType = Constants.PERMISSION_REQUESTED == streamRequestObject.getWriteRequestStatus() ? "write" : "admin";
-        String plagchainResponse = grantPermissionInChain(loggedInUserWalletAddress, streamRequestObject.getRequesterWalletAddress(), streamRequestObject.getStreamName(), permissionType);
-
         StreamPermissionsDTO response = new StreamPermissionsDTO();
-        if(plagchainResponse != null && !plagchainResponse.isEmpty()) {
-            if(Constants.PERMISSION_REQUESTED == streamRequestObject.getWriteRequestStatus()) {
+
+        streamRequestObject.getPermissionGrantedBy().add(loggedInUserWalletAddress);
+        if(streamRequestObject.getPermissionGrantedBy().size() >= Math.floor(streamRequestObject.getTotalAdmins() * Constants.PERMISSION_CONSENSUS)) {
+            if(Constants.PERMISSION_REQUESTED == streamRequestObject.getAdminRequestStatus()) {
+                grantPermissionInChain(loggedInUserWalletAddress, streamRequestObject.getRequesterWalletAddress(), streamRequestObject.getStreamName(), "admin");
+                streamRequestObject.setAdminRequestStatus(Constants.PERMISSION_GRANTED);
+                streamRequestObject.setAdmin(true);
+            } else {
                 streamRequestObject.setWriteRequestStatus(Constants.PERMISSION_GRANTED);
                 streamRequestObject.setWrite(true);
             }
-            streamRequestObject.getPermissionGrantedBy().add(loggedInUserWalletAddress);
-            if(streamRequestObject.getPermissionGrantedBy().size() >= Math.floor(streamRequestObject.getTotalAdmins() * Constants.PERMISSION_CONSENSUS)) {
-                grantPermissionInChain(loggedInUserWalletAddress, streamRequestObject.getRequesterWalletAddress(), streamRequestObject.getStreamName(), "write");
-                streamRequestObject.setAdminRequestStatus(Constants.PERMISSION_GRANTED);
-                streamRequestObject.setAdmin(true);
-            }
-            response.setSingleObject(streamPermissionRequestsRepository.save(streamRequestObject));
-            response.setSuccess("success");
-        } else
-            response.setError(plagchainResponse);
+            grantPermissionInChain(loggedInUserWalletAddress, streamRequestObject.getRequesterWalletAddress(), streamRequestObject.getStreamName(), "write");
+        }
+        response.setSingleObject(streamPermissionRequestsRepository.save(streamRequestObject));
+        response.setSuccess("success");
+
         return response;
     }
 
