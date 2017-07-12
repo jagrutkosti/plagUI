@@ -11,7 +11,7 @@
                 </div>
             </div>
             <div class="col-md-8 col-md-offset-2">
-                <form name="pdfForm" role="form" novalidate ng-submit="vm.uploadDocForBlockchain()" show-validation>
+                <form name="pdfForm" id="pdfForm" role="form" novalidate ng-submit="vm.uploadDocForBlockchain()" show-validation>
                     <div class="form-group">
                         <label class="control-label" for="fileToHash">File * : </label>
                         <input type="file" class="form-control" id="fileToHash" name="fileToHash" ng-model="vm.fileData.fileToHash"
@@ -49,7 +49,7 @@
                             <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>
                         </div>
                     </div>
-                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
+                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(1)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
                     <button type="submit" ng-disabled="pdfForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>
@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="col-md-8 col-md-offset-2">
-                <form role="form" name="textForm" novalidate ng-submit="vm.uploadTextForBlockchain()" show-validation>
+                <form role="form" name="textForm" id="textForm" novalidate ng-submit="vm.uploadTextForBlockchain()" show-validation>
                     <div class="form-group">
                         <label for="plainText" class="control-label">Text: *</label>
                         <textarea class="form-control" name="plainText" id="plainText" ng-model="vm.fileData.textToHash" ng-minlength=50 required></textarea>
@@ -118,7 +118,7 @@
                             <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>
                         </div>
                     </div>
-                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
+                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(2)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
                     <button type="submit" ng-disabled="textForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>
@@ -138,7 +138,7 @@
                 </div>
             </div>
             <div class="col-md-8 col-md-offset-2">
-                <form name="imageForm" role="form" novalidate ng-submit="vm.uploadImageForBlockchain()" show-validation>
+                <form name="imageForm" id="imageForm" role="form" novalidate ng-submit="vm.uploadImageForBlockchain()" show-validation>
                     <div class="form-group">
                         <label for="imageToHash" class="control-label">Image: *</label>
                         <input class="form-control" id="imageToHash" name="imageToHash" ng-model="vm.fileData.imageToHash"
@@ -167,7 +167,7 @@
                             </p>
                         </div>
                     </div>
-                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(widgetId)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
+                    <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(3)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
                     <button type="submit" ng-disabled="imageForm.$invalid" class="btn btn-primary">Submit</button>
                 </form>

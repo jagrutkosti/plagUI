@@ -46,7 +46,7 @@
                         vm.fileData.error = response.error;
                     else
                         vm.fileData.error = response;
-                    vcRecaptchaService.reload(vm.recaptcha.widgetId);
+                    vm.cbExpiration();
                     AlertService.error(vm.fileData.error);
                 }
             });
@@ -66,7 +66,7 @@
                         vm.fileData.error = response.error;
                     else
                         vm.fileData.error = response;
-                    vcRecaptchaService.reload(vm.recaptcha.widgetId);
+                    vm.cbExpiration();
                     AlertService.error(vm.fileData.error);
                 }
             });
@@ -86,7 +86,7 @@
                         vm.fileData.error = response.error;
                     else
                         vm.fileData.error = response;
-                    vcRecaptchaService.reload(vm.recaptcha.widgetId);
+                    vm.cbExpiration();
                     AlertService.error(vm.fileData.error);
                 }
             });
