@@ -4,7 +4,7 @@
             <h1>Registration</h1>
 
             <div class="alert alert-success" ng-show="vm.success">
-                <strong>Registration saved!</strong> Please check your email for confirmation.
+                <strong>Registration successful!</strong>
             </div>
 
             <div class="alert alert-danger" ng-show="vm.error">
@@ -115,9 +115,6 @@
                 <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Register</button>
             </form>
             <p></p>
-            <div class="alert alert-warning">
-                If you want to <a class="alert-link" href="" ng-click="vm.login()">sign in</a>, you can try the default accounts:<br/>- Administrator (login="admin" and password="admin") <br/>- User (login="user" and password="user").
-            </div>
         </div>
     </div>
 </div>

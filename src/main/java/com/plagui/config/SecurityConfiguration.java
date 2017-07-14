@@ -133,6 +133,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .disable()
         .and()
             .authorizeRequests()
+            .antMatchers("/api/plagchain/getPermissionsAndRequestsForUser").permitAll()
+            .antMatchers("/api/plagchain/getPendingNumberOfRequests").permitAll()
             .antMatchers("/api/register").permitAll()
             .antMatchers("/api/activate").permitAll()
             .antMatchers("/api/authenticate").permitAll()

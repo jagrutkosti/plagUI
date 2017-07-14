@@ -38,34 +38,37 @@ public class PermissionService {
     public StreamPermissionsDTO getPermissionsForUser(User loggedInUser) {
         log.info("Service method to get permissions for: {}", loggedInUser.getLogin());
         StreamPermissionsDTO response = new StreamPermissionsDTO();
-        List<StreamPermissionRequests> allPermissionForUser = new ArrayList<>();
-
-        //Get all streams available in the blockchain
-        List<Stream> allStreams = getAllAvailableStreams();
-        if(!allStreams.isEmpty()) {
-            for(Stream stream : allStreams) {
-                StreamPermissionRequests item = new StreamPermissionRequests();
-                item.setRequesterWalletAddress(loggedInUser.getPlagchainWalletAddress());
-                item.setRequesterLogin(loggedInUser.getLogin());
-                item.setStreamName(stream.getName());
-                //For each stream, if it is not public, check if the user has admin or write permissions and update
-                if(!stream.isOpen()) {
-                    List<Permission> permissionForStream = getPermissions(stream.getName() + ".*", loggedInUser.getPlagchainWalletAddress());
-                    if(!permissionForStream.isEmpty()) {
-                        for(Permission permission : permissionForStream) {
-                            if(permission.getType().equalsIgnoreCase("write"))
-                                item.setWrite(true);
-                            else if(permission.getType().equalsIgnoreCase("admin"))
-                                item.setAdmin(true);
+        if(loggedInUser.getPlagchainWalletAddress() != null && !loggedInUser.getPlagchainWalletAddress().isEmpty()) {
+            List<StreamPermissionRequests> allPermissionForUser = new ArrayList<>();
+            //Get all streams available in the blockchain
+            List<Stream> allStreams = getAllAvailableStreams();
+            if(!allStreams.isEmpty()) {
+                for(Stream stream : allStreams) {
+                    StreamPermissionRequests item = new StreamPermissionRequests();
+                    item.setRequesterWalletAddress(loggedInUser.getPlagchainWalletAddress());
+                    item.setRequesterLogin(loggedInUser.getLogin());
+                    item.setStreamName(stream.getName());
+                    //For each stream, if it is not public, check if the user has admin or write permissions and update
+                    if(!stream.isOpen()) {
+                        List<Permission> permissionForStream = getPermissions(stream.getName() + ".*", loggedInUser.getPlagchainWalletAddress());
+                        if(!permissionForStream.isEmpty()) {
+                            for(Permission permission : permissionForStream) {
+                                if(permission.getType().equalsIgnoreCase("write"))
+                                    item.setWrite(true);
+                                else if(permission.getType().equalsIgnoreCase("admin"))
+                                    item.setAdmin(true);
+                            }
                         }
-                    }
-                } else
-                    item.setWrite(true);
-                allPermissionForUser.add(item);
+                    } else
+                        item.setWrite(true);
+                    allPermissionForUser.add(item);
+                }
             }
+            response.setAllStreamPermissionRequests(allPermissionForUser);
+            response.setSuccess("success");
+        } else {
+            response.setError("Your account is not associated with any wallet address.");
         }
-        response.setAllStreamPermissionRequests(allPermissionForUser);
-        response.setSuccess("success");
         return response;
     }
 
@@ -78,25 +81,26 @@ public class PermissionService {
     public StreamPermissionsDTO getUserRequests(StreamPermissionsDTO permissionsForUser) {
         log.info("Service method to get user requests");
         List<StreamPermissionRequests> requestsForAdmin = new ArrayList<>();
+        if(permissionsForUser.getAllStreamPermissionRequests() != null && !permissionsForUser.getAllStreamPermissionRequests().isEmpty()) {
+            for (StreamPermissionRequests permission : permissionsForUser.getAllStreamPermissionRequests()) {
+                //If the user has admin rights, fetch all request for that stream and add it as requestsForAdmin
+                if (permission.isAdmin()) {
+                    requestsForAdmin.addAll(streamPermissionRequestsRepository
+                        .findAllByStreamNameAndAdminRequestStatus(permission.getStreamName(), Constants.PERMISSION_REQUESTED));
+                    requestsForAdmin.addAll(streamPermissionRequestsRepository
+                        .findAllByStreamNameAndWriteRequestStatus(permission.getStreamName(), Constants.PERMISSION_REQUESTED));
+                } else {
+                    //If user is not an admin, check if there is any admin request made and update the status accordingly
+                    Optional<StreamPermissionRequests> adminDbItem = streamPermissionRequestsRepository
+                        .findOneByRequesterWalletAddressAndStreamNameAndAdminRequestStatus(permission.getRequesterWalletAddress(), permission.getStreamName(), Constants.PERMISSION_REQUESTED);
+                    adminDbItem.ifPresent(streamPermissionRequests -> permission.setAdminRequestStatus(streamPermissionRequests.getAdminRequestStatus()));
 
-        for(StreamPermissionRequests permission : permissionsForUser.getAllStreamPermissionRequests()) {
-            //If the user has admin rights, fetch all request for that stream and add it as requestsForAdmin
-            if(permission.isAdmin()) {
-                requestsForAdmin.addAll(streamPermissionRequestsRepository
-                    .findAllByStreamNameAndAdminRequestStatus(permission.getStreamName(), Constants.PERMISSION_REQUESTED));
-                requestsForAdmin.addAll(streamPermissionRequestsRepository
-                    .findAllByStreamNameAndWriteRequestStatus(permission.getStreamName(), Constants.PERMISSION_REQUESTED));
-            } else {
-                //If user is not an admin, check if there is any admin request made and update the status accordingly
-                Optional<StreamPermissionRequests> adminDbItem = streamPermissionRequestsRepository
-                    .findOneByRequesterWalletAddressAndStreamNameAndAdminRequestStatus(permission.getRequesterWalletAddress(), permission.getStreamName(), Constants.PERMISSION_REQUESTED);
-                adminDbItem.ifPresent(streamPermissionRequests -> permission.setAdminRequestStatus(streamPermissionRequests.getAdminRequestStatus()));
-
-                //If the user does not have write permission, check if they made any write requests.
-                if (!permission.isWrite()) {
-                    Optional<StreamPermissionRequests> writeDbItem = streamPermissionRequestsRepository
-                        .findOneByRequesterWalletAddressAndStreamNameAndWriteRequestStatus(permission.getRequesterWalletAddress(), permission.getStreamName(), Constants.PERMISSION_REQUESTED);
-                    writeDbItem.ifPresent(streamPermissionRequests -> permission.setWriteRequestStatus(streamPermissionRequests.getWriteRequestStatus()));
+                    //If the user does not have write permission, check if they made any write requests.
+                    if (!permission.isWrite()) {
+                        Optional<StreamPermissionRequests> writeDbItem = streamPermissionRequestsRepository
+                            .findOneByRequesterWalletAddressAndStreamNameAndWriteRequestStatus(permission.getRequesterWalletAddress(), permission.getStreamName(), Constants.PERMISSION_REQUESTED);
+                        writeDbItem.ifPresent(streamPermissionRequests -> permission.setWriteRequestStatus(streamPermissionRequests.getWriteRequestStatus()));
+                    }
                 }
             }
         }
