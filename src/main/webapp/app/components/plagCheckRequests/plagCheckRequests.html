@@ -4,11 +4,7 @@
             <h4>Plagiarism Check Requests</h4>
             <jhi-alert></jhi-alert>
         </div>
-        <div ng-if="vm.allRequests.requestsFromUser.length > 0">
-            <p class="alert alert-info" align="center">
-                <strong>Note: </strong>Please allow pop-ups for this page before submitting your document. (Available after the author has accepted your request)
-            </p>
-        </div>
+
         <uib-accordion close-others="false">
             <div uib-accordion-group class="panel-primary" ng-show="vm.allRequests.requestsToUser.length > 0"
                  heading="From other users" is-open="true" is-disabled="false">
@@ -54,6 +50,9 @@
             <br/>
             <div uib-accordion-group class="panel-primary" ng-show="vm.allRequests.requestsFromUser.length > 0"
                  heading="From me" is-open="true" is-disabled="false">
+                <p class="alert alert-info" align="center">
+                    <strong>Note: </strong>Please allow pop-ups for this page before submitting your document. (Available after the author has accepted your request)
+                </p>
                 <div class="panel panel-default">
                     <table class="table table-striped">
                         <thead>
