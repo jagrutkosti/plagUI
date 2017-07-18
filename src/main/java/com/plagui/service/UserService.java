@@ -13,6 +13,7 @@ import com.plagui.service.dto.UserDTO;
 
 import multichain.command.AddressCommand;
 import multichain.command.ChainCommand;
+import multichain.command.GrantCommand;
 import multichain.command.MultichainException;
 import multichain.object.Address;
 import org.slf4j.Logger;
@@ -288,6 +289,7 @@ public class UserService {
         Address newPlagchainAddress = new Address();
         try {
             newPlagchainAddress = AddressCommand.getNewAddress();
+            GrantCommand.grant(newPlagchainAddress.getAddress(), "unpublishedwork.write");
         } catch (MultichainException e) {
             e.printStackTrace();
         }
