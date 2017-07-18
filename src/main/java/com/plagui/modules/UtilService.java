@@ -14,6 +14,7 @@ import com.plagui.modules.streamformats.ChainData;
 import multichain.command.MultichainException;
 import multichain.command.StreamCommand;
 import multichain.object.StreamItem;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.security.MessageDigest;
@@ -51,14 +53,22 @@ public class UtilService {
      *
      * Initialize random numbers from file. The random numbers used should always be the same for all documents for
      * MinHash algorithm to work. So, if you delete the random-number.txt file, you need to re-index all documents.
+     *
+     * Read the random number file and populate the randomNumbers int array.
+     * @throws IOException if error while fetching or reading file
      */
-    public UtilService() {
-        File randomNumbersFiles = new File(Constants.RANDOM_NUMBERS_FILE);
+    @PostConstruct
+    public void populateRandomNumbers() {
+        log.info("Populating random numbers from file");
+        List<String> randomNumAsString;
         try {
-            if(!randomNumbersFiles.exists())
-                writeRandomNumbersToFile();
-            populateRandomNumbers();
-        } catch (IOException e) {
+            randomNumAsString = IOUtils.readLines(this.getClass().getResourceAsStream(Constants.RANDOM_NUMBERS_FILE), "UTF-8");
+            int i = 0;
+            for(String number : randomNumAsString) {
+                randomNumbers[i] = Integer.parseInt(number);
+                i++;
+            }
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
     }
@@ -280,26 +290,6 @@ public class UtilService {
 
         Gson gson = new GsonBuilder().create();
         return DatatypeConverter.printHexBinary(gson.toJson(chainData, ChainData.class).getBytes());
-    }
-
-    /**
-     * Read the random number file and populate the randomNumbers int array.
-     * @throws IOException if error while fetching or reading file
-     */
-    public void populateRandomNumbers() throws IOException {
-        log.info("Populating random numbers from file");
-        BufferedReader bufferedReader;
-        FileReader fileReader;
-        String number;
-        int i = 0;
-        fileReader = new FileReader(Constants.RANDOM_NUMBERS_FILE);
-        bufferedReader = new BufferedReader(fileReader);
-        while((number = bufferedReader.readLine()) != null) {
-            randomNumbers[i] = Integer.parseInt(number);
-            i++;
-        }
-        bufferedReader.close();
-        fileReader.close();
     }
 
     /**
