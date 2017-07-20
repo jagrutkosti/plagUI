@@ -1,35 +1,56 @@
 <div ng-cloak>
-    <div class="row">
-        <div class="col-md-4">
-            <!--<span class="hipster img-responsive img-rounded"></span>-->
-        </div>
-        <div class="col-md-8">
-            <h1>Welcome!</h1>
-            <p class="lead">Plagiarism Detection using Blockchain.</p>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="page-header text-center">
+                <h2>Welcome to Plagchain!</h2>
+                <h4>Privacy preserving, local similarity assessment between documents using Blockchain.</h4>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3" ng-switch="vm.isAuthenticated()">
+                    <div class="alert alert-success text-center" ng-switch-when="true">
+                        You are logged in as user "{{vm.account.login}}".
+                    </div>
 
-            <div ng-switch="vm.isAuthenticated()">
-                <div class="alert alert-success" ng-switch-when="true">
-                    You are logged in as user "{{vm.account.login}}".
-                </div>
-
-                <div class="alert alert-warning" ng-switch-when="false">
-                    You don't have an account yet? <a class="alert-link" ui-sref="register">Register a new account</a>
+                    <div class="alert alert-warning text-center" ng-switch-when="false">
+                        You don't have an account yet? <a class="alert-link" ui-sref="register">Register a new account</a>
+                    </div>
                 </div>
             </div>
-
-            <p>
-                You can:
-            </p>
-
-            <ul>
-                <li>Check for plagiarism in a document (Min-Hash Algorithm).</li>
-                <li>Upload a document hash for timestamping using Bitcoin Blockchain.</li>
-                <li>
-                    <ul>
-                        <li>By uploading more document hashes, you help to expand look-up database, which will in turn improve plagiarism detection.</li>
-                    </ul>
-                </li>
-            </ul>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="container-fluid">
+                <h3>What is Plagchain?</h3>
+                <p><strong>Plagchain</strong> is a custom blockchain created from <a href="https://www.multichain.com" target="_blank">Multichain</a> to help academia: </p>
+                <ul>
+                    <li>Build bigger source of publications for plagiarism detection <em>without exposing</em> the content of the documents.</li>
+                    <li>Timestamp research publications or on-going research work and ideas using Bitcoin Blockchain. (Credits: <a href="https://app.originstamp.org" target="_blank">Originstamp</a>)</li>
+                    <li>Find text in your document that are similar to text in other documents.</li>
+                    <li>Decentralized storage of document fingerprints. We only perform computations!</li>
+                </ul>
+                <!--<br/>
+                <p>To become a part of the decentralized network (<em>Plagchain</em>), add a mining node by:</p>
+                <ul>
+                    <li>Installing Multichain (Version 1.0, Beta 1.0) from <a href="https://www.multichain.com/download-install/" target="_blank">here</a>, on your device.</li>
+                    <li>Run: <samp>multichaind plagchain@192.52.2.34:4407 -daemon</samp></li>
+                </ul>
+                <p>That's it! You are now a part of the decentralized blockchain!</p>-->
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="container-fluid">
+                <h3>Document Similarity - Process</h3>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="container-fluid">
+                <h3>Timestamp Document - Process</h3>
+            </div>
         </div>
     </div>
 </div>
