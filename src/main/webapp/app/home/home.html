@@ -24,7 +24,7 @@
                 <h3>What is Plagchain?</h3>
                 <p><strong>Plagchain</strong> is a custom blockchain created from <a href="https://www.multichain.com" target="_blank">Multichain</a> to help academia: </p>
                 <ul>
-                    <li>Build bigger source of publications for plagiarism detection <em>without exposing</em> the content of the documents.</li>
+                    <li>Build larger source of publications' fingerprints for plagiarism detection <em>without exposing</em> the content of the documents.</li>
                     <li>Timestamp research publications or on-going research work and ideas using Bitcoin Blockchain. (Credits: <a href="https://app.originstamp.org" target="_blank">Originstamp</a>)</li>
                     <li>Find text in your document that are similar to text in other documents.</li>
                     <li>Decentralized storage of document fingerprints. We only perform computations!</li>
@@ -42,14 +42,50 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="container-fluid">
-                <h3>Document Similarity - Process</h3>
+                <h3>Document Similarity</h3>
+                <h4>Steps: </h4>
+                <ul>
+                    <li>User can test a document (e.g. "Test Doc") for similarity with existing document(s) fingerprints in Plagchain using <strong>Check Similarity</strong> menu item.</li>
+                    <li>If there are any similar document(s) found (e.g. "Doc1"), user can further use <strong>Request</strong> option for finding which part of their document is similar.</li>
+                    <li>The user who timestamped the document in Plagchain (author/publisher), will receive a notification about the request.</li>
+                    <li>All users can track request status from <strong>Doc Requests</strong> menu item.</li>
+                    <li>If the author/publisher accepts the request, they need to submit the same document (i.e. "Doc1") for which the request was generated, for calculating different type of document fingerprint i.e. Tri-gram Hash.</li>
+                    <li>Later, the user who created the request, can submit the same document (i.e. "Test Doc") again and we will compare the Tri-gram Hashes from both document and highlight similar text in the document submitted by the requester (i.e. "Test Doc").</li>
+                </ul>
+                <p class="alert alert-info">At no point in time, do we store the actual content of any document. And neither of the involved users can see the actual content of other's document.</p><br/>
+            </div>
+            <div class="container-fluid center" align="center">
+                <h4><strong>Similarity Check Process Flow</strong></h4>
+                <span class="simdoc img-responsive img-rounded"></span>
             </div>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="container-fluid">
-                <h3>Timestamp Document - Process</h3>
+            <div class="container-fluid text-justify">
+                <h3>Timestamp Document</h3>
+                <p>Users can timestamp their research work, ideas or any document and keep track of the status, all in one place (from <strong>My Docs</strong> menu item).</p>
+                <p>We provide different streams to timestamp and publish documents. Each have their own purpose.<br/>
+                    You can request for <em>Write</em> (to publish/timestamp in that stream) or <em>Admin</em> (to monitor <em>Write</em>) permission for the stream, for which you do not already have permission.
+                    <strong>Permissions</strong> menu item shows your permissions for all available streams and provides you with option to request and track your permissions.
+                </p>
+                <p>Currently, we have the following streams: </p>
+                <ul>
+                    <li>
+                        <strong>unpublishedwork: </strong> This stream is open to all and anyone can publish into this stream. The main purpose of this stream is to timestamp documents.
+                    </li>
+                    <li>
+                        <strong>publishedwork: </strong> This stream is closed for new users. You can request permission if you want to publish in this stream. This stream is primarily scanned for checking similarity of documents. The fingerprints stored here conforms to Min-Hash algorithm for similarity of documents.
+                    </li>
+                </ul>
+                <p>If you have an <em>Admin</em> permission for any stream, you will be one of the users who are in-charge of granting or rejecting permissions for that stream.<br/>
+                    A permission is granted when at least half of the users with <em>Admin</em> permissions agrees.<br/>
+                </p>
+                <p>The more you publish, the larger our source of document fingerprints becomes. This will lead to more coverage of documents for plagiarism detection.</p>
+            </div>
+            <div class="container-fluid center" align="center">
+                <h4><strong>Timestamp Process Flow</strong></h4><br/>
+                <span class="timestampdoc img-responsive img-rounded"></span>
             </div>
         </div>
     </div>
