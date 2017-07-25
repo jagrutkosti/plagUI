@@ -38,7 +38,7 @@ public class PlagCheckREST {
         PlagCheckResultDTO response;
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            if(plagCheckDoc.getOriginalFilename().endsWith(".pdf")) {
+            if(plagCheckDoc.getOriginalFilename().endsWith(".pdf") || plagCheckDoc.getOriginalFilename().endsWith(".txt")) {
                 response = plagCheckService.plagCheckForDoc(plagCheckDoc, checkUnpublishedWork);
                 //Different kinds of error handling
                 if(response != null && response.getError() == null)

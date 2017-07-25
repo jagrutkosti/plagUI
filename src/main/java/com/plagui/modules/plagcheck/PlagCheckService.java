@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,23 +51,32 @@ public class PlagCheckService {
         log.info("Processing the pdf file for plagiarism check");
         //Calculate sha256 hash for document
         List<String> sha256DocHash = new ArrayList<>();
+        String textFromFile = null;
         try {
             sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(plagCheckDoc.getBytes()));
+            //Parse pdf file for text and generate min hash
+            if(plagCheckDoc.getOriginalFilename().endsWith(".pdf"))
+                textFromFile = utilService.parsePdf(plagCheckDoc);
+            else if(plagCheckDoc.getOriginalFilename().endsWith(".txt"))
+                textFromFile = new String(plagCheckDoc.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //Parse pdf file for text and generate min hash
-        String textFromPdf = utilService.parsePdf(plagCheckDoc);
-        String cleanedText = utilService.cleanText(textFromPdf);
+        String cleanedText = utilService.cleanText(textFromFile);
         cleanedText = utilService.removeAllWhiteSpaces(cleanedText);
         List<String> allShingles = new ArrayList<>();
         allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, cleanedText));
         int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);
 
+        PlagCheckResultDTO response;
         //Parse pdf file for images and generate sha256 hash
-        List<byte[]> imagesFromPdfAsByte = utilService.extractImageFromPdfFile(plagCheckDoc);
-        List<String> sha256HashOfImages = utilService.generateSHA256HashFromObjects(imagesFromPdfAsByte);
-        PlagCheckResultDTO response = callPlagDetectionModule(sha256DocHash.get(0), Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), sha256HashOfImages, checkUnpublishedWork);
+        if(plagCheckDoc.getOriginalFilename().endsWith(".pdf")) {
+            List<byte[]> imagesFromPdfAsByte = utilService.extractImageFromPdfFile(plagCheckDoc);
+            List<String> sha256HashOfImages = utilService.generateSHA256HashFromObjects(imagesFromPdfAsByte);
+             response = callPlagDetectionModule(sha256DocHash.get(0), Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), sha256HashOfImages, checkUnpublishedWork);
+        } else {
+            response = callPlagDetectionModule(sha256DocHash.get(0), Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), null, checkUnpublishedWork);
+        }
         response.setPlagCheckDocFileName(plagCheckDoc.getOriginalFilename());
         return response;
     }

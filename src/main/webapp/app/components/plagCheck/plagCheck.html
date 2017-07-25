@@ -14,10 +14,10 @@
             <div class="form-group">
                 <label for="plagCheckDoc" class="control-label">File: *</label>
                 <input class="form-control" name="plagCheckDoc" id="plagCheckDoc" ng-model="vm.data.plagCheckDoc"
-                       type="file" accept=".pdf" ngf-select ngf-max-size="50MB" required>
-                <p class="help-block">Please upload only .pdf file.</p>
+                       type="file" accept=".pdf,.txt" ngf-select ngf-max-size="50MB" required>
+                <p class="help-block">Please upload only .pdf or .txt file.</p>
                 <div ng-if="pdfPlagCheck.plagCheckDoc.$dirty && pdfPlagCheck.plagCheckDoc.$invalid">
-                    <p class="help-block" ng-if="pdfPlagCheck.plagCheckDoc.$error.required">Please select a pdf file.</p>
+                    <p class="help-block" ng-if="pdfPlagCheck.plagCheckDoc.$error.required">Please select a pdf or txt file.</p>
                 </div>
             </div>
             <div class="form-group">
