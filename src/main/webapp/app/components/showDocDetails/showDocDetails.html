@@ -27,6 +27,14 @@
                                 <td>Confirmed on:</td>
                                 <td>{{publishedItem.confirmationTime | date:'dd-MM-yy HH:mm:ss'}}</td>
                             </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <a ng-show="publishedItem.plagchainSeed.length > 4" class="btn btn-info" download="plagchainseed.txt"
+                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(publishedItem.plagchainSeed)">Download Plagchain Seed</a>
+                                    <a ng-show="publishedItem.originstampSeed.length > 4" class="btn btn-info" download="originstampseed.txt"
+                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(publishedItem.originstampSeed)">Download Originstamp Seed</a>
+                                </td>
+                            </tr>
                         </table>
                     </td>
                     <td align="center">
@@ -56,13 +64,14 @@
                                 <p>Timestamped on Bitcoin Blockchain with at least one block depth!</p>
                             </div>
                         </div>
-                        <a ng-show="publishedItem.plagchainSeed.length > 4" class="btn btn-info" download="plagchainseed.txt"
-                           ng-href="{{vm.url}}" ng-click="vm.downloadSeed(publishedItem.plagchainSeed)">Download Plagchain Seed</a>
-                        <a ng-show="publishedItem.originstampSeed.length > 4" class="btn btn-info" download="originstampseed.txt"
-                           ng-href="{{vm.url}}" ng-click="vm.downloadSeed(publishedItem.originstampSeed)">Download Originstamp Seed</a>
-                        <div ng-show="publishedItem.transactionHash.length > 4">
-                            <br>
-                            <a href="https://blockexplorer.com/tx/{{publishedItem.transactionHash}}" target="_blank">Verify on https://blockexplorer.com</a>
+                        <div class="btn-group" role="group">
+                            <a href="https://app.originstamp.org/s/{{publishedItem.plagchainSeedHash}}" target="_blank"
+                               ng-show="publishedItem.plagchainSeedHash.length > 4" class="btn btn-default">Status on Originstamp
+                                <span class="glyphicon glyphicon-new-window"></span></a>
+
+                            <a href="https://blockexplorer.com/tx/{{publishedItem.transactionHash}}" target="_blank"
+                               ng-show="publishedItem.transactionHash.length > 4" class="btn btn-default">Verify on Blockexplorer
+                                <span class="glyphicon glyphicon-new-window"></span></a>
                         </div>
                     </td>
                 </tr>
@@ -91,6 +100,14 @@
                             <tr ng-show="unpublishedItem.confirmationTime.length > 4">
                                 <td>Confirmed on:</td>
                                 <td>{{unpublishedItem.confirmationTime | date:'dd-MM-yy HH:mm:ss'}}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <a ng-show="unpublishedItem.plagchainSeed.length > 4" class="btn btn-info" download="plagchainseed.txt"
+                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(unpublishedItem.plagchainSeed)">Download Plagchain Seed</a>
+                                    <a ng-show="unpublishedItem.originstampSeed.length > 4" class="btn btn-info" download="originstampseed.txt"
+                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(unpublishedItem.originstampSeed)">Download Originstamp Seed</a>
+                                </td>
                             </tr>
                         </table>
                     </td>
@@ -121,13 +138,14 @@
                                 <p>Timestamped on Bitcoin Blockchain with at least one block depth!</p>
                             </div>
                         </div>
-                        <a ng-show="unpublishedItem.plagchainSeed.length > 4" class="btn btn-info" download="plagchainseed.txt"
-                           ng-href="{{vm.url}}" ng-click="vm.downloadSeed(unpublishedItem.plagchainSeed)">Download Plagchain Seed</a>
-                        <a ng-show="unpublishedItem.originstampSeed.length > 4" class="btn btn-info" download="originstampseed.txt"
-                           ng-href="{{vm.url}}" ng-click="vm.downloadSeed(unpublishedItem.originstampSeed)">Download Originstamp Seed</a>
-                        <div ng-show="unpublishedItem.transactionHash.length > 4">
-                            <br>
-                            <a href="https://blockexplorer.com/tx/{{unpublishedItem.transactionHash}}">Verify on https://blockexplorer.com</a>
+                        <div class="btn-group" role="group">
+                            <a href="https://app.originstamp.org/s/{{unpublishedItem.plagchainSeedHash}}" target="_blank"
+                               ng-show="unpublishedItem.plagchainSeedHash.length > 4" class="btn btn-default">Status on Originstamp
+                                <span class="glyphicon glyphicon-new-window"></span></a>
+
+                            <a href="https://blockexplorer.com/tx/{{unpublishedItem.transactionHash}}" target="_blank"
+                               ng-show="unpublishedItem.transactionHash.length > 4" class="btn btn-default">Verify on Blockexplorer
+                                <span class="glyphicon glyphicon-new-window"></span></a>
                         </div>
                     </td>
                 </tr>

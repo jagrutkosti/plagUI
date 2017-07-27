@@ -21,6 +21,7 @@ public class DocDetails {
     private boolean fetchedByPDModule;
     private String bitcoinAddress;
     private String transactionHash;
+    private String plagchainSeedHash;
     private String confirmationTime;
     private String submissionTimeToPlagchain;
 
@@ -102,5 +103,13 @@ public class DocDetails {
 
     public void setTransactionHash(String transactionHash) {
         this.transactionHash = transactionHash;
+    }
+
+    public String getPlagchainSeedHash() {
+        return plagchainSeedHash;
+    }
+
+    public void setPlagchainSeedHash(String plagchainSeedHash) {
+        this.plagchainSeedHash = plagchainSeedHash;
     }
 }

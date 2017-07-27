@@ -76,13 +76,12 @@ public class DocDetailsService {
             docItem.setFileName(utilService.transformDataFromHexToObject(streamItem.getData()).getFileName());
             docItem.setFileHash(streamItem.getKey());
             try {
+                //For each hash, get the information from plag-detection module
                 String responseStringFromPDModule = getSeedSubmissionDetailsForHash(streamItem.getKey());
-
+                //If the stream item was identified by Plag-detection module, populate it, else do nothing
                 if(responseStringFromPDModule != null && responseStringFromPDModule.length() > 0 &&
                     responseStringFromPDModule.contains("{")) {
-                    //For each hash, get the information from plag-detection module
                     JSONObject responseFromPDModule = new JSONObject(responseStringFromPDModule);
-                    //If the stream item was identified by Plag-detection module, populate it, else do nothing
                     if(!(responseFromPDModule.get("seedDetails") instanceof JSONObject)) {
                         docItem.setFetchedByPDModule(false);
                     } else {
@@ -94,6 +93,7 @@ public class DocDetailsService {
                         docItem.setConfirmation(seedDetails.getInt("originstampConfirmed"));
                         docItem.setConfirmationTime(seedDetails.getString("originstampBitcoinConfirmTime"));
                         docItem.setFetchedByPDModule(true);
+                        docItem.setPlagchainSeedHash(seedDetails.getString("plagchainSeedHash"));
                     }
                 } else {
                     response.setError(responseStringFromPDModule);
