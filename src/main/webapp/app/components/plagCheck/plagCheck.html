@@ -1,6 +1,8 @@
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
-        <h4 align="center">Check Document Similarity</h4>
+        <div class="page-header text-center">
+            <h3>Check Similarity <br/><small>Compare document with other document(s) (fingerprints) in Plagchain</small></h3>
+        </div>
         <jhi-alert></jhi-alert>
         <div ng-if="vm.results.listOfSimilarPublishedWork.length === 0 && vm.results.listOfSimilarUnpublishedWork.length === 0" class="alert alert-info">
             <p align="center">No similar documents found!</p>

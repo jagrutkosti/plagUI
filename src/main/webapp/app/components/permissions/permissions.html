@@ -2,7 +2,9 @@
 <div class="col-md-8 col-md-offset-2">
     <jhi-alert></jhi-alert>
     <div ng-if="vm.streamPermissionsAndRequests.requestsForAdmin.length > 0" align="center">
-        <h4>Permission Requests</h4>
+        <div class="page-header text-center">
+            <h3>Permission Requests<br/><small>Permission requests from other user(s) for stream(s) in which you have <em>admin</em> permission</small></h3>
+        </div>
     </div>
     <div class="row" ng-if="vm.streamPermissionsAndRequests.requestsForAdmin.length > 0">
         <div class="panel panel-default">
@@ -61,7 +63,9 @@
         </div>
     </div>
     <div align="center">
-        <h4>Your Stream Permissions</h4>
+        <div class="page-header text-center">
+            <h3>Your Stream Permissions<br/><small>List of permissions you have for all available streams in Plagchain</small></h3>
+        </div>
     </div>
     <div class="row">
         <div class="panel panel-default">

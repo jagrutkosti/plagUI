@@ -2,7 +2,9 @@
     <uib-tab index="0" heading="PDF">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h4 align="center">Timestamp PDF</h4>
+                <div class="page-header text-center">
+                    <h3>Submit Publication <br/><small>Publish document fingerprint to a stream and get timestamped on Bitcoin via Originstamp</small></h3>
+                </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                 </div>
@@ -60,7 +62,9 @@
     <uib-tab index="1" heading="Text">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h4 align="center">Timestamp Text</h4><br>
+                <div class="page-header text-center">
+                    <h3>Submit Text<br/><small>Publish plain text fingerprint to a stream and get timestamped on Bitcoin via Originstamp</small></h3>
+                </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                 </div>
@@ -129,7 +133,9 @@
     <uib-tab index="2" heading="Image">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h4 align="center">Timestamp Image</h4><br>
+                <div class="page-header text-center">
+                    <h3>Submit Image<br/><small>Publish image fingerprint to <em>unpublishedwork</em> stream and get timestamped on Bitcoin via Originstamp</small></h3>
+                </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>
                 </div>

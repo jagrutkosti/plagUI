@@ -1,6 +1,10 @@
 <div align="center">
-    <h4>Your Documents</h4>
-    <jhi-alert></jhi-alert>
+    <div class="page-header text-center">
+        <h3>Your Documents<br/><small>List of all your documents that you submitted to timestamp and their status</small></h3>
+        <a href="http://localhost:2750" target="_blank" class="btn btn-default">View Plagchain Transactions
+            <span class="glyphicon glyphicon-new-window"></span></a>
+    </div>
+    <span class="alert alert-danger" ng-if="vm.docDetails.error.length > 0">{{vm.docDetails.error}}</span>
 </div>
 
 <uib-accordion close-others="false">
@@ -154,6 +158,6 @@
     </div>
 </uib-accordion>
 
-<div ng-if="vm.docDetails.unpublishedWorkDocs.length <= 0 && vm.docDetails.publishedWorkDocs.length <= 0" class="alert alert-info">
+<div ng-if="vm.docDetails.unpublishedWorkDocs.length <= 0 && vm.docDetails.publishedWorkDocs.length <= 0 && !vm.docDetails.error" class="alert alert-info">
     <p align="center">You have no documents in blockchain. Please add using <i>Timestamp Docs</i> menu option.</p>
 </div>
