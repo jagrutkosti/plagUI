@@ -97,6 +97,9 @@ Main page styles
     letter-spacing: -1px;
 }
 
+/* ==========================================================================
+Home Page Images
+===========================================================================*/
 .simdoc {
     display: inline-block;
     width: 781px;
@@ -137,6 +140,28 @@ only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) {
     .timestampdoc {
         background: url("../images/timestamp.png") no-repeat center top;
+        background-size: contain;
+    }
+}
+
+.verifytimestamp {
+    display: inline-block;
+    width: 883px;
+    height: 346px;
+    background: url("../images/verifytimestamp.png") no-repeat center top;
+    background-size: contain;
+}
+
+/* wait autoprefixer update to allow simple generation of high pixel density media query */
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (   min--moz-device-pixel-ratio: 2),
+only screen and (     -o-min-device-pixel-ratio: 2/1),
+only screen and (        min-device-pixel-ratio: 2),
+only screen and (                min-resolution: 192dpi),
+only screen and (                min-resolution: 2dppx) {
+    .verifytimestamp {
+        background: url("../images/verifytimestamp.png") no-repeat center top;
         background-size: contain;
     }
 }

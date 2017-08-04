@@ -3,7 +3,8 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-header text-center">
-                    <h3>Submit Publication <br/><small>Publish document fingerprint to a stream and get timestamped on Bitcoin via Originstamp</small></h3>
+                    <h3>Submit Publication<br/><small>We calculate SHA-256 fingerprint from your document and publish it to your chosen stream on Plagchain.
+                        We then aggregate fingerprints received during a time period from Plagchain and calculate the SHA-256 fingerprint of the aggregated values and get timestamped on Bitcoin via Originstamp.</small></h3>
                 </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>
@@ -63,7 +64,8 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-header text-center">
-                    <h3>Submit Text<br/><small>Publish plain text fingerprint to a stream and get timestamped on Bitcoin via Originstamp</small></h3>
+                    <h3>Submit Text<br/><small>We calculate SHA-256 fingerprint from your text and publish it to your chosen stream on Plagchain.
+                        We then aggregate fingerprints received during a time period from Plagchain and calculate the SHA-256 fingerprint of the aggregated values and get timestamped on Bitcoin via Originstamp.</small></h3>
                 </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>
@@ -134,7 +136,8 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-header text-center">
-                    <h3>Submit Image<br/><small>Publish image fingerprint to <em>unpublishedwork</em> stream and get timestamped on Bitcoin via Originstamp</small></h3>
+                    <h3>Submit Image<br/><small>We calculate SHA-256 fingerprint from your image and publish it to <em>unpublishedwork</em> stream on Plagchain.
+                        We then aggregate fingerprints received during a time period from Plagchain and calculate the SHA-256 fingerprint of the aggregated values and get timestamped on Bitcoin via Originstamp.</small></h3>
                 </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>
