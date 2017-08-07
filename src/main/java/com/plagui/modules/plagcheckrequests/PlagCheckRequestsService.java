@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -168,7 +169,7 @@ public class PlagCheckRequestsService {
         List<Integer> userDochashes = new ArrayList<>();
         int sameHashes = 0;
         //Cannot call createShinglesFromDoc() as we need to show the user the text output, so need to store in DTO
-        String textFromPdf = utilService.parsePdf(plagCheckUserDoc);
+        String textFromPdf = utilService.getTextFromDoc(plagCheckUserDoc);
         textFromPdf = utilService.cleanText(textFromPdf);
         response.setFullText(textFromPdf);
 
@@ -209,7 +210,7 @@ public class PlagCheckRequestsService {
      */
     public List<String> createShinglesFromDoc(MultipartFile plagCheckDoc) {
         //Get text from PDF and clean the text
-        String textFromPdf = utilService.parsePdf(plagCheckDoc);
+        String textFromPdf = utilService.getTextFromDoc(plagCheckDoc);
         textFromPdf = utilService.cleanText(textFromPdf);
         //Generate word shingles from cleaned text
         return utilService.createWordShingles(Constants.WORD_SHINGLE_LENGTH, textFromPdf);
@@ -227,5 +228,4 @@ public class PlagCheckRequestsService {
         }
         return hashesFromShingles;
     }
-
 }

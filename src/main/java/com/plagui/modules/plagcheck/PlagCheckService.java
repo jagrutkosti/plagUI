@@ -51,17 +51,13 @@ public class PlagCheckService {
         log.info("Processing the pdf file for plagiarism check");
         //Calculate sha256 hash for document
         List<String> sha256DocHash = new ArrayList<>();
-        String textFromFile = null;
         try {
             sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(plagCheckDoc.getBytes()));
-            //Parse pdf file for text and generate min hash
-            if(plagCheckDoc.getOriginalFilename().endsWith(".pdf"))
-                textFromFile = utilService.parsePdf(plagCheckDoc);
-            else if(plagCheckDoc.getOriginalFilename().endsWith(".txt"))
-                textFromFile = new String(plagCheckDoc.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //Parse pdf file for text and generate min hash
+        String textFromFile = utilService.getTextFromDoc(plagCheckDoc);
         String cleanedText = utilService.cleanText(textFromFile);
         cleanedText = utilService.removeAllWhiteSpaces(cleanedText);
         List<String> allShingles = new ArrayList<>();

@@ -100,7 +100,7 @@ public class PlagCheckRequestsREST {
                                                      @RequestParam("plagCheckDoc")MultipartFile plagCheckDoc) {
         log.info("REST request to update the request status to accepted and generate hashes from the document");
         PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
-        if(!plagCheckDoc.getOriginalFilename().endsWith(".pdf")) {
+        if(!plagCheckDoc.getOriginalFilename().endsWith(".pdf") && !plagCheckDoc.getOriginalFilename().endsWith(".txt")) {
             response.setError("File format not supported. Please upload a PDF file");
             return response;
         }
@@ -120,7 +120,7 @@ public class PlagCheckRequestsREST {
                                                @RequestParam("plagCheckUserDoc")MultipartFile plagCheckUserDoc) {
         log.info("REST request to compare the two document hashes and generate similarity score");
         PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
-        if(!plagCheckUserDoc.getOriginalFilename().endsWith(".pdf")) {
+        if(!plagCheckUserDoc.getOriginalFilename().endsWith(".pdf") && !plagCheckUserDoc.getOriginalFilename().endsWith(".txt")) {
             response.setError("File format not supported. Please upload a PDF file");
             return response;
         }

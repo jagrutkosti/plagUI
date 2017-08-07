@@ -354,4 +354,21 @@ public class UtilService {
         }
         return false;
     }
+
+    /**
+     * To extract text from file based on file extension
+     * @param multipartFile the multipartfile received from user
+     * @return
+     */
+    public String getTextFromDoc(MultipartFile multipartFile) {
+        if(multipartFile.getOriginalFilename().endsWith(".pdf"))
+            return parsePdf(multipartFile);
+        else
+            try {
+                return new String(multipartFile.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+    }
 }

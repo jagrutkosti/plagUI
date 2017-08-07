@@ -18,10 +18,10 @@
                 <div class="form-group">
                     <label for="acceptRequestDoc" class="control-label">File: *</label>
                     <input class="form-control" id="acceptRequestDoc" name="acceptRequestDoc" ng-model="vm.acceptModalFormData.acceptRequestDoc"
-                           type="file" ng-change="vm.requestDetails.authorFileName === vm.acceptModalFormData.acceptRequestDoc.name ? vm.sameFile=true : vm.sameFile=false" accept=".pdf" ngf-select ngf-max-size="50MB" required>
-                    <p class="help-block">Please select only .pdf file.</p>
+                           type="file" ng-change="vm.requestDetails.authorFileName === vm.acceptModalFormData.acceptRequestDoc.name ? vm.sameFile=true : vm.sameFile=false" accept=".pdf, .txt" ngf-select ngf-max-size="50MB" required>
+                    <p class="help-block">Please select only .pdf or .txt file.</p>
                     <div ng-show="accpetRequestDocForm.acceptRequestDoc.$dirty && accpetRequestDocForm.acceptRequestDoc.$invalid">
-                        <p class="help-block" ng-show="accpetRequestDocForm.acceptRequestDoc.$error.required">Please select a PDF file.</p>
+                        <p class="help-block" ng-show="accpetRequestDocForm.acceptRequestDoc.$error.required">Please select a PDF or TXT file.</p>
                     </div>
                 </div>
                 <br/>
