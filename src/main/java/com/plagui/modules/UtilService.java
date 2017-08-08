@@ -160,9 +160,9 @@ public class UtilService {
      * @param cleanedText the sentence from which shingles need to be extracted
      * @return {List<String>} list containing word shingles from the sentence
      */
-    public Set<String> createShingles(int shingleLength, String cleanedText) {
+    public List<String> createShingles(int shingleLength, String cleanedText) {
         log.info("Creating shingles of length: {}", shingleLength);
-        Set<String> shinglesFromSentences = new HashSet<>();
+        List<String> shinglesFromSentences = new ArrayList<>();
         for(int i = 0; i < cleanedText.length() - shingleLength + 1; i++) {
             shinglesFromSentences.add(cleanedText.substring(i, i + shingleLength));
         }

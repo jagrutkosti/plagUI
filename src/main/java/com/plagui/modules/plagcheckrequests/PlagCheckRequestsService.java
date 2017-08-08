@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * Created by Jagrut on 03-07-2017.
@@ -174,13 +171,14 @@ public class PlagCheckRequestsService {
         response.setFullText(textFromPdf);
 
         //Cannot call generateHashesFromShingles() as we need to do store keywords in DTO too.
-        List<String> shingles = utilService.createWordShingles(Constants.WORD_SHINGLE_LENGTH, textFromPdf);
+        textFromPdf = utilService.removeAllWhiteSpaces(textFromPdf);
+        List<String> shingles = utilService.createShingles(Constants.SHINGLE_LENGTH, textFromPdf);
         StringJoiner keywords = new StringJoiner(",");
         for(String shingle : shingles) {
             int hash = (shingle.hashCode());
+            userDochashes.add(hash);
             if(authorDocHashes.contains(hash)) {
                 sameHashes++;
-                userDochashes.add(hash);
                 keywords.add(shingle);
             }
         }
@@ -213,7 +211,8 @@ public class PlagCheckRequestsService {
         String textFromPdf = utilService.getTextFromDoc(plagCheckDoc);
         textFromPdf = utilService.cleanText(textFromPdf);
         //Generate word shingles from cleaned text
-        return utilService.createWordShingles(Constants.WORD_SHINGLE_LENGTH, textFromPdf);
+        textFromPdf = utilService.removeAllWhiteSpaces(textFromPdf);
+        return utilService.createShingles(Constants.SHINGLE_LENGTH, textFromPdf);
     }
 
     /**
