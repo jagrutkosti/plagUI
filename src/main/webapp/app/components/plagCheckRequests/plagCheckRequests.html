@@ -17,7 +17,7 @@
                                 <th>From</th>
                                 <th>For Your Document</th>
                                 <th>MinHash similarity</th>
-                                <th>Tri-gram Hash Similarity</th>
+                                <th>Simple Text Hash Similarity</th>
                                 <th>Accept/Reject</th>
                             </tr>
                         </thead>
@@ -61,7 +61,7 @@
                         <tr>
                             <th>Your Document</th>
                             <th>MinHash Similarity</th>
-                            <th>Tri-gram Hash Similarity</th>
+                            <th>Simple Text Hash Similarity</th>
                             <th>Status</th>
                         </tr>
                         </thead>
@@ -90,7 +90,7 @@
             <br>
             <div ng-if="vm.allRequests.requestsFromUser.length > 0 || vm.allRequests.requestsToUser.length > 0">
                 <p class="alert alert-info">
-                    <strong>N.A.: </strong>Not Applicable. To calculate Tri-gram Hash similarity, both parties need to generate hash by submitting the document to the system, for that request.
+                    <strong>N.A.: </strong>Not Applicable. To calculate Simple Text Hash similarity, both parties need to generate hash by submitting the document to the system, for that request.
                 </p>
             </div>
         </uib-accordion>
