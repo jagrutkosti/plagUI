@@ -30,6 +30,14 @@
                     <li>Timestamp research publications or on-going research work and ideas using Bitcoin Blockchain. (Credits: <a href="https://app.originstamp.org" target="_blank">Originstamp</a>)</li>
                     <li>Find text in your document that are similar to text in other documents.</li>
                     <li>Decentralized storage of document fingerprints. We only perform computations!</li>
+                </ul><br/>
+                <h4>Advantages of using Plagchain: </h4>
+                <ul>
+                    <li>Keep track of all document timestamps in one place.</li>
+                    <li>Check for document similarity without exposing the content of the document.</li>
+                    <li>With time, the number of document fingerprints will grow which will help to identify plagiarism from documents that are currently not indexed by Plagiarism Detection systems.</li>
+                    <li>Flexible for multiple fingerprint techniques. Need another fingerprint technique? No problem! Create an issue for new feature <a href="https://github.com/jagrutkosti/plagUI/issues" target="_blank">here</a> and we can get you started.</li>
+                    <li>Need a separate stream for your own purpose? Drop us an email: <samp>jagrut.kosti[at]uni-konstanz.de</samp></li>
                 </ul>
                 <!--<br/>
                 <p>To become a part of the decentralized network (<em>Plagchain</em>), add a mining node by:</p>
@@ -66,9 +74,21 @@
         <div class="panel-body">
             <div class="container-fluid text-justify">
                 <h3>Timestamp Document</h3>
-                <p>Users can timestamp their research work, ideas or any document and keep track of the status, all in one place (from <strong>My Docs</strong> menu item).</p>
-                <p>We provide different streams to timestamp and publish documents. Each have their own purpose.<br/>
-                    You can request for <em>Write</em> (to publish/timestamp in that stream) or <em>Admin</em> (to monitor <em>Write</em>) permission for the stream, for which you do not already have permission.
+                <p>Users can timestamp their research work, ideas or any document using <strong>Submit Publication</strong> menu item and keep track of the status, all in one place. (using <strong>My Docs</strong> menu item)</p>
+            </div>
+            <div class="container-fluid center" align="center">
+                <h4><strong>Timestamp Process Flow</strong></h4><br/>
+                <span class="timestampdoc img-responsive img-rounded"></span>
+            </div>
+            <div class="container-fluid text-justify">
+                <p>We calculate and submit the SHA-256 hash (for timestamp) and Min-hash (for similarity) of the document to the Plagchain. All data is public and anyone can read it. The Plagchain accepts a &lt;key,value&gt; pair for storing data. We set the <em>key</em> as SHA-256 hash of the document.
+                    The <em>value</em> is set to the following JSON format:
+                    <pre>{<br/> filename: <em>&lt;Name of the file&gt;</em>,<br/> textMinHash: <em>&lt;Comma separated list of min-hash values (integers)&gt;</em>,<br/> contactInfo: <em>&lt;Email, if provided&gt;</em><br/>}</pre>
+                </p>
+                <br/>
+                <h4>Permissions for Streams</h4>
+                <p>We provide different <strong>streams</strong> to timestamp and publish documents. Each have their own purpose.<br/>
+                    You can request for <em>Write</em> (to publish/timestamp in a stream) or <em>Admin</em> (to monitor <em>Write</em>) permission for a stream, for which you do not already have permission.
                     <strong>Permissions</strong> menu item shows your permissions for all available streams and provides you with option to request and track your permissions.
                 </p>
                 <p>Currently, we have the following streams: </p>
@@ -81,13 +101,9 @@
                     </li>
                 </ul>
                 <p>If you have an <em>Admin</em> permission for any stream, you will be one of the users who are in-charge of granting or rejecting permissions for that stream.<br/>
-                    A permission is granted when at least half of the users with <em>Admin</em> permissions agrees.<br/>
-                </p>
+                    A permission is granted when at least half of the users with <em>Admin</em> permission, agrees.<br/>
+                </p><br/>
                 <p>The more you publish, the larger our source of document fingerprints becomes. This will lead to more coverage of documents for plagiarism detection.</p>
-            </div>
-            <div class="container-fluid center" align="center">
-                <h4><strong>Timestamp Process Flow</strong></h4><br/>
-                <span class="timestampdoc img-responsive img-rounded"></span>
             </div>
         </div>
     </div>
@@ -102,6 +118,63 @@
             <div class="container-fluid center" align="center">
                 <h4><strong>Document Timestamp Verification Process Flow</strong></h4><br/>
                 <span class="verifytimestamp img-responsive img-rounded"></span>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="container-fluid text-justify">
+                <h3>Generating Min-hashes</h3>
+                <p>The current version of the system uses only Min-Hash as the fingerprint technique to find similar documents. When a user submits a document, Min-hash is also calculated along with SHA-256 hashes.
+                The diagram explains the process of generating min-hashes from a document.</p>
+                <h4>Steps to generate Min-hashes: </h4>
+                <ul>
+                    <li>Extract all text from the submitted document.</li>
+                    <li>Clean the extracted text:
+                        <ul>
+                            <li>Remove line breaks.</li>
+                            <li>Convert all characters to lowercase.</li>
+                            <li>Remove all punctuation marks.</li>
+                            <li>Remove all spaces.</li>
+                        </ul>
+                    </li>
+                    <li>Create character shingles of length 9. (As shown in diagram)</li>
+                    <li>Use these <strong>j</strong> hash functions:
+                        <ul>
+                            <li>We use <var>j</var> = <var>200</var> hash functions.</li>
+                            <li>For the first hash function, we use Java's default <code>hashCode()</code> method.</li>
+                            <li>For the next 199 hash functions, we simply <code>XOR</code> the hashCode() values with 199 random numbers mentioned in <a target="_self" href="/content/random-numbers.txt" download="random-numbers.txt">this</a> file, in the given order.</li>
+                        </ul>
+                    </li>
+                    <li>Calculating Min-hash:
+                        <ol>
+                            <li>For each shingle, calculate the <code>hashCode()</code>.</li>
+                            <li>Find minimum <code>hashCode()</code> value. This is your first min-hash.</li>
+                            <li>Pick the first number from the <em>random-numbers.txt</em> file.</li>
+                            <li><code>XOR</code> each <code>hashCode()</code> with this random number. </li>
+                            <li>From this new list of XOR'ed values, find the minimum value. This is your next min-hash.</li>
+                            <li>Pick the next number from the <em>random-number.txt</em> file.</li>
+                            <li>Repeat steps (4) to (6) for all random numbers from the file.</li>
+                        </ol>
+                        Please note: It is important to preserve the order of min-hash calculated.
+                    </li>
+                </ul>
+                Finally, you have a list of integers in a given order that represent the min-hash values of a document. These integers are then stored in the Plagchain using the format mentioned in <em>Timestamp Document</em> section.
+            </div>
+            <div class="container-fluid center" align="center">
+                <h4><strong>Min-hashes from a Document</strong></h4><br/>
+                <span class="minhash img-responsive img-rounded"></span>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="container-fluid text-justify">
+                <h4>Credits</h4>
+                <p>This project is developed as a part of Master Project/Thesis of Jagrut Kosti under Information Science Group of University of Konstanz, Germany. <br/>
+                Supervisors: Prof. Dr. Bela Gipp, Corinna Breitinger and Thomas Hepp</p>
+                <p>For any questions, drop an email: <samp>jagrut.kosti[at]uni-konstanz.de</samp><br/>
+                If you find any bugs or for new feature requests, please create a new issue <a href="https://github.com/jagrutkosti/plagUI/issues" target="_blank">here</a>.</p>
             </div>
         </div>
     </div>
