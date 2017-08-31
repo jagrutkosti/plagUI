@@ -136,7 +136,7 @@ public class PlagCheckRequestsService {
     public PlagCheckRequestsDTO acceptRequestWithDoc(PlagCheckRequests acceptObject, MultipartFile plagCheckDoc) {
         log.info("Service method to update the db item with accept and generate and store hashes from file");
         PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
-        List<String> shingles = createShinglesFromDoc(plagCheckDoc);
+        Set<String> shingles = createShinglesFromDoc(plagCheckDoc);
         List<Integer> hashesFromDocument = generateHashesFromShingles(shingles);
         try {
             PlagCheckRequests dbItem = plagCheckRequestsRepository.findOne(acceptObject.getId());
@@ -167,12 +167,12 @@ public class PlagCheckRequestsService {
         int sameHashes = 0;
         //Cannot call createShinglesFromDoc() as we need to show the user the text output, so need to store in DTO
         String textFromPdf = utilService.getTextFromDoc(plagCheckUserDoc);
-        textFromPdf = utilService.cleanText(textFromPdf);
         response.setFullText(textFromPdf);
+        textFromPdf = utilService.cleanText(textFromPdf);
 
         //Cannot call generateHashesFromShingles() as we need to do store keywords in DTO too.
         textFromPdf = utilService.removeAllWhiteSpaces(textFromPdf);
-        List<String> shingles = utilService.createShingles(Constants.SHINGLE_LENGTH, textFromPdf);
+        Set<String> shingles = utilService.createShingles(Constants.SHINGLE_LENGTH, textFromPdf);
         StringJoiner keywords = new StringJoiner(",");
         for(String shingle : shingles) {
             int hash = (shingle.hashCode());
@@ -206,7 +206,7 @@ public class PlagCheckRequestsService {
      * @param plagCheckDoc the document to process
      * @return List<String> containing shinlges from the given document
      */
-    public List<String> createShinglesFromDoc(MultipartFile plagCheckDoc) {
+    public Set<String> createShinglesFromDoc(MultipartFile plagCheckDoc) {
         //Get text from PDF and clean the text
         String textFromPdf = utilService.getTextFromDoc(plagCheckDoc);
         textFromPdf = utilService.cleanText(textFromPdf);
@@ -220,7 +220,7 @@ public class PlagCheckRequestsService {
      * @param shingles list of shingles from which to calculate hashes
      * @return List<String> containing hashes for all shingles
      */
-    public List<Integer> generateHashesFromShingles(List<String> shingles) {
+    public List<Integer> generateHashesFromShingles(Set<String> shingles) {
         List<Integer> hashesFromShingles = new ArrayList<>();
         for(String shingle : shingles) {
             hashesFromShingles.add(shingle.hashCode());
