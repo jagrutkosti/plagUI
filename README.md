@@ -1,7 +1,19 @@
 # plagUI
-This application was generated using JHipster 4.5.2, you can find documentation and help at [https://jhipster.github.io/documentation-archive/v4.5.2](https://jhipster.github.io/documentation-archive/v4.5.2).
+Plagchain is a project developed as a part of Master thesis of Jagrut Kosti at University of Konstanz.
 
+plagUI is the user interface that interacts with custom blockchain called 'Plagchain' (created using [Multichain][]) and other plagiarism detection(PD) module running different PD algorithm.
+
+The research objective for the project:
+<i>“Explore, develop and evaluate a Blockchain based approach to amplify data source for better plagiarism detection by indexing private (behind-the-paywall) research documents.”</i> 
+
+For proof-of-concept, we are currently using Min-hash technique for local similarity assessment using document fingerprints implemented in [plagdetection][] module. The application is developed in a way to provide flexibility to everyone to plug their own PD algorithm and use Plagchain for storing 
+document fingerprints or other information,if required. All information on Plagchain will always be public. Therefore, no actual document content is to be stored on the Plagchain for preserving privacy.
+ 
+Plagchain also provides in-built document timestamp feature by leveraging [Originstamp][]'s API. This implies that Plagchain in anchored on Bitcoin. 
+
+This application was generated using JHipster 4.5.2, you can find documentation and help at [https://jhipster.github.io/documentation-archive/v4.5.2](https://jhipster.github.io/documentation-archive/v4.5.2).
 ## Development
+
 
 Before you can build this project, you must install and configure the following dependencies on your machine:
 
@@ -109,3 +121,6 @@ To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`)
 [Protractor]: https://angular.github.io/protractor/
 [Leaflet]: http://leafletjs.com/
 [DefinitelyTyped]: http://definitelytyped.org/
+[Multichain]: https://www.multichain.com
+[plagdetection]: https://github.com/jagrutkosti/plagdetection
+[Originstamp]: http://originstamp.org
