@@ -50,9 +50,32 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="control-label" for="miners">Select a miner to associate</label>
+                    <select class="form-control" id="miners" name="miners"
+                            ng-options="option.minerName for option in vm.listOfMiners track by option.minerName"
+                            ng-model="vm.registerAccount.selectedMiner" required>
+                        <option value="">--Choose a Miner--</option>
+                    </select>
+                    <div ng-show="form.miners.$dirty && form.miners.$invalid">
+                        <p class="help-block"
+                           ng-show="form.miners.$error.required">
+                            You need to select a miner.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="control-label" for="email">Email</label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="Your email"
-                           ng-model="vm.registerAccount.email" ng-minlength=5 ng-maxlength=100 required>
+                           ng-model="vm.registerAccount.email" ng-minlength=5 ng-maxlength=100 required
+                           ng-disabled="!vm.registerAccount.selectedMiner" ng-change="vm.checkEmailFormat()">
+                    <div ng-show="!vm.registerAccount.selectedMiner">
+                        <p class="help-block">Please first select a miner.</p>
+                    </div>
+                    <div class="help-block" ng-show="vm.invalidEmail && vm.registerAccount.selectedMiner">
+                        <p class="text-danger">Your email does not end with one of the required formats:
+                        <i ng-repeat="email in vm.registerAccount.selectedMiner.emailFormats">{{email}}</i>
+                        </p>
+                    </div>
                     <div ng-show="form.email.$dirty && form.email.$invalid">
                         <p class="help-block"
                                ng-show="form.email.$error.required">
@@ -112,7 +135,7 @@
                     </div>
                 </div>
 
-                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Register</button>
+                <button type="submit" ng-disabled="form.$invalid || vm.invalidEmail" class="btn btn-primary">Register</button>
             </form>
             <p></p>
         </div>

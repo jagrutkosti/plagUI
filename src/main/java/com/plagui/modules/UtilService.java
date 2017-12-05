@@ -253,7 +253,7 @@ public class UtilService {
      * @param hexData the data to be submitted in hex string format
      * @return {String} Transaction id
      */
-    public String submitToPlagchain(String walletAddress, String streamName, String keyAsDocHash, String hexData) {
+    public String submitToPlagchainFrom(String walletAddress, String streamName, String keyAsDocHash, String hexData) {
         log.info("Submitting data to plagchain");
         String response = null;
         try {
@@ -261,6 +261,25 @@ public class UtilService {
             if(alreadyExistingKeys != null && alreadyExistingKeys.size() > 0)
                 return "Document already exists.";
             response = StreamCommand.publishFromStream(walletAddress, streamName, keyAsDocHash, hexData);
+            log.info("Transaction response: {}", response);
+        } catch (MultichainException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * Submits the transaction into plagchain as key pair in the mentioned stream.
+     * @param streamName the name of the stream to publish to
+     * @param key the key
+     * @param hexData the data to be submitted in hex string format
+     * @return {String} Transaction id
+     */
+    public String submitToPlagchain(String streamName, String key, String hexData) {
+        log.info("Submitting data to plagchain");
+        String response = null;
+        try {
+            response = StreamCommand.publishStream(streamName, key, hexData);
             log.info("Transaction response: {}", response);
         } catch (MultichainException e) {
             e.printStackTrace();
@@ -323,6 +342,22 @@ public class UtilService {
         String dataInString = new String(DatatypeConverter.parseHexBinary(dataInHex));
         Gson gson = new Gson();
         return gson.fromJson(dataInString,ChainData.class);
+    }
+
+    /**
+     * Data in Blockchain is always stored in the JSON format.
+     * This is a generic method to transform the hex coded data into JSON object.
+     * @param dataInHex the data in hexadecimal string
+     * @return {JSONObject} with data from stream item
+     */
+    public JSONObject transformDataFromHextoJSON(String dataInHex) {
+        String dataInString = new String(DatatypeConverter.parseHexBinary(dataInHex));
+        try {
+            return new JSONObject(dataInString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

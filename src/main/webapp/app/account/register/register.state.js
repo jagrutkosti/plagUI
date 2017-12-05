@@ -21,6 +21,11 @@
                     controller: 'RegisterController',
                     controllerAs: 'vm'
                 }
+            },
+            resolve : {
+                listOfMiners: ['Register', function(Register) {
+                    return Register.getAllActiveMiners();
+                }]
             }
         });
     }

@@ -43,9 +43,12 @@ public class PermissionREST {
     @ResponseBody
     public StreamPermissionsDTO getPermissionsAndRequestsForUser() {
         User loggedInUser = userService.getUserWithAuthorities();
-        log.info("REST request to get all permissions and requests for user :{}", loggedInUser.getLogin());
-        StreamPermissionsDTO permissionsForUser = permissionService.getPermissionsForUser(loggedInUser);
-        return permissionService.getUserRequests(permissionsForUser);
+        if(loggedInUser != null && loggedInUser.getLogin().length() > 0) {
+            log.info("REST request to get all permissions and requests for user :{}", loggedInUser.getLogin());
+            StreamPermissionsDTO permissionsForUser = permissionService.getPermissionsForUser(loggedInUser);
+            return permissionService.getUserRequests(permissionsForUser);
+        } else
+            return null;
     }
 
     /**
