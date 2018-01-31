@@ -1,5 +1,7 @@
 package com.plagui.domain;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.plagui.config.Constants;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -85,6 +87,12 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @Field("plagchain_wallet_pubkey")
     private String plagchainWalletPubkey;
+
+    @Field("associated_miner_address")
+    private String associatedMinerAddress;
+
+    @Field("associated_miner_name")
+    private String associatedMinerName;
 
     public String getId() {
         return id;
@@ -206,6 +214,22 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.plagchainWalletPubkey = plagchainWalletPubkey;
     }
 
+    public String getAssociatedMinerAddress() {
+        return associatedMinerAddress;
+    }
+
+    public void setAssociatedMinerAddress(String associatedMinerAddress) {
+        this.associatedMinerAddress = associatedMinerAddress;
+    }
+
+    public String getAssociatedMinerName() {
+        return associatedMinerName;
+    }
+
+    public void setAssociatedMinerName(String associatedMinerName) {
+        this.associatedMinerName = associatedMinerName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -227,17 +251,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
-            "login='" + login + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", imageUrl='" + imageUrl + '\'' +
-            ", activated='" + activated + '\'' +
-            ", langKey='" + langKey + '\'' +
-            ", activationKey='" + activationKey + '\'' +
-            ", plagchainWalletAddress='" + plagchainWalletAddress + '\'' +
-            ", plagchainWalletPubkey='" + plagchainWalletPubkey + '\'' +
-            "}";
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(this, this.getClass());
     }
 }

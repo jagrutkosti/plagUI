@@ -4,6 +4,8 @@ import com.codahale.metrics.annotation.Timed;
 
 import com.plagui.domain.PersistentToken;
 import com.plagui.domain.User;
+import com.plagui.modules.miners.MinersDTO;
+import com.plagui.modules.miners.MinersService;
 import com.plagui.repository.PersistentTokenRepository;
 import com.plagui.repository.UserRepository;
 import com.plagui.security.SecurityUtils;
@@ -46,13 +48,22 @@ public class AccountResource {
 
     private final PersistentTokenRepository persistentTokenRepository;
 
+    private final MinersService minersService;
+
     public AccountResource(UserRepository userRepository, UserService userService,
-            MailService mailService, PersistentTokenRepository persistentTokenRepository) {
+            MailService mailService, PersistentTokenRepository persistentTokenRepository, MinersService minersService) {
 
         this.userRepository = userRepository;
         this.userService = userService;
         this.mailService = mailService;
         this.persistentTokenRepository = persistentTokenRepository;
+        this.minersService = minersService;
+    }
+
+    @GetMapping("/getAllActiveMiners")
+    @Timed
+    public List<MinersDTO> getAllActiveMiners() {
+        return minersService.removeInactiveMiners(minersService.getAllAvailableMinersInfo());
     }
 
     /**
@@ -78,7 +89,8 @@ public class AccountResource {
                         .createUser(managedUserVM.getLogin(), managedUserVM.getPassword(),
                             managedUserVM.getFirstName(), managedUserVM.getLastName(),
                             managedUserVM.getEmail().toLowerCase(), managedUserVM.getImageUrl(),
-                            managedUserVM.getLangKey());
+                            managedUserVM.getLangKey(), managedUserVM.getSelectedMiner().getMinerAddress(),
+                            managedUserVM.getSelectedMiner().getMinerName());
 
                     mailService.sendActivationEmail(user);
                     return new ResponseEntity<>(HttpStatus.CREATED);

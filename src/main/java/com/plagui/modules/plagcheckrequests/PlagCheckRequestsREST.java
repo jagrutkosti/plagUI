@@ -72,7 +72,10 @@ public class PlagCheckRequestsREST {
     public int getPendingNumberOfRequests() {
         log.info("REST request to get pending number of requests made to the logged in user");
         User currentUser = userService.getUserWithAuthorities();
-        return plagCheckRequestsService.getPendingNumberOfRequests(currentUser);
+        if(currentUser != null && currentUser.getLogin().length() > 0)
+            return plagCheckRequestsService.getPendingNumberOfRequests(currentUser);
+        else
+            return 0;
     }
 
     /**

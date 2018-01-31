@@ -8,6 +8,12 @@
     Register.$inject = ['$resource'];
 
     function Register ($resource) {
-        return $resource('api/register', {}, {});
+        return $resource('api/register', {}, {
+            getAllActiveMiners: {
+                method: 'GET',
+                isArray: true,
+                url: 'api/getAllActiveMiners'
+            }
+        });
     }
 })();

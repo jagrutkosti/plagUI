@@ -5,6 +5,7 @@ import com.plagui.config.Constants;
 import com.plagui.domain.Authority;
 import com.plagui.domain.User;
 
+import com.plagui.modules.miners.MinersDTO;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -55,6 +56,8 @@ public class UserDTO {
 
     private Set<String> authorities;
 
+    private MinersDTO selectedMiner;
+
     public UserDTO() {
         // Empty constructor needed for Jackson.
     }
@@ -64,13 +67,17 @@ public class UserDTO {
             user.getEmail(), user.getActivated(), user.getImageUrl(), user.getLangKey(),
             user.getCreatedBy(), user.getCreatedDate(), user.getLastModifiedBy(), user.getLastModifiedDate(), user.getPlagchainWalletAddress(),
             user.getAuthorities().stream().map(Authority::getName)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toSet()), user.getAssociatedMinerAddress(), user.getAssociatedMinerName());
     }
 
     public UserDTO(String id, String login, String firstName, String lastName,
         String email, boolean activated, String imageUrl, String langKey,
         String createdBy, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate,
-        String walletAddress, Set<String> authorities) {
+        String walletAddress, Set<String> authorities, String associatedMinerAddress, String associatedMinerName) {
+
+        MinersDTO selectedMiner = new MinersDTO();
+        selectedMiner.setMinerAddress(associatedMinerAddress);
+        selectedMiner.setMinerName(associatedMinerName);
 
         this.id = id;
         this.login = login;
@@ -86,6 +93,7 @@ public class UserDTO {
         this.lastModifiedDate = lastModifiedDate;
         this.authorities = authorities;
         this.walletAddress = walletAddress;
+        this.selectedMiner = selectedMiner;
     }
 
     public String getId() {
@@ -154,6 +162,10 @@ public class UserDTO {
 
     public String getWalletAddress() {
         return walletAddress;
+    }
+
+    public MinersDTO getSelectedMiner() {
+        return selectedMiner;
     }
 
     @Override
