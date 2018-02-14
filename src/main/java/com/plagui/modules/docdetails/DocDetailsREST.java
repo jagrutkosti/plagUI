@@ -35,7 +35,7 @@ public class DocDetailsREST {
         User currentUser = userService.getUserWithAuthorities();
         log.info("REST request to get all document details for: {}", currentUser.getLogin());
 
-        return docDetailsService.getDocDetails(currentUser.getPlagchainWalletAddress());
+        return docDetailsService.getDocDetails(currentUser.getPlagchainAddress());
     }
 
 }

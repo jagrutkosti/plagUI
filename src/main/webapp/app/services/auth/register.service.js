@@ -13,6 +13,10 @@
                 method: 'GET',
                 isArray: true,
                 url: 'api/getAllActiveMiners'
+            },
+            generatePlagchainAddress : {
+                method: 'GET',
+                url: 'api/generatePlagchainAddress'
             }
         });
     }

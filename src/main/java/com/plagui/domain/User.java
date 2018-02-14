@@ -82,11 +82,17 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
 
-    @Field("plagchain_wallet_address")
-    private String plagchainWalletAddress;
+    @Field("privkey_option")
+    private int privKeyOption;
 
-    @Field("plagchain_wallet_pubkey")
-    private String plagchainWalletPubkey;
+    @Field("plagchain_address")
+    private String plagchainAddress;
+
+    @Field("plagchain_pubkey")
+    private String plagchainPubkey;
+
+    @Field("plagchain_privkey")
+    private String plagchainPrivkey;
 
     @Field("associated_miner_address")
     private String associatedMinerAddress;
@@ -198,20 +204,36 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.authorities = authorities;
     }
 
-    public String getPlagchainWalletAddress() {
-        return plagchainWalletAddress;
+    public int getPrivKeyOption() {
+        return privKeyOption;
     }
 
-    public void setPlagchainWalletAddress(String plagchainWalletAddress) {
-        this.plagchainWalletAddress = plagchainWalletAddress;
+    public void setPrivKeyOption(int privKeyOption) {
+        this.privKeyOption = privKeyOption;
     }
 
-    public String getPlagchainWalletPubkey() {
-        return plagchainWalletPubkey;
+    public String getPlagchainAddress() {
+        return plagchainAddress;
     }
 
-    public void setPlagchainWalletPubkey(String plagchainWalletPubkey) {
-        this.plagchainWalletPubkey = plagchainWalletPubkey;
+    public void setPlagchainAddress(String plagchainAddress) {
+        this.plagchainAddress = plagchainAddress;
+    }
+
+    public String getPlagchainPubkey() {
+        return plagchainPubkey;
+    }
+
+    public void setPlagchainPubkey(String plagchainPubkey) {
+        this.plagchainPubkey = plagchainPubkey;
+    }
+
+    public String getPlagchainPrivkey() {
+        return plagchainPrivkey;
+    }
+
+    public void setPlagchainPrivkey(String plagchainPrivkey) {
+        this.plagchainPrivkey = plagchainPrivkey;
     }
 
     public String getAssociatedMinerAddress() {

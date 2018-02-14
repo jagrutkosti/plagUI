@@ -51,7 +51,7 @@ public class UploadDocsREST {
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
             if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
-                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainWalletAddress(), pdfFile, contactInfo, streamName);
+                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainAddress(), pdfFile, contactInfo, streamName);
                 if(!result.contains(" "))
                     response.setSuccess("success");
                 else
@@ -84,7 +84,7 @@ public class UploadDocsREST {
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainWalletAddress(), textToHash, contactInfo, streamName);
+            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainAddress(), textToHash, contactInfo, streamName);
             if(!result.contains(" "))
                 response.setSuccess("success");
             else
@@ -113,7 +113,7 @@ public class UploadDocsREST {
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            String result = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainWalletAddress(), imageFile, contactInfo);
+            String result = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainAddress(), imageFile, contactInfo);
             if(!result.contains(" "))
                 response.setSuccess("success");
             else

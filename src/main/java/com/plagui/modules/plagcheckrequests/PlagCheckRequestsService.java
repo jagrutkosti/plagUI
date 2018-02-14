@@ -45,13 +45,13 @@ public class PlagCheckRequestsService {
         try {
             authorFileName = docDetails.getString("fileName");
             authorWalletAddress = docDetails.getString("publisherWalletAddress");
-            Optional<PlagCheckRequests> dbItem = getDBRequestObjectIfPresent(authorFileName, authorWalletAddress, userFileName, currentUser.getPlagchainWalletAddress());
+            Optional<PlagCheckRequests> dbItem = getDBRequestObjectIfPresent(authorFileName, authorWalletAddress, userFileName, currentUser.getPlagchainAddress());
             if(dbItem.isPresent())
                 return dbItem.get();
             request.setAuthorFileName(authorFileName);
             request.setAuthorWalletAddress(authorWalletAddress);
             request.setUserFileName(userFileName);
-            request.setUserWalletAddress(currentUser.getPlagchainWalletAddress());
+            request.setUserWalletAddress(currentUser.getPlagchainAddress());
             request.setUserLoginId(currentUser.getLogin());
             request.setStatus(Constants.REQUESTS_STATUS_PENDING);
             request.setMinHashSimScore(docDetails.getDouble("similarityScore"));
@@ -82,7 +82,7 @@ public class PlagCheckRequestsService {
      */
     public List<PlagCheckRequests> getRequestsFromThisUser(User currentUser) {
         log.info("Service method to return all requests from the given user");
-        return plagCheckRequestsRepository.findAllByUserWalletAddressOrderByStatus(currentUser.getPlagchainWalletAddress());
+        return plagCheckRequestsRepository.findAllByUserWalletAddressOrderByStatus(currentUser.getPlagchainAddress());
     }
 
     /**
@@ -92,7 +92,7 @@ public class PlagCheckRequestsService {
      */
     public List<PlagCheckRequests> getRequestsToThisUser(User currentUser) {
         log.info("Service method to return all requests to this user");
-        return plagCheckRequestsRepository.findAllByAuthorWalletAddressOrderByStatus(currentUser.getPlagchainWalletAddress());
+        return plagCheckRequestsRepository.findAllByAuthorWalletAddressOrderByStatus(currentUser.getPlagchainAddress());
     }
 
     /**
@@ -102,7 +102,7 @@ public class PlagCheckRequestsService {
      */
     public int getPendingNumberOfRequests(User currentUser) {
         log.info("Service method to return the number of pending requests to this user");
-        List<PlagCheckRequests> pendingRequests = plagCheckRequestsRepository.findAllByAuthorWalletAddressAndStatus(currentUser.getPlagchainWalletAddress(), 0);
+        List<PlagCheckRequests> pendingRequests = plagCheckRequestsRepository.findAllByAuthorWalletAddressAndStatus(currentUser.getPlagchainAddress(), 0);
         if(pendingRequests != null)
             return pendingRequests.size();
         return 0;

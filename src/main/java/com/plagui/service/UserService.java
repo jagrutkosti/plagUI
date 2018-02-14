@@ -3,6 +3,7 @@ package com.plagui.service;
 import com.plagui.domain.Authority;
 import com.plagui.domain.User;
 import com.plagui.modules.miners.MinersService;
+import com.plagui.modules.privatekeymanagement.PrivateKeyManagementService;
 import com.plagui.repository.AuthorityRepository;
 import com.plagui.repository.PersistentTokenRepository;
 import com.plagui.config.Constants;
@@ -17,6 +18,7 @@ import multichain.command.ChainCommand;
 import multichain.command.GrantCommand;
 import multichain.command.MultichainException;
 import multichain.object.Address;
+import multichain.object.KeyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -49,12 +51,16 @@ public class UserService {
 
     private final MinersService minersService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PersistentTokenRepository persistentTokenRepository, AuthorityRepository authorityRepository, MinersService minersService) {
+    private final PrivateKeyManagementService privateKeyManagementService;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PersistentTokenRepository persistentTokenRepository,
+                       AuthorityRepository authorityRepository, MinersService minersService, PrivateKeyManagementService privateKeyManagementService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.persistentTokenRepository = persistentTokenRepository;
         this.authorityRepository = authorityRepository;
         this.minersService = minersService;
+        this.privateKeyManagementService = privateKeyManagementService;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -96,7 +102,8 @@ public class UserService {
     }
 
     public User createUser(String login, String password, String firstName, String lastName, String email,
-        String imageUrl, String langKey, String associatedMinerAddress, String associatedMinerName) {
+        String imageUrl, String langKey, int privKeyOption, String plagchainAddress, String plagchainPubkey, String plagchainPrivkey,
+        String associatedMinerAddress, String associatedMinerName) {
 
         User newUser = new User();
         Authority authority = authorityRepository.findOne(AuthoritiesConstants.USER);
@@ -117,17 +124,20 @@ public class UserService {
         authorities.add(authority);
         newUser.setAuthorities(authorities);
 
-        //Generate wallet address for this user
-        Address walletAddress = generateNewPlagchainAddress();
-        if(walletAddress.getAddress().length() > 0) {
-            newUser.setPlagchainWalletAddress(walletAddress.getAddress());
-            newUser.setPlagchainWalletPubkey(walletAddress.getPubkey());
+        //Set user address and all other plagchain options
+        newUser.setPrivKeyOption(privKeyOption);
+        newUser.setPlagchainAddress(plagchainAddress);
+        newUser.setPlagchainPubkey(plagchainPubkey);
+        newUser.setPlagchainPrivkey(plagchainPrivkey);
 
-            //Store the associated miner info in DB as well as Blockchain
-            newUser.setAssociatedMinerAddress(associatedMinerAddress);
-            newUser.setAssociatedMinerName(associatedMinerName);
-            minersService.addMinerAndUserAssociationToPlagchain(associatedMinerAddress, walletAddress.getAddress());
-        }
+        //Add the address to the wallet of the UI server and grant basic permissions
+        privateKeyManagementService.importAddress(plagchainAddress);
+        privateKeyManagementService.grantReceiveSendConnectPermission(plagchainAddress);
+
+        //Store the associated miner info in DB as well as Blockchain
+        newUser.setAssociatedMinerAddress(associatedMinerAddress);
+        newUser.setAssociatedMinerName(associatedMinerName);
+        minersService.addMinerAndUserAssociationToPlagchain(associatedMinerAddress, plagchainAddress);
 
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
@@ -159,16 +169,21 @@ public class UserService {
         user.setResetDate(Instant.now());
         user.setActivated(true);
 
-        //Generate wallet address for this user
-        Address walletAddress = generateNewPlagchainAddress();
-        if(walletAddress.getAddress().length() > 0) {
-            user.setPlagchainWalletAddress(walletAddress.getAddress());
-            user.setPlagchainWalletPubkey(walletAddress.getPubkey());
+        //Set user address and all other plagchain options
+        user.setPrivKeyOption(userDTO.getPrivKeyOption());
+        user.setPlagchainAddress(userDTO.getPlagchainAddress());
+        user.setPlagchainPubkey(userDTO.getPlagchainPubkey());
+        user.setPlagchainPrivkey(userDTO.getPlagchainPrivkey());
 
-            user.setAssociatedMinerAddress(userDTO.getSelectedMiner().getMinerAddress());
-            user.setAssociatedMinerName(userDTO.getSelectedMiner().getMinerName());
-            minersService.addMinerAndUserAssociationToPlagchain(userDTO.getSelectedMiner().getMinerAddress(), walletAddress.getAddress());
-        }
+        //Add the address to the wallet of the UI server and grant basic permissions
+        privateKeyManagementService.importAddress(userDTO.getPlagchainAddress());
+        privateKeyManagementService.grantReceiveSendConnectPermission(userDTO.getPlagchainAddress());
+
+        //Store the associated miner info in DB as well as Blockchain
+        user.setAssociatedMinerAddress(userDTO.getSelectedMiner().getMinerAddress());
+        user.setAssociatedMinerName(userDTO.getSelectedMiner().getMinerName());
+        minersService.addMinerAndUserAssociationToPlagchain(userDTO.getSelectedMiner().getMinerAddress(), userDTO.getPlagchainAddress());
+
         userRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;

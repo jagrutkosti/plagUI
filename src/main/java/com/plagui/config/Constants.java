@@ -37,6 +37,11 @@ public final class Constants {
 
     public static final float PERMISSION_CONSENSUS = 0.5f;
 
+    //Constants to identify how the private key for the user is managed
+    public static final int PRIVKEY_ENCRYPTED = 0;
+    public static final int PRIVKEY_PLAIN_STORE = 1;
+    public static final int PRIVKEY_USER_MANAGED = 2;
+
     private Constants() {
     }
 }

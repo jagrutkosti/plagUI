@@ -38,19 +38,19 @@ public class PermissionService {
     public StreamPermissionsDTO getPermissionsForUser(User loggedInUser) {
         log.info("Service method to get permissions for: {}", loggedInUser.getLogin());
         StreamPermissionsDTO response = new StreamPermissionsDTO();
-        if(loggedInUser.getPlagchainWalletAddress() != null && !loggedInUser.getPlagchainWalletAddress().isEmpty()) {
+        if(loggedInUser.getPlagchainAddress() != null && !loggedInUser.getPlagchainAddress().isEmpty()) {
             List<StreamPermissionRequests> allPermissionForUser = new ArrayList<>();
             //Get all streams available in the blockchain
             List<Stream> allStreams = getAllAvailableStreams();
             if(!allStreams.isEmpty()) {
                 for(Stream stream : allStreams) {
                     StreamPermissionRequests item = new StreamPermissionRequests();
-                    item.setRequesterWalletAddress(loggedInUser.getPlagchainWalletAddress());
+                    item.setRequesterWalletAddress(loggedInUser.getPlagchainAddress());
                     item.setRequesterLogin(loggedInUser.getLogin());
                     item.setStreamName(stream.getName());
                     //For each stream, if it is not public, check if the user has admin or write permissions and update
                     if(!stream.isOpen()) {
-                        List<Permission> permissionForStream = getPermissions(stream.getName() + ".*", loggedInUser.getPlagchainWalletAddress());
+                        List<Permission> permissionForStream = getPermissions(stream.getName() + ".*", loggedInUser.getPlagchainAddress());
                         if(!permissionForStream.isEmpty()) {
                             for(Permission permission : permissionForStream) {
                                 if(permission.getType().equalsIgnoreCase("write"))

@@ -24,11 +24,13 @@ public class ManagedUserVM extends UserDTO {
 
     public ManagedUserVM(String id, String login, String password, String firstName, String lastName,
                          String email, boolean activated, String imageUrl, String langKey,
-                         String createdBy, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate, String walletAddress,
+                         String createdBy, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate,
+                         int privKeyOption, String plagchainAddress, String plagchainPubkey, String plagchainPrivkey,
                         Set<String> authorities, String associatedMinerAddress, String associatedMinerName) {
 
         super(id, login, firstName, lastName, email, activated, imageUrl, langKey,
-            createdBy, createdDate, lastModifiedBy, lastModifiedDate, walletAddress,  authorities, associatedMinerAddress, associatedMinerName);
+            createdBy, createdDate, lastModifiedBy, lastModifiedDate, privKeyOption, plagchainAddress, plagchainPubkey,
+            plagchainPrivkey,  authorities, associatedMinerAddress, associatedMinerName);
 
         this.password = password;
     }

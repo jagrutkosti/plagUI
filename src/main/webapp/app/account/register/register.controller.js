@@ -6,17 +6,20 @@
         .controller('RegisterController', RegisterController);
 
 
-    RegisterController.$inject = [ '$timeout', 'Auth', 'LoginService', 'listOfMiners'];
+    RegisterController.$inject = [ '$timeout', 'Auth', 'LoginService', 'listOfMiners', 'plagchainaddress'];
 
-    function RegisterController ($timeout, Auth, LoginService, listOfMiners) {
+    function RegisterController ($timeout, Auth, LoginService, listOfMiners, plagchainaddress) {
         var vm = this;
         vm.listOfMiners = listOfMiners;
+        vm.plagchainaddress = plagchainaddress;
         vm.doNotMatch = null;
         vm.error = null;
         vm.errorUserExists = null;
         vm.login = LoginService.open;
         vm.register = register;
-        vm.registerAccount = {};
+        vm.registerAccount = {
+            privKeyOption: '0'
+        };
         vm.success = null;
         vm.invalidEmail = true;
         vm.checkEmailFormat = checkEmailFormat;
@@ -32,6 +35,14 @@
                 vm.error = null;
                 vm.errorUserExists = null;
                 vm.errorEmailExists = null;
+
+                vm.registerAccount.plagchainAddress = vm.plagchainaddress.address;
+                vm.registerAccount.plagchainPubkey = vm.plagchainaddress.pubkey;
+
+                if(vm.registerAccount.privKeyOption === '0')
+                    vm.registerAccount.plagchainPrivkey = CryptoJS.AES.encrypt(vm.plagchainaddress.privkey, vm.registerAccount.password).toString();
+                else if(vm.registerAccount.privKeyOption === '1')
+                    vm.registerAccount.plagchainPrivkey = vm.plagchainaddress.privkey;
 
                 Auth.createAccount(vm.registerAccount).then(function () {
                     vm.success = 'OK';

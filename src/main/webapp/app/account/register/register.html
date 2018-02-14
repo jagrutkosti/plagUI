@@ -95,6 +95,28 @@
                         </p>
                     </div>
                 </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            Generated Plagchain Address and Keys
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <label class="control-label" for="plagchainaddress">Address:</label>
+                        <p class="text-primary" id="plagchainaddress">{{vm.plagchainaddress.address}}</p>
+                        <label class="control-label" for="plagchainpubkey">Public Key:</label>
+                        <p class="text-primary" id="plagchainpubkey">{{vm.plagchainaddress.pubkey}}</p>
+                        <label class="control-label" for="plagchainprivkey">Private Key:</label>
+                        <p class="text-primary" id="plagchainprivkey">{{vm.plagchainaddress.privkey}}</p>
+
+                        <label class="control-label">Choose private key management option:</label>
+                        <div class="radio">
+                            <label><input type="radio" ng-model="vm.registerAccount.privKeyOption" value=0 ng-checked="true">Encrypt private key using login password and store on UI server. (You will be required to decrypt the key, wherever required.)</input></label>
+                            <label><input type="radio" ng-model="vm.registerAccount.privKeyOption" value=1>Store plain text private key on UI server.</input></label>
+                            <label><input type="radio" ng-model="vm.registerAccount.privKeyOption" value=2>I will manage my private key. (You will be required to provide the key, wherever required.)</input></label>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="control-label" for="password">New password</label>
                     <input type="password" class="form-control" id="password" name="password" placeholder="New password"

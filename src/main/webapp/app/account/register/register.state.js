@@ -25,6 +25,9 @@
             resolve : {
                 listOfMiners: ['Register', function(Register) {
                     return Register.getAllActiveMiners();
+                }],
+                plagchainaddress: ['Register', function (Register) {
+                    return Register.generatePlagchainAddress();
                 }]
             }
         });

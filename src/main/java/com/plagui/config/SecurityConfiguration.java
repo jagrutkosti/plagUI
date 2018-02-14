@@ -137,6 +137,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/plagchain/getPendingNumberOfRequests").permitAll()
             .antMatchers("/api/getAllActiveMiners").permitAll()
             .antMatchers("/api/register").permitAll()
+            .antMatchers("/api/generatePlagchainAddress").permitAll()
             .antMatchers("/api/activate").permitAll()
             .antMatchers("/api/authenticate").permitAll()
             .antMatchers("/api/account/reset_password/init").permitAll()

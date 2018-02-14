@@ -6,6 +6,7 @@ import com.plagui.domain.PersistentToken;
 import com.plagui.domain.User;
 import com.plagui.modules.miners.MinersDTO;
 import com.plagui.modules.miners.MinersService;
+import com.plagui.modules.privatekeymanagement.PrivateKeyManagementService;
 import com.plagui.repository.PersistentTokenRepository;
 import com.plagui.repository.UserRepository;
 import com.plagui.security.SecurityUtils;
@@ -16,6 +17,7 @@ import com.plagui.web.rest.vm.KeyAndPasswordVM;
 import com.plagui.web.rest.vm.ManagedUserVM;
 import com.plagui.web.rest.util.HeaderUtil;
 
+import multichain.object.KeyPair;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,9 @@ public class AccountResource {
 
     private final MinersService minersService;
 
-    public AccountResource(UserRepository userRepository, UserService userService,
+    private final PrivateKeyManagementService privateKeyManagementService;
+
+    public AccountResource(UserRepository userRepository, UserService userService, PrivateKeyManagementService privateKeyManagementService,
             MailService mailService, PersistentTokenRepository persistentTokenRepository, MinersService minersService) {
 
         this.userRepository = userRepository;
@@ -58,12 +62,19 @@ public class AccountResource {
         this.mailService = mailService;
         this.persistentTokenRepository = persistentTokenRepository;
         this.minersService = minersService;
+        this.privateKeyManagementService = privateKeyManagementService;
     }
 
     @GetMapping("/getAllActiveMiners")
     @Timed
     public List<MinersDTO> getAllActiveMiners() {
         return minersService.removeInactiveMiners(minersService.getAllAvailableMinersInfo());
+    }
+
+    @GetMapping("/generatePlagchainAddress")
+    @Timed
+    public KeyPair generatePlagchainAddress() {
+        return privateKeyManagementService.generateKeyPair();
     }
 
     /**
@@ -79,7 +90,6 @@ public class AccountResource {
 
         HttpHeaders textPlainHeaders = new HttpHeaders();
         textPlainHeaders.setContentType(MediaType.TEXT_PLAIN);
-
         return userRepository.findOneByLogin(managedUserVM.getLogin().toLowerCase())
             .map(user -> new ResponseEntity<>("login already in use", textPlainHeaders, HttpStatus.BAD_REQUEST))
             .orElseGet(() -> userRepository.findOneByEmail(managedUserVM.getEmail())
@@ -89,7 +99,9 @@ public class AccountResource {
                         .createUser(managedUserVM.getLogin(), managedUserVM.getPassword(),
                             managedUserVM.getFirstName(), managedUserVM.getLastName(),
                             managedUserVM.getEmail().toLowerCase(), managedUserVM.getImageUrl(),
-                            managedUserVM.getLangKey(), managedUserVM.getSelectedMiner().getMinerAddress(),
+                            managedUserVM.getLangKey(), managedUserVM.getPrivKeyOption(), managedUserVM.getPlagchainAddress(),
+                            managedUserVM.getPlagchainPubkey(), managedUserVM.getPlagchainPrivkey(),
+                            managedUserVM.getSelectedMiner().getMinerAddress(),
                             managedUserVM.getSelectedMiner().getMinerName());
 
                     mailService.sendActivationEmail(user);

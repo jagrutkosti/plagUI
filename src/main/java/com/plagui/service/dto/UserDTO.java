@@ -52,9 +52,15 @@ public class UserDTO {
 
     private Instant lastModifiedDate;
 
-    private String walletAddress;
-
     private Set<String> authorities;
+
+    private int privKeyOption;
+
+    private String plagchainAddress;
+
+    private String plagchainPubkey;
+
+    private String plagchainPrivkey;
 
     private MinersDTO selectedMiner;
 
@@ -65,15 +71,17 @@ public class UserDTO {
     public UserDTO(User user) {
         this(user.getId(), user.getLogin(), user.getFirstName(), user.getLastName(),
             user.getEmail(), user.getActivated(), user.getImageUrl(), user.getLangKey(),
-            user.getCreatedBy(), user.getCreatedDate(), user.getLastModifiedBy(), user.getLastModifiedDate(), user.getPlagchainWalletAddress(),
+            user.getCreatedBy(), user.getCreatedDate(), user.getLastModifiedBy(), user.getLastModifiedDate(),
+            user.getPrivKeyOption(), user.getPlagchainAddress(), user.getPlagchainPubkey(), user.getPlagchainPrivkey(),
             user.getAuthorities().stream().map(Authority::getName)
                 .collect(Collectors.toSet()), user.getAssociatedMinerAddress(), user.getAssociatedMinerName());
     }
 
     public UserDTO(String id, String login, String firstName, String lastName,
         String email, boolean activated, String imageUrl, String langKey,
-        String createdBy, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate,
-        String walletAddress, Set<String> authorities, String associatedMinerAddress, String associatedMinerName) {
+        String createdBy, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate, int privKeyOption,
+        String plagchainAddress, String plagchainPubkey, String plagchainPrivkey,
+        Set<String> authorities, String associatedMinerAddress, String associatedMinerName) {
 
         MinersDTO selectedMiner = new MinersDTO();
         selectedMiner.setMinerAddress(associatedMinerAddress);
@@ -91,8 +99,11 @@ public class UserDTO {
         this.createdDate = createdDate;
         this.lastModifiedBy = lastModifiedBy;
         this.lastModifiedDate = lastModifiedDate;
+        this.privKeyOption = privKeyOption;
+        this.plagchainAddress = plagchainAddress;
+        this.plagchainPubkey = plagchainPubkey;
+        this.plagchainPrivkey = plagchainPrivkey;
         this.authorities = authorities;
-        this.walletAddress = walletAddress;
         this.selectedMiner = selectedMiner;
     }
 
@@ -160,29 +171,63 @@ public class UserDTO {
         return authorities;
     }
 
-    public String getWalletAddress() {
-        return walletAddress;
-    }
-
     public MinersDTO getSelectedMiner() {
         return selectedMiner;
+    }
+
+    public int getPrivKeyOption() {
+        return privKeyOption;
+    }
+
+    public void setPrivKeyOption(int privKeyOption) {
+        this.privKeyOption = privKeyOption;
+    }
+
+    public String getPlagchainAddress() {
+        return plagchainAddress;
+    }
+
+    public void setPlagchainAddress(String plagchainAddress) {
+        this.plagchainAddress = plagchainAddress;
+    }
+
+    public String getPlagchainPubkey() {
+        return plagchainPubkey;
+    }
+
+    public void setPlagchainPubkey(String plagchainPubkey) {
+        this.plagchainPubkey = plagchainPubkey;
+    }
+
+    public String getPlagchainPrivkey() {
+        return plagchainPrivkey;
+    }
+
+    public void setPlagchainPrivkey(String plagchainPrivkey) {
+        this.plagchainPrivkey = plagchainPrivkey;
     }
 
     @Override
     public String toString() {
         return "UserDTO{" +
-            "login='" + login + '\'' +
+            "id='" + id + '\'' +
+            ", login='" + login + '\'' +
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", email='" + email + '\'' +
             ", imageUrl='" + imageUrl + '\'' +
             ", activated=" + activated +
             ", langKey='" + langKey + '\'' +
-            ", createdBy=" + createdBy +
+            ", createdBy='" + createdBy + '\'' +
             ", createdDate=" + createdDate +
             ", lastModifiedBy='" + lastModifiedBy + '\'' +
             ", lastModifiedDate=" + lastModifiedDate +
             ", authorities=" + authorities +
-            "}";
+            ", privKeyOption=" + privKeyOption +
+            ", plagchainAddress='" + plagchainAddress + '\'' +
+            ", plagchainPubkey='" + plagchainPubkey + '\'' +
+            ", plagchainPrivkey='" + plagchainPrivkey + '\'' +
+            ", selectedMiner=" + selectedMiner +
+            '}';
     }
 }
