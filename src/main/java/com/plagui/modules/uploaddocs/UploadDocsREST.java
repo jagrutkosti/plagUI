@@ -1,14 +1,22 @@
 package com.plagui.modules.uploaddocs;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.plagui.domain.User;
 import com.plagui.modules.GenericResponse;
 import com.plagui.modules.UtilService;
 import com.plagui.modules.plagcheck.PlagCheckResultDTO;
 import com.plagui.service.UserService;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Jagrut on 07-06-2017.
@@ -44,14 +52,18 @@ public class UploadDocsREST {
     public GenericResponse uploadDoc(@RequestParam("fileToHash")MultipartFile pdfFile,
                                      @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
                                      @RequestParam(required = false, value = "contactInfo")String contactInfo,
-                                     @RequestParam("streamName")String streamName) {
+                                     @RequestParam(required = false, value = "streamNames")String streamNames) {
         log.info("REST request to timestamp PDF file");
+        Gson gson = new GsonBuilder().create();
+        Type listType = new TypeToken<List<PDServersDTO>>(){}.getType();
+        List<PDServersDTO> streamNamesList = gson.fromJson(streamNames, listType);
+
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
             if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
-                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainAddress(), pdfFile, contactInfo, streamName);
+                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainAddress(), pdfFile, contactInfo, streamNamesList);
                 if(!result.contains(" "))
                     response.setSuccess("success");
                 else
@@ -78,13 +90,17 @@ public class UploadDocsREST {
                                       @RequestParam("fileName") String fileName,
                                       @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
                                       @RequestParam(required = false, value = "contactInfo")String contactInfo,
-                                      @RequestParam("streamName")String streamName) {
+                                      @RequestParam(required = false, value = "streamNames")String streamNames) {
         log.info("REST request to timestamp some text");
+        Gson gson = new GsonBuilder().create();
+        Type listType = new TypeToken<List<PDServersDTO>>(){}.getType();
+        List<PDServersDTO> streamNamesList = gson.fromJson(streamNames, listType);
+
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainAddress(), textToHash, contactInfo, streamName);
+            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainAddress(), textToHash, contactInfo, streamNamesList);
             if(!result.contains(" "))
                 response.setSuccess("success");
             else

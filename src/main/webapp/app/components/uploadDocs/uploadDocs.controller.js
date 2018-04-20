@@ -10,9 +10,9 @@
         .module('plagUiApp')
         .controller('UploadDocsController', UploadDocsController);
 
-    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state', 'vcRecaptchaService', 'streamPermissionsAndRequests'];
+    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state', 'vcRecaptchaService', 'streamPermissionsAndRequests', 'pdServers'];
 
-    function UploadDocsController(UploadDocsService, AlertService, $state, vcRecaptchaService, streamPermissionsAndRequests){
+    function UploadDocsController(UploadDocsService, AlertService, $state, vcRecaptchaService, streamPermissionsAndRequests, pdServers){
         var vm = this;
         vm.uploadDocForBlockchain = uploadDocForBlockchain;
         vm.uploadTextForBlockchain = uploadTextForBlockchain;
@@ -20,10 +20,15 @@
         vm.setResponse = setResponse;
         vm.setWidgetId = setWidgetId;
         vm.cbExpiration = cbExpiration;
+
+        vm.pdServers = pdServers;
+
         /**
          * fileData: {'fileToHash', 'textToHash', 'imageToHash', 'streamName', 'contactInfo', 'fileName', 'success', 'error'}
          */
-        vm.fileData = {};
+        vm.fileData = {
+            streamNames : []
+        };
         vm.streamPermissions = streamPermissionsAndRequests;
         vm.recaptcha = {
             key: '6LfGcycUAAAAAAn3Aanri79ijQSwust7kH_BH9Bd',
@@ -36,6 +41,7 @@
          * Handle the response from the server and redirect accordingly.
          */
         function uploadDocForBlockchain() {
+            setStreamNames();
             UploadDocsService.uploadDocForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response){
                 if(response.success) {
                     vm.fileData.success = response.success;
@@ -57,6 +63,7 @@
          * Handle the response from the server and redirect accordingly.
          */
         function uploadTextForBlockchain() {
+            setStreamNames();
             UploadDocsService.uploadTextForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
@@ -114,6 +121,13 @@
         function cbExpiration() {
             vcRecaptchaService.reload(vm.recaptcha.widgetId);
             vm.recaptcha.response = null;
+        }
+
+        function setStreamNames() {
+            vm.pdServers.forEach(function (item) {
+                if(item.selected)
+                    vm.fileData.streamNames.push(item);
+            })
         }
     }
 })();

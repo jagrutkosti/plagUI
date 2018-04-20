@@ -27,7 +27,7 @@
                 data: {
                     fileToHash: fileData.fileToHash,
                     contactInfo: fileData.contactInfo,
-                    streamName: fileData.streamName,
+                    streamNames: angular.toJson(fileData.streamNames),
                     gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {
@@ -96,6 +96,19 @@
                     return response.status + ':' + response.statusText;
                 }
             })
+        };
+
+        /**
+         * Retrieves the list of pd servers confirmed and stored in blockchain
+         */
+        service.getPdServersList = function() {
+            return $http.get('/api/plagchain/getPdServersList').then(function(response) {
+               return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            });
         };
 
         return service;

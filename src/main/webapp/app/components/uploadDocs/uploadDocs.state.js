@@ -27,6 +27,9 @@
                    }
                },
                resolve: {
+                   pdServers: ['UploadDocsService', function(UploadDocsService) {
+                       return UploadDocsService.getPdServersList();
+                   }]
                }
            });
     }

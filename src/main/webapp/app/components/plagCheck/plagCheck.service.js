@@ -26,7 +26,7 @@
                 url : API_URL + 'plagCheckDoc',
                 data : {
                     plagCheckDoc: data.plagCheckDoc,
-                    checkUnpublishedWork: data.checkUnpublishedWork,
+                    streamNames: data.streamNames,
                     gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {

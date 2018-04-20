@@ -1,10 +1,10 @@
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <div class="page-header text-center">
-            <h3>Check Similarity <br/><small>Compare document with other document(s) (fingerprints) in Plagchain</small></h3>
+            <h3>Check Similarity <br/><small>Compare document with other document(s)' features in Plagchain</small></h3>
         </div>
         <jhi-alert></jhi-alert>
-        <div ng-if="vm.results.listOfSimilarPublishedWork.length === 0 && vm.results.listOfSimilarUnpublishedWork.length === 0" class="alert alert-info">
+        <div ng-if="vm.isEmpty" class="alert alert-info">
             <p align="center">No similar documents found!</p>
         </div>
         <div class="col-sm-10">
@@ -23,26 +23,30 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input id="checkUnpublishedWork" name="checkUnpublishedWork" ng-model="vm.data.checkUnpublishedWork" type="checkbox"> Check for similar documents in <b>unpublished</b> work stream.
+                <div class="checkbox" id="streamName">
+                    <label ng-repeat="item in vm.pdServers">
+                        <input type="checkbox" value="{{item.pdServerName}}" ng-model="item.selected" ng-change="vm.setStreamNames()">
+                        {{item.pdServerName}}
                     </label>
+                    <div ng-if="vm.data.streamNames.length === 0">
+                        <p class="help-block">Please select at least one agorithm.</p>
+                    </div>
                 </div>
             </div>
             <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId()" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
             <br/>
-            <button type="submit" ng-disabled="pdfPlagCheck.$invalid" class="btn btn-primary">Submit</button>
+            <button type="submit" ng-disabled="pdfPlagCheck.$invalid || vm.data.streamNames.length === 0" class="btn btn-primary">Submit</button>
         </form>
     </div>
 </div>
 
 <br/><br/>
 
-<div class="row" ng-if="vm.results.listOfSimilarPublishedWork.length > 0 || vm.results.listOfSimilarUnpublishedWork.length > 0">
+<div class="row" ng-if="!vm.isEmpty">
     <div class="col-md-8 col-md-offset-2">
         <uib-accordion close-others="false">
-            <div ng-if="vm.results.listOfSimilarPublishedWork.length > 0">
-                <div uib-accordion-group class="panel-primary" heading="Similar Documents in Published Work stream" is-open="true">
+            <div ng-repeat="(key, value) in vm.results">
+                <div uib-accordion-group class="panel-primary" heading="Similar Documents in {{key}} stream" is-open="true">
                     <div class="panel panel-default">
                         <table class="table table-striped">
                             <thead>
@@ -54,7 +58,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="simDoc in vm.results.listOfSimilarPublishedWork">
+                                <tr ng-repeat="simDoc in value.listOfSimilarDocuments">
                                     <td>{{simDoc.fileName}}</td>
                                     <td>{{simDoc.similarityScore * 100 | number : 2}}%</td>
                                     <td>{{simDoc.contactInfo}}</td>
@@ -71,38 +75,8 @@
                     </div>
                 </div>
             </div>
-            <div ng-if="vm.results.listOfSimilarUnpublishedWork.length > 0">
-                <div uib-accordion-group class="panel-primary" heading="Similar Documents in Unpublished Work stream" is-open="true">
-                    <div class="panel panel-default">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Document</th>
-                                <th>Similarity Percentage</th>
-                                <th>Contact Info</th>
-                                <th>*Request Author</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="simDoc in vm.results.listOfSimilarUnpublishedWork">
-                                <td>{{simDoc.fileName}}</td>
-                                <td>{{simDoc.similarityScore * 100 | number : 2}}%</td>
-                                <td>{{simDoc.contactInfo}}</td>
-                                <td>
-                                    <button class="btn btn-default" type="button" ng-click="vm.createPlagCheckRequest(simDoc)" ng-disabled="simDoc.disabled"
-                                            ng-if="vm.currentUserWalletAddress !== simDoc.publisherWalletAddress">
-                                        <span ng-class="simDoc.disabled ? 'glyphicon glyphicon-time' : '' " aria-hidden="true"> {{simDoc.disabled ? 'Requested' : 'Request'}}</span>
-                                    </button>
-                                    <span ng-if="vm.currentUserWalletAddress === simDoc.publisherWalletAddress">Self</span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </uib-accordion>
-        <div class="panel panel-info panel-body" ng-if="vm.results.listOfSimilarPublishedWork.length > 0 || vm.results.listOfSimilarUnpublishedWork.length > 0">
+        <div class="panel panel-info panel-body" ng-if="!vm.isEmpty">
             <p align="justify">
                 <strong>* Request Author:</strong>
                 You can request the author of the document to upload more hashes of that particular document.

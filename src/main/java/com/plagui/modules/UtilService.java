@@ -11,18 +11,25 @@ import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 import com.plagui.config.Constants;
 import com.plagui.modules.streamformats.ChainData;
+import com.plagui.modules.uploaddocs.PDServersDTO;
 import multichain.command.MultichainException;
 import multichain.command.StreamCommand;
 import multichain.object.StreamItem;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -35,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -259,7 +267,7 @@ public class UtilService {
         try {
             List<StreamItem> alreadyExistingKeys = StreamCommand.listStreamKeyItems(streamName, keyAsDocHash);
             if(alreadyExistingKeys != null && alreadyExistingKeys.size() > 0)
-                return "Document already exists.";
+                return "Document already exists in " + streamName;
             response = StreamCommand.publishFromStream(walletAddress, streamName, keyAsDocHash, hexData);
             log.info("Transaction response: {}", response);
         } catch (MultichainException e) {
@@ -405,5 +413,80 @@ public class UtilService {
                 e.printStackTrace();
                 return null;
             }
+    }
+
+    /**
+     * Get all available servers list stored on the blockchain stream
+     * @return List of PDServersDTO object
+     */
+    public List<PDServersDTO> getAllPDServers() {
+        log.info("UtilService#getAllPDServers()");
+        List<PDServersDTO> pdServersList = new ArrayList<>();
+        try {
+            List<StreamItem> allPDServersAsStream = StreamCommand.listStreamItems(Constants.PD_SERVERS_STREAM);
+            for(StreamItem item : allPDServersAsStream) {
+                PDServersDTO pdServer = new PDServersDTO();
+                pdServer.setPdServerName(item.getKey());
+
+                JSONObject itemData = transformDataFromHextoJSON(item.getData());
+                if(itemData != null) {
+                    pdServer.setPingUrl(itemData.getString("ping"));
+                    pdServer.setSubmitDocUrl(itemData.getString("submitDoc"));
+                    pdServer.setCheckSimUrl(itemData.getString("checkSim"));
+                    pdServersList.add(pdServer);
+                }
+            }
+        } catch (MultichainException | JSONException e) {
+            e.printStackTrace();
+        }
+        return  pdServersList;
+    }
+
+    /**
+     * Makes HTTP call to mentioned url with specified payloads
+     * @param paramsList list of parameters
+     * @param url url to which the post request is to be made
+     * @return {GenericResponse} contains response from server
+     */
+    public GenericResponse postRequestPDServer(GenericPostRequest paramsList, String url, String publisherWalletAddress) {
+        log.info("Making HTTP call to Plagdetection module");
+        GenericResponse response = new GenericResponse();
+
+        HttpClient httpClient = HttpClients.createDefault();
+        HttpPost postRequest = new HttpPost(url);
+
+        try {
+            File payload;
+            if(paramsList.getTextualContent() != null && paramsList.getTextualContent().length() > 0) {
+                payload = new File(paramsList.getFileName());
+                FileUtils.writeStringToFile(payload, paramsList.getTextualContent(), Charset.defaultCharset());
+            } else {
+                payload = new File(paramsList.getMultipartFile().getOriginalFilename());
+                paramsList.getMultipartFile().transferTo(payload);
+            }
+
+            MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+            entity.addPart("file", new FileBody(payload));
+
+            if(paramsList.getContactInfo() != null && paramsList.getContactInfo().length() > 0)
+                entity.addPart("contactInfo", new StringBody(paramsList.getContactInfo()));
+
+            entity.addPart("publisherWalletAddress", new StringBody(publisherWalletAddress));
+            postRequest.setEntity(entity);
+            HttpResponse responseFromServer = httpClient.execute(postRequest);
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseFromServer.getEntity().getContent()));
+            StringBuilder result = new StringBuilder();
+            String line;
+            while((line = bufferedReader.readLine()) != null)
+                result.append(line);
+            response.setResponseText(result.toString());
+        } catch (HttpHostConnectException e) {
+            response.setError("Plag detection server not available");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return response;
     }
 }

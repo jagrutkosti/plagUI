@@ -31,6 +31,9 @@
                         return Principal.identity().then(function(user) {
                             return user.walletAddress;
                         });
+                    }],
+                    pdServers: ['UploadDocsService', function(UploadDocsService) {
+                        return UploadDocsService.getPdServersList();
                     }]
                 }
             });

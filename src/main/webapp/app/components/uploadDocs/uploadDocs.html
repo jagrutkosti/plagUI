@@ -3,8 +3,8 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-header text-center">
-                    <h3>Submit Publication<br/><small>We calculate SHA-256 fingerprint from your document and publish it to your chosen stream on Plagchain.
-                        We then aggregate fingerprints received during a time period from Plagchain and calculate the SHA-256 fingerprint of the aggregated values and get timestamped on Bitcoin via Originstamp.</small></h3>
+                    <h3>Submit Document<br/><small>We calculate SHA-256 fingerprint from your document and publish it to 'Timestamp' stream on Plagchain to get a timestamp on Bitcoin.
+                        You can choose with which similarity detection technique(s) you would like to index your document. Original document content is not stored anywhere.</small></h3>
                 </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>
@@ -45,9 +45,13 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label" for="streamName">Submit to Stream: </label>
-                        <select class="form-control" name="streamName" id="streamName" ng-model="vm.fileData.streamName" required>
-                            <option ng-repeat="option in vm.streamPermissions.allStreamPermissionRequests | filter: {write : true}" value="{{option.streamName}}">{{option.streamName}}</option>
-                        </select>
+                        <p class="help-block">If none selected, the document will only be timestamped.</p>
+                        <div class="checkbox" id="streamName">
+                            <label ng-repeat="item in vm.pdServers">
+                                <input type="checkbox" value="{{item.pdServerName}}" ng-model="item.selected">
+                                {{item.pdServerName}}
+                            </label>
+                        </div>
                         <div ng-show="pdfForm.streamName.$dirty && pdfForm.streamName.$invalid">
                             <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>
                         </div>
@@ -64,8 +68,8 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-header text-center">
-                    <h3>Submit Text<br/><small>We calculate SHA-256 fingerprint from your text and publish it to your chosen stream on Plagchain.
-                        We then aggregate fingerprints received during a time period from Plagchain and calculate the SHA-256 fingerprint of the aggregated values and get timestamped on Bitcoin via Originstamp.</small></h3>
+                    <h3>Submit Text<br/><small>We calculate SHA-256 fingerprint from your text and publish it to 'Timestamp' stream on Plagchain to get a timestamp on Bitcoin.
+                        You can choose with which similarity detection technique(s) you would like to index your text. Original text is not stored anywhere.</small></h3>
                 </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>
@@ -117,9 +121,13 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label" for="streamNameText">Submit to Stream: </label>
-                        <select class="form-control" name="streamName" id="streamNameText" ng-model="vm.fileData.streamName" required>
-                            <option ng-repeat="option in vm.streamPermissions.allStreamPermissionRequests | filter: {write : true}" value="{{option.streamName}}">{{option.streamName}}</option>
-                        </select>
+                        <p class="help-block">If none selected, the document will only be timestamped.</p>
+                        <div class="checkbox" id="streamNameText">
+                            <label ng-repeat="item in vm.pdServers">
+                                <input type="checkbox" value="{{item.pdServerName}}" ng-model="item.selected">
+                                {{item.pdServerName}}
+                            </label>
+                        </div>
                         <div ng-show="pdfForm.streamName.$dirty && pdfForm.streamName.$invalid">
                             <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>
                         </div>
@@ -136,8 +144,7 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-header text-center">
-                    <h3>Submit Image<br/><small>We calculate SHA-256 fingerprint from your image and publish it to <em>unpublishedwork</em> stream on Plagchain.
-                        We then aggregate fingerprints received during a time period from Plagchain and calculate the SHA-256 fingerprint of the aggregated values and get timestamped on Bitcoin via Originstamp.</small></h3>
+                    <h3>Submit Image<br/><small>We calculate SHA-256 fingerprint from your image and publish it to 'Timestamp' stream on Plagchain to get a timestamp on Bitcoin.</small></h3>
                 </div>
                 <div ng-if="vm.fileData.error">
                     <jhi-alert>{{vm.fileData.error}}</jhi-alert>

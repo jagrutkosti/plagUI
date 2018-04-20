@@ -5,8 +5,17 @@ package com.plagui.modules;
  * A generic class to build a response.
  */
 public class GenericResponse {
+    private String responseText;
     private String success;
     private String error;
+
+    public String getResponseText() {
+        return responseText;
+    }
+
+    public void setResponseText(String responseText) {
+        this.responseText = responseText;
+    }
 
     public String getSuccess() {
         return success;

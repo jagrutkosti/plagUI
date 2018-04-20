@@ -11,17 +11,20 @@
         .module('plagUiApp')
         .controller('PlagCheckController', PlagCheckController);
 
-    PlagCheckController.$inject = ['$scope', 'PlagCheckService', 'AlertService', 'vcRecaptchaService', 'currentUserWalletAddress'];
+    PlagCheckController.$inject = ['$scope', 'PlagCheckService', 'AlertService', 'vcRecaptchaService', 'currentUserWalletAddress', 'pdServers'];
 
-    function PlagCheckController($scope, PlagCheckService, AlertService, vcRecaptchaService, currentUserWalletAddress) {
+    function PlagCheckController($scope, PlagCheckService, AlertService, vcRecaptchaService, currentUserWalletAddress, pdServers) {
         var vm = this;
         vm.checkForPlagiarism = checkForPlagiarism;
         vm.createPlagCheckRequest = createPlagCheckRequest;
         vm.setResponse = setResponse;
         vm.setWidgetId = setWidgetId;
         vm.cbExpiration = cbExpiration;
+        vm.setStreamNames = setStreamNames;
         vm.currentUserWalletAddress = currentUserWalletAddress;
         vm.results = {};
+        vm.isEmpty = "";
+        vm.pdServers = pdServers;
         vm.plagCheckDocFileName = '';
         vm.recaptcha = {
             key: '6LfGcycUAAAAAAn3Aanri79ijQSwust7kH_BH9Bd',
@@ -31,15 +34,22 @@
         /**
          * 'plagCheckDoc', 'checkUnpublishedWork'
          */
-        vm.data = {};
+        vm.data = {
+            streamNames : []
+        };
 
         /**
          * Calls the service function to check for plagiarism of the uploaded document and handles the response.
          */
         function checkForPlagiarism() {
+            setStreamNames();
             PlagCheckService.checkForPlagiarism(vm.data, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.results = angular.fromJson(response.resultJsonString);
+                    if(Object.keys(vm.results).length === 0 && vm.results.constructor === Object)
+                        vm.isEmpty = true;
+                    else
+                        vm.isEmpty = false;
                     vm.plagCheckDocFileName = response.plagCheckDocFileName;
                 } else {
                     vm.data = {};
@@ -97,6 +107,13 @@
         function cbExpiration() {
             vcRecaptchaService.reload(vm.recaptcha.widgetId);
             vm.recaptcha.response = null;
+        }
+
+        function setStreamNames() {
+            vm.pdServers.forEach(function (item) {
+                if(item.selected)
+                    vm.data.streamNames.push(item);
+            })
         }
     }
 })();

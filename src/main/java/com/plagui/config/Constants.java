@@ -19,10 +19,14 @@ public final class Constants {
     public static final String CHAIN_NAME="plagchain";
     public static final String PUBLISHED_WORK_STREAM_NAME = "publishedwork";
     public static final String UNPUBLISHED_WORK_STREAM_NAME = "unpublishedwork";
-    public static final String MINERS_STREAM = "allminers";
-    public static final String MINERS_USERS_ASSOCIATION_STREAM = "minersusersassociation";
     public static final String PLAGDETECTION_URL = "http://localhost:8090/plagcheck/runMinHashAlgo";
     public static final String SEED_DETAILS_FOR_HASH_URL = "http://localhost:8090/plagcheck/getHashSeed";
+
+    public static final String TIMESTAMP_STREAM = "timestamp";
+    public static final String MINERS_STREAM = "all_miners";
+    public static final String MINERS_USERS_ASSOCIATION_STREAM = "miner_association";
+    public static final String PD_SERVERS_STREAM = "pd_servers";
+
     public static final String GOOGLE_RECAPTCHA_SECRET = "6LfGcycUAAAAAPUaHNoU-jatYvdgj75mjGUeYTzk";
     public static final String GOOGLE_RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify";
 
