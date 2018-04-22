@@ -56,9 +56,24 @@
                             <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>
                         </div>
                     </div>
+                    <div class="form-group" ng-if="vm.account.privKeyOption === 0">
+                        <label class="control-label" for="password">Login password to decrypt your private key: </label>
+                        <input type="password" class="form-control" id="password" name="password" ng-model="vm.fileData.password" ng-change="vm.checkPassword()"
+                               placeholder="Your login password.." required>
+                        <div ng-show="pdfForm.password.$dirty && pdfForm.password.$invalid">
+                            <p class="help-block" ng-show="pdfForm.password.$error.required">
+                                Please enter your password.
+                            </p>
+                        </div>
+                        <div ng-show="vm.invalidPassword">
+                            <p class="help-block" style="color: red">
+                                Your password is incorrect.
+                            </p>
+                        </div>
+                    </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(1)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
-                    <button type="submit" ng-disabled="pdfForm.$invalid" class="btn btn-primary">Submit</button>
+                    <button type="submit" ng-disabled="pdfForm.$invalid || vm.invalidPassword" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>
@@ -132,6 +147,21 @@
                             <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>
                         </div>
                     </div>
+                    <div class="form-group" ng-if="vm.account.privKeyOption === 0">
+                        <label class="control-label" for="passwordForText">Login password to decrypt your private key: </label>
+                        <input type="password" class="form-control" id="passwordForText" name="password" ng-model="vm.fileData.password" ng-change="vm.checkPassword()"
+                               placeholder="Your login password.." required>
+                        <div ng-show="pdfForm.password.$dirty && pdfForm.password.$invalid">
+                            <p class="help-block" ng-show="pdfForm.password.$error.required">
+                                Please enter your password.
+                            </p>
+                        </div>
+                        <div ng-show="vm.invalidPassword">
+                            <p class="help-block" style="color: red">
+                                Your password is incorrect.
+                            </p>
+                        </div>
+                    </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(2)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
                     <button type="submit" ng-disabled="textForm.$invalid" class="btn btn-primary">Submit</button>
@@ -180,6 +210,21 @@
                             <p class="help-block"
                                ng-show="imageForm.contactInfo.$error.maxlength">
                                 Your email cannot be longer than 100 characters.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="vm.account.privKeyOption === 0">
+                        <label class="control-label" for="passwordForImage">Login password to decrypt your private key: </label>
+                        <input type="password" class="form-control" id="passwordForImage" name="password" ng-model="vm.fileData.password" ng-change="vm.checkPassword()"
+                               placeholder="Your login password.." required>
+                        <div ng-show="pdfForm.password.$dirty && pdfForm.password.$invalid">
+                            <p class="help-block" ng-show="pdfForm.password.$error.required">
+                                Please enter your password.
+                            </p>
+                        </div>
+                        <div ng-show="vm.invalidPassword">
+                            <p class="help-block" style="color: red">
+                                Your password is incorrect.
                             </p>
                         </div>
                     </div>

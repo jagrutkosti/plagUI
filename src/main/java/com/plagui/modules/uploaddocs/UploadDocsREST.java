@@ -51,6 +51,7 @@ public class UploadDocsREST {
     @ResponseBody
     public GenericResponse uploadDoc(@RequestParam("fileToHash")MultipartFile pdfFile,
                                      @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
+                                     @RequestParam("decryptedPrivKey")String decryptedPrivKey,
                                      @RequestParam(required = false, value = "contactInfo")String contactInfo,
                                      @RequestParam(required = false, value = "streamNames")String streamNames) {
         log.info("REST request to timestamp PDF file");
@@ -63,11 +64,8 @@ public class UploadDocsREST {
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
             if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
-                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainAddress(), pdfFile, contactInfo, streamNamesList);
-                if(!result.contains(" "))
-                    response.setSuccess("success");
-                else
-                    response.setError(result);
+                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainAddress(), pdfFile, contactInfo, streamNamesList, decryptedPrivKey);
+                response.setSuccess(result);
             } else
                 response.setError("File format not supported.");
         } else {
@@ -89,6 +87,7 @@ public class UploadDocsREST {
     public GenericResponse uploadText(@RequestParam("textToHash")String textToHash,
                                       @RequestParam("fileName") String fileName,
                                       @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
+                                      @RequestParam("decryptedPrivKey")String decryptedPrivKey,
                                       @RequestParam(required = false, value = "contactInfo")String contactInfo,
                                       @RequestParam(required = false, value = "streamNames")String streamNames) {
         log.info("REST request to timestamp some text");
@@ -100,7 +99,7 @@ public class UploadDocsREST {
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainAddress(), textToHash, contactInfo, streamNamesList);
+            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainAddress(), textToHash, contactInfo, streamNamesList, decryptedPrivKey);
             if(!result.contains(" "))
                 response.setSuccess("success");
             else
@@ -123,13 +122,14 @@ public class UploadDocsREST {
     @ResponseBody
     public GenericResponse uploadImage(@RequestParam("imageToHash")MultipartFile imageFile,
                                        @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
+                                       @RequestParam("decryptedPrivKey")String decryptedPrivKey,
                                        @RequestParam(required = false, value = "contactInfo")String contactInfo) {
         log.info("REST request to timestamp image");
         GenericResponse response = new GenericResponse();
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            String result = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainAddress(), imageFile, contactInfo);
+            String result = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainAddress(), imageFile, contactInfo, decryptedPrivKey);
             if(!result.contains(" "))
                 response.setSuccess("success");
             else

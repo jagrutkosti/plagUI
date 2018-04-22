@@ -23,7 +23,7 @@
         vm.setStreamNames = setStreamNames;
         vm.currentUserWalletAddress = currentUserWalletAddress;
         vm.results = {};
-        vm.isEmpty = "";
+        vm.isEmpty = null;
         vm.pdServers = pdServers;
         vm.plagCheckDocFileName = '';
         vm.recaptcha = {
@@ -42,10 +42,14 @@
          * Calls the service function to check for plagiarism of the uploaded document and handles the response.
          */
         function checkForPlagiarism() {
-            setStreamNames();
             PlagCheckService.checkForPlagiarism(vm.data, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.results = angular.fromJson(response.resultJsonString);
+                    for(var key in vm.results) {
+                        if(vm.results.hasOwnProperty(key)) {
+                            vm.results[key] = angular.fromJson(vm.results[key]);
+                        }
+                    }
                     if(Object.keys(vm.results).length === 0 && vm.results.constructor === Object)
                         vm.isEmpty = true;
                     else
@@ -110,6 +114,7 @@
         }
 
         function setStreamNames() {
+            vm.data.streamNames = [];
             vm.pdServers.forEach(function (item) {
                 if(item.selected)
                     vm.data.streamNames.push(item);

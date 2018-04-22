@@ -133,6 +133,7 @@ public class UserService {
         //Add the address to the wallet of the UI server and grant basic permissions
         privateKeyManagementService.importAddress(plagchainAddress);
         privateKeyManagementService.grantReceiveSendConnectPermission(plagchainAddress);
+        privateKeyManagementService.sendZeroTransaction(plagchainAddress);
 
         //Store the associated miner info in DB as well as Blockchain
         newUser.setAssociatedMinerAddress(associatedMinerAddress);
@@ -178,6 +179,7 @@ public class UserService {
         //Add the address to the wallet of the UI server and grant basic permissions
         privateKeyManagementService.importAddress(userDTO.getPlagchainAddress());
         privateKeyManagementService.grantReceiveSendConnectPermission(userDTO.getPlagchainAddress());
+        privateKeyManagementService.sendZeroTransaction(userDTO.getPlagchainAddress());
 
         //Store the associated miner info in DB as well as Blockchain
         user.setAssociatedMinerAddress(userDTO.getSelectedMiner().getMinerAddress());

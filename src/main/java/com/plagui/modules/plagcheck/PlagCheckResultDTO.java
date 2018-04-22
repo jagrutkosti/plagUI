@@ -1,6 +1,7 @@
 package com.plagui.modules.plagcheck;
 
 import com.plagui.modules.GenericResponse;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -11,6 +12,7 @@ import java.util.HashMap;
 public class PlagCheckResultDTO extends GenericResponse {
     private HashMap<String, String> resultJsonString;
     private String plagCheckDocFileName;
+    private String resultAsJson;
 
     public HashMap<String, String> getResultJsonString() {
         return resultJsonString;
@@ -26,5 +28,13 @@ public class PlagCheckResultDTO extends GenericResponse {
 
     public void setPlagCheckDocFileName(String plagCheckDocFileName) {
         this.plagCheckDocFileName = plagCheckDocFileName;
+    }
+
+    public String getResultAsJson() {
+        return resultAsJson;
+    }
+
+    public void setResultAsJson(String resultAsJson) {
+        this.resultAsJson = resultAsJson;
     }
 }

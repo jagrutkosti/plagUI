@@ -10,9 +10,9 @@
         .module('plagUiApp')
         .controller('UploadDocsController', UploadDocsController);
 
-    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state', 'vcRecaptchaService', 'streamPermissionsAndRequests', 'pdServers'];
+    UploadDocsController.$inject = ['UploadDocsService', 'AlertService', '$state', 'vcRecaptchaService', 'streamPermissionsAndRequests', 'pdServers', 'account'];
 
-    function UploadDocsController(UploadDocsService, AlertService, $state, vcRecaptchaService, streamPermissionsAndRequests, pdServers){
+    function UploadDocsController(UploadDocsService, AlertService, $state, vcRecaptchaService, streamPermissionsAndRequests, pdServers, account){
         var vm = this;
         vm.uploadDocForBlockchain = uploadDocForBlockchain;
         vm.uploadTextForBlockchain = uploadTextForBlockchain;
@@ -20,14 +20,16 @@
         vm.setResponse = setResponse;
         vm.setWidgetId = setWidgetId;
         vm.cbExpiration = cbExpiration;
+        vm.checkPassword = checkPassword;
 
         vm.pdServers = pdServers;
-
+        vm.account = account;
         /**
          * fileData: {'fileToHash', 'textToHash', 'imageToHash', 'streamName', 'contactInfo', 'fileName', 'success', 'error'}
          */
         vm.fileData = {
-            streamNames : []
+            streamNames : [],
+            decryptedPrivKey : ''
         };
         vm.streamPermissions = streamPermissionsAndRequests;
         vm.recaptcha = {
@@ -35,6 +37,21 @@
             response: null,
             widgetId: null
         };
+        vm.invalidPassword = true;
+
+        /**
+         * Checks if password is valid by decrypting the private key of the logged in user.
+         */
+        function checkPassword() {
+            try {
+                var bytes  = CryptoJS.AES.decrypt(vm.account.plagchainPrivkey, vm.fileData.password);
+                vm.fileData.decryptedPrivKey = bytes.toString(CryptoJS.enc.Utf8);
+            } catch(err) {
+                vm.fileData.decryptedPrivKey = '';
+            } finally {
+                vm.invalidPassword = vm.fileData.decryptedPrivKey.length <= 5;
+            }
+        }
 
         /**
          * Redirect the request to angular service after receiving the file from UI.

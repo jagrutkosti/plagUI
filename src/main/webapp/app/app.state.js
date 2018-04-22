@@ -30,6 +30,9 @@
                     return PermissionsService.getPermissionsAndRequestsForUser().then(function(response) {
                         return response;
                     });
+                }],
+                account: ['Account', function(Account) {
+                    return Account.get();
                 }]
             }
         });

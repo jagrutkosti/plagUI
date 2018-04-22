@@ -4,6 +4,7 @@ import com.plagui.config.Constants;
 import com.plagui.modules.GenericPostRequest;
 import com.plagui.modules.GenericResponse;
 import com.plagui.modules.UtilService;
+import com.plagui.modules.privatekeymanagement.PrivateKeyManagementService;
 import multichain.command.MultichainException;
 import multichain.command.StreamCommand;
 import multichain.object.StreamItem;
@@ -26,10 +27,12 @@ import java.util.*;
 public class PlagchainUploadService {
     private final Logger log = LoggerFactory.getLogger(PlagchainUploadService.class);
     private UtilService utilService;
+    private PrivateKeyManagementService privateKeyManagementService;
 
 
-    public PlagchainUploadService(UtilService utilService) {
+    public PlagchainUploadService(UtilService utilService, PrivateKeyManagementService privateKeyManagementService) {
         this.utilService = utilService;
+        this.privateKeyManagementService = privateKeyManagementService;
     }
 
     /**
@@ -39,21 +42,8 @@ public class PlagchainUploadService {
      * @param contactInfo contact info of the user, if provided
      * @return true, if everything was successful, exception otherwise
      */
-    public String processAndTimestampDoc(String walletAddress, MultipartFile pdfFile, String contactInfo, List<PDServersDTO> submitToServers) {
+    public String processAndTimestampDoc(String walletAddress, MultipartFile pdfFile, String contactInfo, List<PDServersDTO> submitToServers, String decryptedPrivKey) {
         log.info("Processing the pdf file for time stamping");
-        String response = "";
-        GenericPostRequest requestParams = new GenericPostRequest();
-        requestParams.setContactInfo(contactInfo);
-        requestParams.setMultipartFile(pdfFile);
-
-        for(PDServersDTO server : submitToServers) {
-            GenericResponse responseFromThisServer = utilService.postRequestPDServer(requestParams, server.getSubmitDocUrl(), walletAddress);
-            if (responseFromThisServer.getError() != null || responseFromThisServer.getError().length() > 0)
-                response = response.concat("\n" + server.getPdServerName() + " : " + responseFromThisServer.getError());
-            else
-                response = response.concat("\n" + server.getPdServerName() + " : " +responseFromThisServer.getResponseText());
-        }
-
         //Calculate sha256 hash for document to be used as key
         List<String> sha256DocHash = new ArrayList<>();
         try {
@@ -62,26 +52,23 @@ public class PlagchainUploadService {
             e.printStackTrace();
         }
 
+        String response = "";
+        GenericPostRequest requestParams = new GenericPostRequest();
+        requestParams.setContactInfo(contactInfo);
+        requestParams.setMultipartFile(pdfFile);
+
+        for(PDServersDTO server : submitToServers) {
+            System.out.println("inside");
+            GenericResponse responseFromThisServer = utilService.postRequestPDServer(requestParams, server.getSubmitDocUrl(), walletAddress);
+            if (responseFromThisServer.getError() != null && responseFromThisServer.getError().length() > 0)
+                response = response.concat("\n" + server.getPdServerName() + " : " + responseFromThisServer.getError());
+            else
+                response = response.concat("\n" + server.getPdServerName() + " : " +responseFromThisServer.getResponseText());
+        }
+
         //Submit the document for timestamp
-        response = response.concat("\n" + utilService.submitToPlagchainFrom(walletAddress, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), ""));
+        privateKeyManagementService.publishStreamItemForPrivateKey(walletAddress,decryptedPrivKey, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), "7b7d");
         return response;
-
-
-        /*//Parse pdf file for text and generate min hash
-        String textFromPdf = utilService.parsePdf(pdfFile);
-        String cleanedText = utilService.cleanText(textFromPdf);
-        cleanedText = utilService.removeAllWhiteSpaces(cleanedText);
-        List<String> allShingles = new ArrayList<>();
-        allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, cleanedText));
-        int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);
-
-        //Parse pdf file for images and generate sha256 hash
-        List<byte[]> imagesFromPdfAsByte = utilService.extractImageFromPdfFile(pdfFile);
-        List<String> sha256HashOfImages = utilService.generateSHA256HashFromObjects(imagesFromPdfAsByte);
-
-        //Transform to Hex string format and submit to plagchain
-        String hexData = utilService.formatDataToHex(pdfFile.getOriginalFilename(), Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), sha256HashOfImages, contactInfo);
-        return utilService.submitToPlagchainFrom(walletAddress, streamName, sha256DocHash.get(0), hexData);*/
     }
 
     /**
@@ -91,9 +78,12 @@ public class PlagchainUploadService {
      * @param contactInfo contact info of the user, if provided
      * @return true, if everything was successful, exception otherwise
      */
-    public String processAndTimestampText(String fileName, String walletAddress, String textToHash, String contactInfo, List<PDServersDTO> submitToServers) {
+    public String processAndTimestampText(String fileName, String walletAddress, String textToHash, String contactInfo, List<PDServersDTO> submitToServers, String decryptedPrivKey) {
         log.info("Processing text for time stamping");
         String response = "";
+
+        //Calculate sha256 hash for document to be used as key
+        List<String> sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(textToHash.getBytes()));
 
         for(PDServersDTO server : submitToServers) {
             GenericPostRequest requestParams = new GenericPostRequest();
@@ -101,32 +91,15 @@ public class PlagchainUploadService {
             requestParams.setTextualContent(textToHash);
             requestParams.setFileName(fileName);
             GenericResponse responseFromThisServer = utilService.postRequestPDServer(requestParams, server.getSubmitDocUrl(), walletAddress);
-            if (responseFromThisServer.getError() != null || responseFromThisServer.getError().length() > 0)
+            if (responseFromThisServer.getError() != null && responseFromThisServer.getError().length() > 0)
                 response = response.concat("\n" + server.getPdServerName() + " : " + responseFromThisServer.getError());
             else
                 response = response.concat("\n" + server.getPdServerName() + " : " +responseFromThisServer.getResponseText());
         }
 
-        //Calculate sha256 hash for document to be used as key
-        List<String> sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(textToHash.getBytes()));
-
         //Submit the document for timestamp
-        response = response.concat("\n" + utilService.submitToPlagchainFrom(walletAddress, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), ""));
+        privateKeyManagementService.publishStreamItemForPrivateKey(walletAddress,decryptedPrivKey, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), "7b7d");
         return response;
-
-        /*//Calculate sha256 hash for document to be used as key
-        List<String> sha256DocHash = utilService.generateSHA256HashFromObjects(Arrays.asList(textToHash.getBytes()));
-
-        //Parse the text and generate min hash
-        String cleanedText = utilService.cleanText(textToHash);
-        cleanedText = utilService.removeAllWhiteSpaces(cleanedText);
-        List<String> allShingles = new ArrayList<>();
-        allShingles.addAll(utilService.createShingles(Constants.SHINGLE_LENGTH, cleanedText));
-        int[] minHashFromShingles = utilService.generateMinHashSignature(allShingles);
-
-        //Transform to Hex string format and submit to plagchain
-        String hexData = utilService.formatDataToHex(fileName, Arrays.asList(ArrayUtils.toObject(minHashFromShingles)), null, contactInfo);
-        return utilService.submitToPlagchainFrom(walletAddress, streamName, sha256DocHash.get(0), hexData);*/
     }
 
     /**
@@ -136,7 +109,7 @@ public class PlagchainUploadService {
      * @param contactInfo contact info of the user, if provided
      * @return true, if everything was successful, exception otherwise
      */
-    public String processAndTimestampImage(String walletAddress, MultipartFile image, String contactInfo) {
+    public String processAndTimestampImage(String walletAddress, MultipartFile image, String contactInfo, String decryptedPrivKey) {
         log.info("Processing image for timestamping");
         //Calculate sha256 hash for document to be used as key
         List<String> sha256DocHash = new ArrayList<>();
@@ -148,6 +121,7 @@ public class PlagchainUploadService {
 
         //Transform to Hex string format and submit to plagchain
         String hexData = utilService.formatDataToHex(image.getName(), null, sha256DocHash, contactInfo);
-        return utilService.submitToPlagchainFrom(walletAddress, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), hexData);
+        privateKeyManagementService.publishStreamItemForPrivateKey(walletAddress,decryptedPrivKey, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), hexData);
+        return " ";
     }
 }

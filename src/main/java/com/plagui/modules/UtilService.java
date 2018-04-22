@@ -461,7 +461,7 @@ public class UtilService {
                 payload = new File(paramsList.getFileName());
                 FileUtils.writeStringToFile(payload, paramsList.getTextualContent(), Charset.defaultCharset());
             } else {
-                payload = new File(paramsList.getMultipartFile().getOriginalFilename());
+                payload = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + paramsList.getMultipartFile().getOriginalFilename());
                 paramsList.getMultipartFile().transferTo(payload);
             }
 

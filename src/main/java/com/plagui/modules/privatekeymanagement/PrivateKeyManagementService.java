@@ -1,9 +1,6 @@
 package com.plagui.modules.privatekeymanagement;
 
-import multichain.command.AddressCommand;
-import multichain.command.GrantCommand;
-import multichain.command.MultichainException;
-import multichain.command.RAWTransactionCommand;
+import multichain.command.*;
 import multichain.command.builders.QueryBuilderGrant;
 import multichain.object.KeyPair;
 import multichain.object.SignRawTransactionOut;
@@ -11,11 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Class to handle the private keys of the user depending on the choice of user from the following:
+ * 0) Encrypt the private key using the user password
  * 1) Store the private key in the UI database
- * 2) Encrypt the private key using the user password
- * 3) The user handles their own private key
+ * 2) The user handles their own private key
  */
 @Service
 public class PrivateKeyManagementService {
@@ -66,6 +66,19 @@ public class PrivateKeyManagementService {
     }
 
     /**
+     * Sends zero valued transaction from main node address to created address for getting a UTXO (Unspent transaction
+     * output) available for new address to start publishing data
+     * @param blockchainAddress the blockchain address to which to send zero value transaction
+     */
+    public void sendZeroTransaction(String blockchainAddress) {
+        try {
+            WalletTransactionCommand.SendToAddress(blockchainAddress, 0);
+        } catch (MultichainException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Publish an item to a stream using the blockchain address and runtime fetched private key.
      * @param blockchainAddress the blockchain address who wants to publish an item
      * @param privateKey the private key of the user
@@ -76,7 +89,10 @@ public class PrivateKeyManagementService {
     public void publishStreamItemForPrivateKey(String blockchainAddress, String privateKey, String streamName, String key, String data) {
         log.info("PrivateKeyManagementService::publishStreamItemForPrivateKey()");
 
-        String streamPayload = "'[{\"for\":\""+ streamName +"\",\"key\":\""+ key +"\", \"data\":\""+ data +"\"}]'";
+        Map<String, Object> streamPayload = new HashMap<>();
+        streamPayload.put("for", streamName);
+        streamPayload.put("key", key);
+        streamPayload.put("data", data);
         try {
             String hexadecimalBlob = RAWTransactionCommand.createRawSendFrom(blockchainAddress, null, streamPayload);
             SignRawTransactionOut signedHexadecimal = RAWTransactionCommand.signRawTransactionWithPrivKey(hexadecimalBlob,privateKey);

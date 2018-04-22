@@ -26,7 +26,7 @@
                 url : API_URL + 'plagCheckDoc',
                 data : {
                     plagCheckDoc: data.plagCheckDoc,
-                    streamNames: data.streamNames,
+                    streamNames: angular.toJson(data.streamNames),
                     gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {

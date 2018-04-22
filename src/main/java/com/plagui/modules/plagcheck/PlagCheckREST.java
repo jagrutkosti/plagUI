@@ -41,8 +41,9 @@ public class PlagCheckREST {
     @ResponseBody
     public PlagCheckResultDTO plagCheckForDoc(@RequestParam("plagCheckDoc")MultipartFile plagCheckDoc,
                                                       @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
-                                                      @RequestParam(required = false, value = "streamNames")String streamNames) {
+                                                      @RequestParam("streamNames")String streamNames) {
         log.info("REST request to check for document similarity");
+        System.out.println(streamNames);
         Gson gson = new GsonBuilder().create();
         Type listType = new TypeToken<List<PDServersDTO>>(){}.getType();
         List<PDServersDTO> streamNamesList = gson.fromJson(streamNames, listType);

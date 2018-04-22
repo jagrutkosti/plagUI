@@ -27,6 +27,7 @@
                 data: {
                     fileToHash: fileData.fileToHash,
                     contactInfo: fileData.contactInfo,
+                    decryptedPrivKey: fileData.decryptedPrivKey,
                     streamNames: angular.toJson(fileData.streamNames),
                     gRecaptchaResponse: gRecaptchaResponse
                 }
@@ -51,7 +52,8 @@
                     textToHash: fileData.textToHash,
                     fileName: fileData.fileName,
                     contactInfo: fileData.contactInfo,
-                    streamName: fileData.streamName,
+                    decryptedPrivKey: fileData.decryptedPrivKey,
+                    streamNames: angular.toJson(fileData.streamNames),
                     gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {
@@ -74,6 +76,7 @@
                 data: {
                     imageToHash: fileData.imageToHash,
                     contactInfo: fileData.contactInfo,
+                    decryptedPrivKey: fileData.decryptedPrivKey,
                     gRecaptchaResponse: gRecaptchaResponse
                 }
             }).then(function(response) {
