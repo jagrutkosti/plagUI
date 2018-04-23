@@ -2,6 +2,7 @@ package com.plagui.modules.docdetails;
 
 import com.plagui.config.Constants;
 import com.plagui.modules.UtilService;
+import com.plagui.repository.TimestampsRepository;
 import multichain.command.MultichainException;
 import multichain.command.StreamCommand;
 import multichain.object.StreamItem;
@@ -33,10 +34,15 @@ import java.util.List;
 public class DocDetailsService {
     private final Logger log = LoggerFactory.getLogger(DocDetailsService.class);
     private final UtilService utilService;
+    private final SeedSubmissionService seedSubmissionService;
+    private final TimestampsRepository timestampsRepository;
     private DocDetailsDTO response;
 
-    public DocDetailsService(UtilService utilService) {
+    public DocDetailsService(UtilService utilService, SeedSubmissionService seedSubmissionService,
+                             TimestampsRepository timestampsRepository) {
         this.utilService = utilService;
+        this.seedSubmissionService = seedSubmissionService;
+        this.timestampsRepository = timestampsRepository;
     }
 
     /**
@@ -49,19 +55,17 @@ public class DocDetailsService {
         log.info("Fetching all documents for address, {}", walletAddress);
         response = new DocDetailsDTO();
         //Get both stream items for each user
-        List<StreamItem> userItemsInPublishedWorkStream = getUserItemsFromStream(Constants.PUBLISHED_WORK_STREAM_NAME, walletAddress);
-        List<StreamItem> userItemsInUnpublishedWorkStream = getUserItemsFromStream(Constants.UNPUBLISHED_WORK_STREAM_NAME, walletAddress);
+        List<StreamItem> userItemsTimestampStream = getUserItemsFromStream(Constants.TIMESTAMP_STREAM, walletAddress);
 
         //Populate the items with the details from plag-detection module
-        response.setPublishedWorkDocs(processStreamItemAndCreateResponse(userItemsInPublishedWorkStream));
-        response.setUnpublishedWorkDocs(processStreamItemAndCreateResponse(userItemsInUnpublishedWorkStream));
+        response.setTimestampedDocs(processStreamItemAndCreateResponse(userItemsTimestampStream));
         if(response.getError() == null || response.getError().length() <= 0)
             response.setSuccess("success");
         return response;
     }
 
     /**
-     * For each stream item, query the transaction status from Plag detection module and get plagchain and
+     * For each stream item, query the transaction status from originstamp and get plagchain and
      * originstamp seed which the user can download. Other details fetched: Bitcoin address to which the transaction
      * was made, confirmation time. File name and submission time are populated directly from stream item.
      * @param streamItems List of stream items for which to fetch submission details
@@ -69,69 +73,46 @@ public class DocDetailsService {
      */
     public List<DocDetails> processStreamItemAndCreateResponse(List<StreamItem> streamItems) {
         List<DocDetails> docDetailsList = new ArrayList<>();
+        int count = 0;
         for(StreamItem streamItem : streamItems) {
+            Timestamps dbItem = timestampsRepository.findTimestampsByDocHashKey(streamItem.getKey());
+
             DocDetails docItem = new DocDetails();
             //Populate from stream item itself
             docItem.setSubmissionTimeToPlagchain(streamItem.getTime().toString() + "000");
             docItem.setFileName(utilService.transformDataFromHexToObject(streamItem.getData()).getFileName());
             docItem.setFileHash(streamItem.getKey());
-            try {
-                //For each hash, get the information from plag-detection module
-                String responseStringFromPDModule = getSeedSubmissionDetailsForHash(streamItem.getKey());
-                //If the stream item was identified by Plag-detection module, populate it, else do nothing
-                if(responseStringFromPDModule != null && responseStringFromPDModule.length() > 0 &&
-                    responseStringFromPDModule.contains("{")) {
-                    JSONObject responseFromPDModule = new JSONObject(responseStringFromPDModule);
-                    if(!(responseFromPDModule.get("seedDetails") instanceof JSONObject)) {
-                        docItem.setFetchedByPDModule(false);
-                    } else {
-                        JSONObject seedDetails = responseFromPDModule.getJSONObject("seedDetails");
-                        docItem.setPlagchainSeed(seedDetails.getString("plagchainSeed"));
-                        docItem.setBitcoinAddress(seedDetails.getString("originstampBtcAddress"));
-                        docItem.setTransactionHash(seedDetails.getString("originstampTransactionHash"));
-                        docItem.setOriginstampSeed(seedDetails.getString("originstampSeed"));
-                        docItem.setConfirmation(seedDetails.getInt("originstampConfirmed"));
-                        docItem.setConfirmationTime(seedDetails.getString("originstampBitcoinConfirmTime"));
-                        docItem.setFetchedByPDModule(true);
-                        docItem.setPlagchainSeedHash(seedDetails.getString("plagchainSeedHash"));
-                    }
-                } else {
-                    response.setError(responseStringFromPDModule);
-                    break;
-                }
-                docDetailsList.add(docItem);
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+            //For each hash, get the information from plag-detection module
+            SeedSubmission seedDetails = getSeedSubmissionDetailsForHash(streamItem.getKey());
+            //If the stream item was identified by Plag-detection module, populate it, else do nothing
+            if(seedDetails != null) {
+                docItem.setPlagchainSeed(seedDetails.getPlagchainSeed());
+                docItem.setBitcoinAddress(seedDetails.getOriginstampBtcAddress());
+                docItem.setTransactionHash(seedDetails.getOriginstampTransactionHash());
+                docItem.setOriginstampSeed(seedDetails.getOriginstampSeed());
+                docItem.setConfirmation(seedDetails.getOriginstampConfirmed());
+                docItem.setConfirmationTime(seedDetails.getOriginstampBitcoinConfirmTime());
+                docItem.setFetchedByBitcoinSchedule(dbItem.isSubmittedToOriginstamp());
+                docItem.setPlagchainSeedHash(seedDetails.getPlagchainSeedHash());
+                count++;
             }
+            docDetailsList.add(docItem);
         }
+        if(count == 0)
+            response.setError("No submission details found in local DB");
         return docDetailsList;
     }
 
     /**
-     * Makes an HTTP request to Plag-detection module to fetch all relevant information about the given hash.
-     * @param hashString the sha-256 hash for which to fetch the details
-     * @return {String} JSON string containing response from the plag-detection server.
+     * Find Seed Submission hash in DB whose plagchain_seed filed contains the given hash
+     * @param hashString the hash for which to find the corresponding seed
+     * @return {SeedSubmission} object
      */
-    public String getSeedSubmissionDetailsForHash(String hashString) {
-        HttpClient httpClient = HttpClients.createDefault();
-        HttpPost postRequest = new HttpPost(Constants.SEED_DETAILS_FOR_HASH_URL);
-        List<NameValuePair> paramList = new ArrayList<>();
-        paramList.add(new BasicNameValuePair("hashString", hashString));
-        try {
-            postRequest.setEntity(new UrlEncodedFormEntity(paramList, "UTF-8"));
-            HttpResponse response = httpClient.execute(postRequest);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            StringBuilder result = new StringBuilder();
-            String line;
-            while((line = bufferedReader.readLine()) != null)
-                result.append(line);
-            return result.toString();
-        } catch (HttpHostConnectException e) {
-            return "Plag detection server not available";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public SeedSubmission getSeedSubmissionDetailsForHash(String hashString) {
+
+        log.info("DocDetailsService to get seed submission object which contains the given hash");
+        return seedSubmissionService.findByOriginstampSeedRegex(hashString);
     }
 
     /**

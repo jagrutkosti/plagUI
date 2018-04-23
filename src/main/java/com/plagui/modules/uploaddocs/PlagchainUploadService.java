@@ -4,7 +4,9 @@ import com.plagui.config.Constants;
 import com.plagui.modules.GenericPostRequest;
 import com.plagui.modules.GenericResponse;
 import com.plagui.modules.UtilService;
+import com.plagui.modules.docdetails.Timestamps;
 import com.plagui.modules.privatekeymanagement.PrivateKeyManagementService;
+import com.plagui.repository.TimestampsRepository;
 import multichain.command.MultichainException;
 import multichain.command.StreamCommand;
 import multichain.object.StreamItem;
@@ -28,11 +30,14 @@ public class PlagchainUploadService {
     private final Logger log = LoggerFactory.getLogger(PlagchainUploadService.class);
     private UtilService utilService;
     private PrivateKeyManagementService privateKeyManagementService;
+    private TimestampsRepository timestampsRepository;
 
 
-    public PlagchainUploadService(UtilService utilService, PrivateKeyManagementService privateKeyManagementService) {
+    public PlagchainUploadService(UtilService utilService, PrivateKeyManagementService privateKeyManagementService,
+                                  TimestampsRepository timestampsRepository) {
         this.utilService = utilService;
         this.privateKeyManagementService = privateKeyManagementService;
+        this.timestampsRepository = timestampsRepository;
     }
 
     /**
@@ -65,9 +70,17 @@ public class PlagchainUploadService {
             else
                 response = response.concat("\n" + server.getPdServerName() + " : " +responseFromThisServer.getResponseText());
         }
+        //Save the item in DB
+        Timestamps timestamp = new Timestamps();
+        timestamp.setDocHashKey(sha256DocHash.get(0));
+        timestamp.setPublisherAddress(walletAddress);
+        timestamp.setFileName(pdfFile.getOriginalFilename());
+        timestampsRepository.save(timestamp);
 
         //Submit the document for timestamp
-        privateKeyManagementService.publishStreamItemForPrivateKey(walletAddress,decryptedPrivKey, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), "7b7d");
+        privateKeyManagementService.publishStreamItemForPrivateKey(walletAddress,decryptedPrivKey, Constants.TIMESTAMP_STREAM,
+            sha256DocHash.get(0), utilService.formatDataToHex(timestamp.getFileName(), null, null, contactInfo));
+        response = response.concat("\n" + Constants.TIMESTAMP_STREAM + " : Timestamped successfully");
         return response;
     }
 
@@ -97,8 +110,17 @@ public class PlagchainUploadService {
                 response = response.concat("\n" + server.getPdServerName() + " : " +responseFromThisServer.getResponseText());
         }
 
+        //Save the item in DB
+        Timestamps timestamp = new Timestamps();
+        timestamp.setDocHashKey(sha256DocHash.get(0));
+        timestamp.setPublisherAddress(walletAddress);
+        timestamp.setFileName(fileName);
+        timestampsRepository.save(timestamp);
+
         //Submit the document for timestamp
-        privateKeyManagementService.publishStreamItemForPrivateKey(walletAddress,decryptedPrivKey, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), "7b7d");
+        privateKeyManagementService.publishStreamItemForPrivateKey(walletAddress,decryptedPrivKey, Constants.TIMESTAMP_STREAM,
+            sha256DocHash.get(0), utilService.formatDataToHex(timestamp.getFileName(), null, null, contactInfo));
+        response = response.concat("\n" + Constants.TIMESTAMP_STREAM + " : Timestamped successfully");
         return response;
     }
 
@@ -119,9 +141,16 @@ public class PlagchainUploadService {
             e.printStackTrace();
         }
 
+        //Save the item in DB
+        Timestamps timestamp = new Timestamps();
+        timestamp.setDocHashKey(sha256DocHash.get(0));
+        timestamp.setPublisherAddress(walletAddress);
+        timestamp.setFileName(image.getOriginalFilename());
+        timestampsRepository.save(timestamp);
+
         //Transform to Hex string format and submit to plagchain
-        String hexData = utilService.formatDataToHex(image.getName(), null, sha256DocHash, contactInfo);
+        String hexData = utilService.formatDataToHex(image.getOriginalFilename(), null, sha256DocHash, contactInfo);
         privateKeyManagementService.publishStreamItemForPrivateKey(walletAddress,decryptedPrivKey, Constants.TIMESTAMP_STREAM, sha256DocHash.get(0), hexData);
-        return " ";
+        return Constants.TIMESTAMP_STREAM + " : Timestamped successfully";
     }
 }

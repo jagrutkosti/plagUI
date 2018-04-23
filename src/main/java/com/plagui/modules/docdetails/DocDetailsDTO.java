@@ -9,22 +9,13 @@ import java.util.List;
  * Response object for displaying document status.
  */
 public class DocDetailsDTO extends GenericResponse {
-    private List<DocDetails> publishedWorkDocs;
-    private List<DocDetails> unpublishedWorkDocs;
+    private List<DocDetails> timestampedDocs;
 
-    public List<DocDetails> getPublishedWorkDocs() {
-        return publishedWorkDocs;
+    public List<DocDetails> getTimestampedDocs() {
+        return timestampedDocs;
     }
 
-    public void setPublishedWorkDocs(List<DocDetails> publishedWorkDocs) {
-        this.publishedWorkDocs = publishedWorkDocs;
-    }
-
-    public List<DocDetails> getUnpublishedWorkDocs() {
-        return unpublishedWorkDocs;
-    }
-
-    public void setUnpublishedWorkDocs(List<DocDetails> unpublishedWorkDocs) {
-        this.unpublishedWorkDocs = unpublishedWorkDocs;
+    public void setTimestampedDocs(List<DocDetails> timestampedDocs) {
+        this.timestampedDocs = timestampedDocs;
     }
 }

@@ -8,147 +8,73 @@
 </div>
 
 <uib-accordion close-others="false">
-    <div uib-accordion-group class="panel-primary" ng-show="vm.docDetails.publishedWorkDocs.length > 0"
-         heading="Documents in Published Work stream" is-open="true" is-disabled="false">
+    <div uib-accordion-group class="panel-primary" ng-show="vm.docDetails.timestampedDocs.length > 0"
+         heading="Documents in Timestamp stream" is-open="true" is-disabled="false">
         <div class="panel panel-default">
             <table class="table table-striped">
-                <tr ng-repeat="publishedItem in vm.docDetails.publishedWorkDocs">
+                <tr ng-repeat="doc in vm.docDetails.timestampedDocs">
                     <td class="col-md-7">
                         <table class="table">
                             <tr class="success">
                                 <td>File name:</td>
-                                <td><strong> {{publishedItem.fileName}}</strong></td>
+                                <td><strong> {{doc.fileName}}</strong></td>
                             </tr>
                             <tr>
                                 <td>File Hash:</td>
-                                <td>{{publishedItem.fileHash}}</td>
+                                <td>{{doc.fileHash}}</td>
                             </tr>
                             <tr>
                                 <td>Submitted on:</td>
-                                <td>{{publishedItem.submissionTimeToPlagchain | date:'dd-MM-yy HH:mm:ss'}}</td>
+                                <td>{{doc.submissionTimeToPlagchain | date:'dd-MM-yy HH:mm:ss'}}</td>
                             </tr>
-                            <tr ng-show="publishedItem.confirmationTime.length > 4">
+                            <tr ng-show="doc.confirmationTime.length > 4">
                                 <td>Confirmed on:</td>
-                                <td>{{publishedItem.confirmationTime | date:'dd-MM-yy HH:mm:ss'}}</td>
+                                <td>{{doc.confirmationTime | date:'dd-MM-yy HH:mm:ss'}}</td>
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <a ng-show="publishedItem.plagchainSeed.length > 4" class="btn btn-info" download="plagchainseed.txt"
-                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(publishedItem.plagchainSeed)">Download Plagchain Seed</a>
-                                    <a ng-show="publishedItem.originstampSeed.length > 4" class="btn btn-info" download="originstampseed.txt"
-                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(publishedItem.originstampSeed)">Download Originstamp Seed</a>
+                                    <a ng-show="doc.plagchainSeed.length > 4" class="btn btn-info" download="plagchainseed.txt"
+                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(doc.plagchainSeed)">Download Plagchain Seed</a>
+                                    <a ng-show="doc.originstampSeed.length > 4" class="btn btn-info" download="originstampseed.txt"
+                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(doc.originstampSeed)">Download Originstamp Seed</a>
                                 </td>
                             </tr>
                         </table>
                     </td>
                     <td align="center">
-                        <div ng-show="!publishedItem.fetchedByPDModule">
+                        <div ng-show="!doc.fetchedByBitcoinSchedule">
                             <ui-knob value="1" options="vm.progressOptions"></ui-knob>
                             <p>Submitted to Plagchain!
                                 Waiting for submission to Originstamp...</p>
                         </div>
-                        <div ng-show="publishedItem.fetchedByPDModule">
-                            <div ng-show="publishedItem.confirmation === 0">
+                        <div ng-show="doc.fetchedByBitcoinSchedule">
+                            <div ng-show="doc.confirmation === 0">
                                 <ui-knob value="2" options="vm.progressOptions"></ui-knob>
                                 <p>Submitted to Originstamp!
                                     Waiting for submission to Bitcoin...</p>
                             </div>
-                            <div ng-show="publishedItem.confirmation === 1">
+                            <div ng-show="doc.confirmation === 1">
                                 <ui-knob value="3" options="vm.progressOptions"></ui-knob>
                                 <p>Submitted to Bitcoin!
                                 Waiting for confirmation on Bitcoin...</p>
                             </div>
-                            <div ng-show="publishedItem.confirmation === 2">
+                            <div ng-show="doc.confirmation === 2">
                                 <ui-knob value="4" options="vm.progressOptions"></ui-knob>
                                 <p>Included on Bitcoin Blockchain!
                                 Waiting for at least one block to be above the transaction block...</p>
                             </div>
-                            <div ng-show="publishedItem.confirmation === 3">
+                            <div ng-show="doc.confirmation === 3">
                                 <span class="glyphicon glyphicon-ok-circle" style="font-size: 60px; color:#009688;"></span>
                                 <p>Timestamped on Bitcoin Blockchain with at least one block depth!</p>
                             </div>
                         </div>
                         <div class="btn-group" role="group">
-                            <a href="https://app.originstamp.org/s/{{publishedItem.plagchainSeedHash}}" target="_blank"
-                               ng-show="publishedItem.plagchainSeedHash.length > 4" class="btn btn-default">Status on Originstamp
+                            <a href="https://app.originstamp.org/s/{{doc.plagchainSeedHash}}" target="_blank"
+                               ng-show="doc.plagchainSeedHash.length > 4" class="btn btn-default">Status on Originstamp
                                 <span class="glyphicon glyphicon-new-window"></span></a>
 
-                            <a href="https://blockexplorer.com/tx/{{publishedItem.transactionHash}}" target="_blank"
-                               ng-show="publishedItem.transactionHash.length > 4" class="btn btn-default">Verify on Blockexplorer
-                                <span class="glyphicon glyphicon-new-window"></span></a>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
-    <br>
-    <div uib-accordion-group class="panel-primary" heading="Documents in Unpublished Work stream" ng-show="vm.docDetails.unpublishedWorkDocs.length > 0" is-open="true">
-        <div class="panel panel-default">
-            <table class="table table-striped">
-                <tr ng-repeat="unpublishedItem in vm.docDetails.unpublishedWorkDocs">
-                    <td>
-                        <table class="table">
-                            <tr class="success">
-                                <td>File name:</td>
-                                <td><strong> {{unpublishedItem.fileName}}</strong></td>
-                            </tr>
-                            <tr>
-                                <td>File Hash:</td>
-                                <td>{{unpublishedItem.fileHash}}</td>
-                            </tr>
-                            <tr>
-                                <td>Submitted on:</td>
-                                <td>{{unpublishedItem.submissionTimeToPlagchain | date:'dd-MM-yy HH:mm:ss'}}</td>
-                            </tr>
-                            <tr ng-show="unpublishedItem.confirmationTime.length > 4">
-                                <td>Confirmed on:</td>
-                                <td>{{unpublishedItem.confirmationTime | date:'dd-MM-yy HH:mm:ss'}}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <a ng-show="unpublishedItem.plagchainSeed.length > 4" class="btn btn-info" download="plagchainseed.txt"
-                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(unpublishedItem.plagchainSeed)">Download Plagchain Seed</a>
-                                    <a ng-show="unpublishedItem.originstampSeed.length > 4" class="btn btn-info" download="originstampseed.txt"
-                                       ng-href="{{vm.url}}" ng-click="vm.downloadSeed(unpublishedItem.originstampSeed)">Download Originstamp Seed</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td align="center">
-                        <div ng-show="!unpublishedItem.fetchedByPDModule">
-                            <ui-knob value="1" options="vm.progressOptions"></ui-knob>
-                            <p>Submitted to Plagchain!
-                                Waiting for submission to Originstamp...</p>
-                        </div>
-                        <div ng-show="unpublishedItem.fetchedByPDModule">
-                            <div ng-show="unpublishedItem.confirmation === 0">
-                                <ui-knob value="2" options="vm.progressOptions"></ui-knob>
-                                <p>Submitted to Originstamp!
-                                    Waiting for submission to Bitcoin...</p>
-                            </div>
-                            <div ng-show="unpublishedItem.confirmation === 1">
-                                <ui-knob value="3" options="vm.progressOptions"></ui-knob>
-                                <p>Submitted to Bitcoin!
-                                    Waiting for confirmation on Bitcoin...</p>
-                            </div>
-                            <div ng-show="unpublishedItem.confirmation === 2">
-                                <ui-knob value="4" options="vm.progressOptions"></ui-knob>
-                                <p>Included on Bitcoin Blockchain!
-                                    Waiting for at least one block to be above the transaction block...</p>
-                            </div>
-                            <div ng-show="unpublishedItem.confirmation === 3">
-                                <span class="glyphicon glyphicon-ok-circle" style="font-size: 60px; color:#009688;"></span>
-                                <p>Timestamped on Bitcoin Blockchain with at least one block depth!</p>
-                            </div>
-                        </div>
-                        <div class="btn-group" role="group">
-                            <a href="https://app.originstamp.org/s/{{unpublishedItem.plagchainSeedHash}}" target="_blank"
-                               ng-show="unpublishedItem.plagchainSeedHash.length > 4" class="btn btn-default">Status on Originstamp
-                                <span class="glyphicon glyphicon-new-window"></span></a>
-
-                            <a href="https://blockexplorer.com/tx/{{unpublishedItem.transactionHash}}" target="_blank"
-                               ng-show="unpublishedItem.transactionHash.length > 4" class="btn btn-default">Verify on Blockexplorer
+                            <a href="https://blockexplorer.com/tx/{{doc.transactionHash}}" target="_blank"
+                               ng-show="doc.transactionHash.length > 4" class="btn btn-default">Verify on Blockexplorer
                                 <span class="glyphicon glyphicon-new-window"></span></a>
                         </div>
                     </td>
@@ -158,6 +84,6 @@
     </div>
 </uib-accordion>
 
-<div ng-if="vm.docDetails.unpublishedWorkDocs.length <= 0 && vm.docDetails.publishedWorkDocs.length <= 0 && !vm.docDetails.error" class="alert alert-info">
+<div ng-if="vm.docDetails.timestampedDocs.length <= 0 && !vm.docDetails.error" class="alert alert-info">
     <p align="center">You have no documents in blockchain. Please add using <i>Submit Publication</i> menu option.</p>
 </div>

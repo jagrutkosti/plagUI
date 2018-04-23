@@ -13,16 +13,15 @@ public final class Constants {
 
     //Constants used for plagiarism detection system
     public static final int SHINGLE_LENGTH = 9;
-    public static final int WORD_SHINGLE_LENGTH = 3;
     public static final String RANDOM_NUMBERS_FILE = "/random-numbers.txt";
     public static final int NUMBER_OF_RANDOM_NUMBERS = 199;
     public static final String CHAIN_NAME="plagchain";
-    public static final String PUBLISHED_WORK_STREAM_NAME = "publishedwork";
-    public static final String UNPUBLISHED_WORK_STREAM_NAME = "unpublishedwork";
-    public static final String PLAGDETECTION_URL = "http://localhost:8090/plagcheck/runMinHashAlgo";
-    public static final String SEED_DETAILS_FOR_HASH_URL = "http://localhost:8090/getHashSeed";
+    public static final String BITCOIN_ANCHOR_TIME = "86400000";
+    public static final String TIMESTAMP_COLLECTION_NAME = "timestamps";
+    public static final String ORIGINSTAMP_API_URL = "http://api.originstamp.org/api/";
+    public static final String ORIGINSTAMP_API_KEY = "4c9be75a-f24c-4407-86b3-62e5c9f88aa3";
 
-    public static final String TIMESTAMP_STREAM = "timestamp";
+    public static final String TIMESTAMP_STREAM = "timestamp_test";
     public static final String MINERS_STREAM = "all_miners";
     public static final String MINERS_USERS_ASSOCIATION_STREAM = "miner_association";
     public static final String PD_SERVERS_STREAM = "pd_servers";

@@ -18,7 +18,7 @@ public class DocDetails {
      * 3- stamp verified and has one block above it.
      */
     private int confirmation;
-    private boolean fetchedByPDModule;
+    private boolean fetchedByBitcoinSchedule;
     private String bitcoinAddress;
     private String transactionHash;
     private String plagchainSeedHash;
@@ -65,12 +65,12 @@ public class DocDetails {
         this.confirmation = confirmation;
     }
 
-    public boolean isFetchedByPDModule() {
-        return fetchedByPDModule;
+    public boolean isFetchedByBitcoinSchedule() {
+        return fetchedByBitcoinSchedule;
     }
 
-    public void setFetchedByPDModule(boolean fetchedByPDModule) {
-        this.fetchedByPDModule = fetchedByPDModule;
+    public void setFetchedByBitcoinSchedule(boolean fetchedByBitcoinSchedule) {
+        this.fetchedByBitcoinSchedule = fetchedByBitcoinSchedule;
     }
 
     public String getConfirmationTime() {
