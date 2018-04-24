@@ -156,7 +156,25 @@
                         </p>
                     </div>
                 </div>
-
+                <div class="form-group">
+                    <label class="control-label" for="login">Your price for document check requests</label>
+                    <input type="number" class="form-control" id="docPrice" name="docPrice" placeholder="Your price 0 - 99999999"
+                           ng-model="vm.registerAccount.docPrice" ng-minlength=1 ng-maxlength=8  required>
+                    <div ng-show="form.docPrice.$dirty && form.docPrice.$invalid">
+                        <p class="help-block"
+                           ng-show="form.docPrice.$error.required">
+                            Document price is required.
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.docPrice.$error.minlength">
+                            Document price is required to be at least 1 character. You can also enter 0.
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.docPrice.$error.maxlength">
+                            Document price cannot be longer than 99999999.
+                        </p>
+                    </div>
+                </div>
                 <button type="submit" ng-disabled="form.$invalid || vm.invalidEmail" class="btn btn-primary">Register</button>
             </form>
             <p></p>

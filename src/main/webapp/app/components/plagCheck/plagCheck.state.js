@@ -34,6 +34,9 @@
                     }],
                     pdServers: ['UploadDocsService', function(UploadDocsService) {
                         return UploadDocsService.getPdServersList();
+                    }],
+                    realTimeCurrencyBalance: ['PlagCheckService', function (PlagCheckService) {
+                        return PlagCheckService.getRealTimeBalanceForLoggedInUser();
                     }]
                 }
             });

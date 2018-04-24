@@ -3,8 +3,10 @@ package com.plagui.modules.plagcheck;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.plagui.domain.User;
 import com.plagui.modules.UtilService;
 import com.plagui.modules.uploaddocs.PDServersDTO;
+import com.plagui.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +26,12 @@ public class PlagCheckREST {
     private final Logger log = LoggerFactory.getLogger(PlagCheckREST.class);
     private PlagCheckService plagCheckService;
     private UtilService utilService;
+    private UserService userService;
 
-    public PlagCheckREST(PlagCheckService plagCheckService, UtilService utilService) {
+    public PlagCheckREST(PlagCheckService plagCheckService, UtilService utilService, UserService userService) {
         this.plagCheckService = plagCheckService;
         this.utilService = utilService;
+        this.userService = userService;
     }
 
     /**
@@ -40,10 +44,12 @@ public class PlagCheckREST {
     @PostMapping("/plagCheckDoc")
     @ResponseBody
     public PlagCheckResultDTO plagCheckForDoc(@RequestParam("plagCheckDoc")MultipartFile plagCheckDoc,
-                                                      @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
-                                                      @RequestParam("streamNames")String streamNames) {
+                                              @RequestParam("decryptedPrivKey")String decryptedPrivKey,
+                                              @RequestParam("gRecaptchaResponse") String gRecaptchaResponse,
+                                              @RequestParam("streamNames")String streamNames) {
         log.info("REST request to check for document similarity");
-        System.out.println(streamNames);
+        User currentUser = userService.getUserWithAuthorities();
+
         Gson gson = new GsonBuilder().create();
         Type listType = new TypeToken<List<PDServersDTO>>(){}.getType();
         List<PDServersDTO> streamNamesList = gson.fromJson(streamNames, listType);
@@ -52,7 +58,7 @@ public class PlagCheckREST {
 
         if(recaptchaResponse) {
             if(plagCheckDoc.getOriginalFilename().endsWith(".pdf") || plagCheckDoc.getOriginalFilename().endsWith(".txt")) {
-                response = plagCheckService.plagCheckForDoc(plagCheckDoc, streamNamesList);
+                response = plagCheckService.plagCheckForDoc(plagCheckDoc, streamNamesList, decryptedPrivKey, currentUser);
                 //Different kinds of error handling
                 if(response != null && response.getError() == null)
                     response.setSuccess("success");

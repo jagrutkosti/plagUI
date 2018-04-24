@@ -64,6 +64,8 @@ public class UserDTO {
 
     private MinersDTO selectedMiner;
 
+    private int docPrice;
+
     public UserDTO() {
         // Empty constructor needed for Jackson.
     }
@@ -74,14 +76,14 @@ public class UserDTO {
             user.getCreatedBy(), user.getCreatedDate(), user.getLastModifiedBy(), user.getLastModifiedDate(),
             user.getPrivKeyOption(), user.getPlagchainAddress(), user.getPlagchainPubkey(), user.getPlagchainPrivkey(),
             user.getAuthorities().stream().map(Authority::getName)
-                .collect(Collectors.toSet()), user.getAssociatedMinerAddress(), user.getAssociatedMinerName());
+                .collect(Collectors.toSet()), user.getAssociatedMinerAddress(), user.getAssociatedMinerName(), user.getDocCheckPrice());
     }
 
     public UserDTO(String id, String login, String firstName, String lastName,
         String email, boolean activated, String imageUrl, String langKey,
         String createdBy, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate, int privKeyOption,
         String plagchainAddress, String plagchainPubkey, String plagchainPrivkey,
-        Set<String> authorities, String associatedMinerAddress, String associatedMinerName) {
+        Set<String> authorities, String associatedMinerAddress, String associatedMinerName, int docPrice) {
 
         MinersDTO selectedMiner = new MinersDTO();
         selectedMiner.setMinerAddress(associatedMinerAddress);
@@ -105,6 +107,7 @@ public class UserDTO {
         this.plagchainPrivkey = plagchainPrivkey;
         this.authorities = authorities;
         this.selectedMiner = selectedMiner;
+        this.docPrice = docPrice;
     }
 
     public String getId() {
@@ -205,6 +208,14 @@ public class UserDTO {
 
     public void setPlagchainPrivkey(String plagchainPrivkey) {
         this.plagchainPrivkey = plagchainPrivkey;
+    }
+
+    public int getDocPrice() {
+        return docPrice;
+    }
+
+    public void setDocPrice(int docPrice) {
+        this.docPrice = docPrice;
     }
 
     @Override

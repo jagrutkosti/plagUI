@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +37,7 @@ public class DistributeCoinsService {
         this.partOfMinedCurrencyForMiner = partOfMinedCurrencyForMiner;
     }
 
-    @Scheduled(fixedRate = 86400000)
+    /*@Scheduled(fixedRate = 86400000)*/
     public void distributeMinedCoins() {
         log.info("DistributeCoinsService # distributeMinedCoins");
         List<MinerBalance> allMinersWithBalances = getMiningAddressesAndCoinQty();
@@ -44,7 +45,6 @@ public class DistributeCoinsService {
             if(minerInfo.getQty() > 0.0001) {
                 List<String> associatedUsers = getAllUsersAssociatedWithMiner(minerInfo.getAddress());
                 double qty = minerInfo.getQty()/(associatedUsers.size() + partOfMinedCurrencyForMiner);
-
                 for(String userAddress : associatedUsers) {
                     transferCoins(minerInfo.getAddress(), userAddress, qty);
                 }
@@ -94,14 +94,15 @@ public class DistributeCoinsService {
         List<StreamItem> allAssociatedUsersObject = null;
         try {
             allAssociatedUsersObject = StreamCommand.listStreamKeyItems(associationInfoFromStream, minerAddress);
-        } catch (MultichainException e) {
+            if (allAssociatedUsersObject != null) {
+                for(StreamItem item : allAssociatedUsersObject) {
+                    allAssociatedUsers.add(new String(DatatypeConverter.parseHexBinary(item.getData()), "UTF-8"));
+                }
+            }
+        } catch (MultichainException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        if (allAssociatedUsersObject != null) {
-            for(StreamItem item : allAssociatedUsersObject) {
-                allAssociatedUsers.add(Arrays.toString(DatatypeConverter.parseHexBinary(item.getData())));
-            }
-        }
+
         return allAssociatedUsers;
     }
 
@@ -115,7 +116,7 @@ public class DistributeCoinsService {
     public String transferCoins(String minerAddress, String userAddress, double qty) {
         log.info("DistributeCoinsService # transferCoins()");
         try {
-            return IssueCommand.sendAssetFrom(minerAddress, userAddress, "", (float)qty);
+            return IssueCommand.sendFrom(minerAddress, userAddress, String.format("%.8f", qty));
         } catch (MultichainException e) {
             e.printStackTrace();
             return null;

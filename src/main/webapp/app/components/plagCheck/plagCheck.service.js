@@ -26,6 +26,7 @@
                 url : API_URL + 'plagCheckDoc',
                 data : {
                     plagCheckDoc: data.plagCheckDoc,
+                    decryptedPrivKey: data.decryptedPrivKey,
                     streamNames: angular.toJson(data.streamNames),
                     gRecaptchaResponse: gRecaptchaResponse
                 }
@@ -57,6 +58,15 @@
                     return response.status + ':' + response.statusText;
                 }
             })
+        };
+
+        /**
+         * Gets real time balance of the logged in user.
+         */
+        service.getRealTimeBalanceForLoggedInUser = function () {
+            return $http.get(API_URL + 'getRealTimeBalanceForLoggedInUser').then(function (response) {
+                return response.data;
+            });
         };
 
         return service;

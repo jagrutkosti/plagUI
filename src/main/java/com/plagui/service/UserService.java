@@ -103,7 +103,7 @@ public class UserService {
 
     public User createUser(String login, String password, String firstName, String lastName, String email,
         String imageUrl, String langKey, int privKeyOption, String plagchainAddress, String plagchainPubkey, String plagchainPrivkey,
-        String associatedMinerAddress, String associatedMinerName) {
+        String associatedMinerAddress, String associatedMinerName, int docPrice) {
 
         User newUser = new User();
         Authority authority = authorityRepository.findOne(AuthoritiesConstants.USER);
@@ -129,6 +129,7 @@ public class UserService {
         newUser.setPlagchainAddress(plagchainAddress);
         newUser.setPlagchainPubkey(plagchainPubkey);
         newUser.setPlagchainPrivkey(plagchainPrivkey);
+        newUser.setDocCheckPrice(docPrice);
 
         //Add the address to the wallet of the UI server and grant basic permissions
         privateKeyManagementService.importAddress(plagchainAddress);
@@ -175,6 +176,7 @@ public class UserService {
         user.setPlagchainAddress(userDTO.getPlagchainAddress());
         user.setPlagchainPubkey(userDTO.getPlagchainPubkey());
         user.setPlagchainPrivkey(userDTO.getPlagchainPrivkey());
+        user.setDocCheckPrice(userDTO.getDocPrice());
 
         //Add the address to the wallet of the UI server and grant basic permissions
         privateKeyManagementService.importAddress(userDTO.getPlagchainAddress());

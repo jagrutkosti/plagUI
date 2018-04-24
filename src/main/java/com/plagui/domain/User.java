@@ -81,7 +81,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
-
+    /*
+    0 = Encrypt private key using login password and save in UI db
+    1 = Save private key as is in UI db
+    2 = User manages their own private key
+     */
     @Field("privkey_option")
     private int privKeyOption;
 
@@ -99,6 +103,12 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @Field("associated_miner_name")
     private String associatedMinerName;
+
+    @Field("doc_check_price")
+    private int docCheckPrice;
+
+    @Field("currency_balance")
+    private int currencyBalance;
 
     public String getId() {
         return id;
@@ -250,6 +260,22 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setAssociatedMinerName(String associatedMinerName) {
         this.associatedMinerName = associatedMinerName;
+    }
+
+    public int getDocCheckPrice() {
+        return docCheckPrice;
+    }
+
+    public void setDocCheckPrice(int docCheckPrice) {
+        this.docCheckPrice = docCheckPrice;
+    }
+
+    public int getCurrencyBalance() {
+        return currencyBalance;
+    }
+
+    public void setCurrencyBalance(int currencyBalance) {
+        this.currencyBalance = currencyBalance;
     }
 
     @Override

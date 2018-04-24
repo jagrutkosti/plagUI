@@ -11,9 +11,9 @@
         .module('plagUiApp')
         .controller('PlagCheckController', PlagCheckController);
 
-    PlagCheckController.$inject = ['$scope', 'PlagCheckService', 'AlertService', 'vcRecaptchaService', 'currentUserWalletAddress', 'pdServers'];
+    PlagCheckController.$inject = ['$scope', 'PlagCheckService', 'AlertService', 'vcRecaptchaService', 'currentUserWalletAddress', 'pdServers', 'account', 'realTimeCurrencyBalance'];
 
-    function PlagCheckController($scope, PlagCheckService, AlertService, vcRecaptchaService, currentUserWalletAddress, pdServers) {
+    function PlagCheckController($scope, PlagCheckService, AlertService, vcRecaptchaService, currentUserWalletAddress, pdServers, account, realTimeCurrencyBalance) {
         var vm = this;
         vm.checkForPlagiarism = checkForPlagiarism;
         vm.createPlagCheckRequest = createPlagCheckRequest;
@@ -21,10 +21,13 @@
         vm.setWidgetId = setWidgetId;
         vm.cbExpiration = cbExpiration;
         vm.setStreamNames = setStreamNames;
+        vm.checkPassword = checkPassword;
         vm.currentUserWalletAddress = currentUserWalletAddress;
         vm.results = {};
         vm.isEmpty = null;
         vm.pdServers = pdServers;
+        vm.account = account;
+        vm.account.realTimeCurrencyBalance = realTimeCurrencyBalance;
         vm.plagCheckDocFileName = '';
         vm.recaptcha = {
             key: '6LfGcycUAAAAAAn3Aanri79ijQSwust7kH_BH9Bd',
@@ -32,41 +35,63 @@
             widgetId: null
         };
         /**
-         * 'plagCheckDoc', 'checkUnpublishedWork'
+         * 'plagCheckDoc'
          */
         vm.data = {
-            streamNames : []
+            streamNames : [],
+            decryptedPrivKey : ''
         };
+        vm.invalidPassword = true;
+        vm.totalPricePdServerExceeded = false;
+
+        /**
+         * Checks if password is valid by decrypting the private key of the logged in user.
+         */
+        function checkPassword() {
+            try {
+                var bytes  = CryptoJS.AES.decrypt(vm.account.plagchainPrivkey, vm.data.password);
+                vm.data.decryptedPrivKey = bytes.toString(CryptoJS.enc.Utf8);
+            } catch(err) {
+                vm.data.decryptedPrivKey = '';
+            } finally {
+                vm.invalidPassword = vm.data.decryptedPrivKey.length <= 5;
+            }
+        }
 
         /**
          * Calls the service function to check for plagiarism of the uploaded document and handles the response.
          */
         function checkForPlagiarism() {
-            PlagCheckService.checkForPlagiarism(vm.data, vm.recaptcha.response).then(function(response) {
-                if(response.success) {
-                    vm.results = angular.fromJson(response.resultJsonString);
-                    for(var key in vm.results) {
-                        if(vm.results.hasOwnProperty(key)) {
-                            vm.results[key] = angular.fromJson(vm.results[key]);
+            checkTotal();
+            checkPrivKeyOption();
+            if(!vm.totalPricePdServerExceeded) {
+                PlagCheckService.checkForPlagiarism(vm.data, vm.recaptcha.response).then(function(response) {
+                    if(response.success) {
+                        vm.results = angular.fromJson(response.resultJsonString);
+                        for(var key in vm.results) {
+                            if(vm.results.hasOwnProperty(key)) {
+                                vm.results[key] = angular.fromJson(vm.results[key]);
+                            }
                         }
+                        if(Object.keys(vm.results).length === 0 && vm.results.constructor === Object)
+                            vm.isEmpty = true;
+                        else
+                            vm.isEmpty = false;
+                        vm.plagCheckDocFileName = response.plagCheckDocFileName;
+                    } else {
+                        vm.data = {};
+                        if(response.error)
+                            vm.data.error = response.error;
+                        else
+                            vm.data.error = response;
+                        AlertService.error(vm.data.error);
                     }
-                    if(Object.keys(vm.results).length === 0 && vm.results.constructor === Object)
-                        vm.isEmpty = true;
-                    else
-                        vm.isEmpty = false;
-                    vm.plagCheckDocFileName = response.plagCheckDocFileName;
-                } else {
                     vm.data = {};
-                    if(response.error)
-                        vm.data.error = response.error;
-                    else
-                        vm.data.error = response;
-                    AlertService.error(vm.data.error);
-                }
-                vm.data = {};
-                $scope.pdfPlagCheck.$setPristine();
-                vm.cbExpiration();
-            });
+                    $scope.pdfPlagCheck.$setPristine();
+                    vm.cbExpiration();
+                });
+            }
+
         }
 
         /**
@@ -119,6 +144,21 @@
                 if(item.selected)
                     vm.data.streamNames.push(item);
             })
+        }
+
+        function checkPrivKeyOption() {
+            if(vm.account.privKeyOption === 1)
+                vm.data.decryptedPrivKey = vm.account.plagchainPrivkey;
+        }
+
+        function checkTotal() {
+            var total = 0;
+            vm.pdServers.forEach(function (item) {
+                if(item.selected) {
+                    total += item.simCheckPriceInRawUnits;
+                }
+            });
+            vm.totalPricePdServerExceeded = total > vm.account.realTimeCurrencyBalance;
         }
     }
 })();

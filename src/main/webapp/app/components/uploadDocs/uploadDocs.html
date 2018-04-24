@@ -71,6 +71,16 @@
                             </p>
                         </div>
                     </div>
+                    <div class="form-group" ng-if="vm.account.privKeyOption === 2">
+                        <label class="control-label" for="privKey">Enter your private key: </label>
+                        <input type="text" class="form-control" id="privKey" name="privKey" ng-model="vm.fileData.decryptedPrivKey"
+                               placeholder="Your private key.." required>
+                        <div ng-show="pdfForm.privKey.$dirty && pdfForm.privKey.$invalid">
+                            <p class="help-block" ng-show="pdfForm.privKey.$error.required">
+                                Please enter your private key.
+                            </p>
+                        </div>
+                    </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(1)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
                     <button type="submit" ng-disabled="pdfForm.$invalid || vm.invalidPassword" class="btn btn-primary">Submit</button>
@@ -162,6 +172,16 @@
                             </p>
                         </div>
                     </div>
+                    <div class="form-group" ng-if="vm.account.privKeyOption === 2">
+                        <label class="control-label" for="privKeyText">Enter your private key: </label>
+                        <input type="text" class="form-control" id="privKeyText" name="privKey" ng-model="vm.fileData.decryptedPrivKey"
+                               placeholder="Your private key.." required>
+                        <div ng-show="pdfForm.privKey.$dirty && pdfForm.privKey.$invalid">
+                            <p class="help-block" ng-show="pdfForm.privKey.$error.required">
+                                Please enter your private key.
+                            </p>
+                        </div>
+                    </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(2)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
                     <button type="submit" ng-disabled="textForm.$invalid" class="btn btn-primary">Submit</button>
@@ -225,6 +245,16 @@
                         <div ng-show="vm.invalidPassword">
                             <p class="help-block" style="color: red">
                                 Your password is incorrect.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="vm.account.privKeyOption === 2">
+                        <label class="control-label" for="privKeyImage">Enter your private key: </label>
+                        <input type="text" class="form-control" id="privKeyImage" name="privKey" ng-model="vm.fileData.decryptedPrivKey"
+                               placeholder="Your private key.." required>
+                        <div ng-show="pdfForm.privKey.$dirty && pdfForm.privKey.$invalid">
+                            <p class="help-block" ng-show="pdfForm.privKey.$error.required">
+                                Please enter your private key.
                             </p>
                         </div>
                     </div>

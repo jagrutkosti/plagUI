@@ -93,12 +93,37 @@ public class PrivateKeyManagementService {
         streamPayload.put("for", streamName);
         streamPayload.put("key", key);
         streamPayload.put("data", data);
+        executeRawStreamCommands(blockchainAddress, streamPayload, privateKey, false);
+    }
+
+    /**
+     * Send an asset between two blockchain addresses
+     * @param fromAddress send from address
+     * @param toAddress send to address
+     * @param fromPrivateKey private key of fromAddress for authorizing transaction
+     * @param amount the amount to send
+     */
+    public void sendCurrencyToPDServer(String fromAddress, String toAddress, String fromPrivateKey, int amount) {
+        double amountInDouble = amount/100000000;
+        Map<String, Object> assetInfo = new HashMap<>();
+        assetInfo.put("", String.format("%8f", amountInDouble));
+        Map<String, Object> transferTo = new HashMap<>();
+        transferTo.put(toAddress, assetInfo);
+        executeRawStreamCommands(fromAddress, transferTo, fromPrivateKey, true);
+    }
+
+    public void executeRawStreamCommands(String fromAddress, Map<String, Object> payload, String privateKey, boolean isAsset) {
+        String hexadecimalBlob;
         try {
-            String hexadecimalBlob = RAWTransactionCommand.createRawSendFrom(blockchainAddress, null, streamPayload);
+            if(isAsset)
+                hexadecimalBlob = RAWTransactionCommand.createRawSendFrom(fromAddress, payload, null);
+            else
+                hexadecimalBlob = RAWTransactionCommand.createRawSendFrom(fromAddress, null, payload);
             SignRawTransactionOut signedHexadecimal = RAWTransactionCommand.signRawTransactionWithPrivKey(hexadecimalBlob,privateKey);
             RAWTransactionCommand.sendRawTransaction(signedHexadecimal.getHex());
         } catch (MultichainException e) {
             e.printStackTrace();
         }
+
     }
 }

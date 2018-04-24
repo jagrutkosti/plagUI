@@ -12,8 +12,10 @@ import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 import com.plagui.config.Constants;
 import com.plagui.modules.streamformats.ChainData;
 import com.plagui.modules.uploaddocs.PDServersDTO;
+import multichain.command.AddressCommand;
 import multichain.command.MultichainException;
 import multichain.command.StreamCommand;
+import multichain.object.BalanceAsset;
 import multichain.object.StreamItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -433,6 +435,8 @@ public class UtilService {
                     pdServer.setPingUrl(itemData.getString("ping"));
                     pdServer.setSubmitDocUrl(itemData.getString("submitDoc"));
                     pdServer.setCheckSimUrl(itemData.getString("checkSim"));
+                    pdServer.setSimCheckPriceInRawUnits(itemData.getInt("simCheckPriceInRawUnits"));
+                    pdServer.setPlagchainAddressForTransactions("plagchainAddress");
                     pdServersList.add(pdServer);
                 }
             }
@@ -440,6 +444,21 @@ public class UtilService {
             e.printStackTrace();
         }
         return  pdServersList;
+    }
+
+    /**
+     * Returns the raw currency balance of the logged in user
+     * @param blockchainAddress the blockchain address of the logged in user
+     * @return raw units as int
+     */
+    public int getRealTimeBalance(String blockchainAddress) {
+        try {
+            List<BalanceAsset> allBalancesForAddress = AddressCommand.getAddressBalances(blockchainAddress);
+            return (int) allBalancesForAddress.get(0).getRaw();
+        } catch (MultichainException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     /**

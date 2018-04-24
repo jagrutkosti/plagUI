@@ -102,7 +102,7 @@ public class AccountResource {
                             managedUserVM.getLangKey(), managedUserVM.getPrivKeyOption(), managedUserVM.getPlagchainAddress(),
                             managedUserVM.getPlagchainPubkey(), managedUserVM.getPlagchainPrivkey(),
                             managedUserVM.getSelectedMiner().getMinerAddress(),
-                            managedUserVM.getSelectedMiner().getMinerName());
+                            managedUserVM.getSelectedMiner().getMinerName(), managedUserVM.getDocPrice());
 
                     mailService.sendActivationEmail(user);
                     return new ResponseEntity<>(HttpStatus.CREATED);

@@ -10,6 +10,8 @@ public class PDServersDTO implements Serializable {
     private String pingUrl;
     private String submitDocUrl;
     private String checkSimUrl;
+    private int simCheckPriceInRawUnits;
+    private String plagchainAddressForTransactions;
     private boolean selected = false;
 
     public String getPdServerName() {
@@ -50,6 +52,22 @@ public class PDServersDTO implements Serializable {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public int getSimCheckPriceInRawUnits() {
+        return simCheckPriceInRawUnits;
+    }
+
+    public void setSimCheckPriceInRawUnits(int simCheckPriceInRawUnits) {
+        this.simCheckPriceInRawUnits = simCheckPriceInRawUnits;
+    }
+
+    public String getPlagchainAddressForTransactions() {
+        return plagchainAddressForTransactions;
+    }
+
+    public void setPlagchainAddressForTransactions(String plagchainAddressForTransactions) {
+        this.plagchainAddressForTransactions = plagchainAddressForTransactions;
     }
 
     @Override

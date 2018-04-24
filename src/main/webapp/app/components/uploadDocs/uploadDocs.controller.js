@@ -59,6 +59,7 @@
          */
         function uploadDocForBlockchain() {
             setStreamNames();
+            checkPrivKeyOption();
             UploadDocsService.uploadDocForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response){
                 if(response.success) {
                     vm.fileData.success = response.success;
@@ -81,6 +82,7 @@
          */
         function uploadTextForBlockchain() {
             setStreamNames();
+            checkPrivKeyOption();
             UploadDocsService.uploadTextForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
@@ -101,6 +103,7 @@
          * Handle the response from the server and redirect accordingly.
          */
         function uploadImageForBlockchain() {
+            checkPrivKeyOption();
             UploadDocsService.uploadImageForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
@@ -145,6 +148,11 @@
                 if(item.selected)
                     vm.fileData.streamNames.push(item);
             })
+        }
+
+        function checkPrivKeyOption() {
+            if(vm.account.privKeyOption === 1)
+                vm.fileData.decryptedPrivKey = vm.account.plagchainPrivkey;
         }
     }
 })();

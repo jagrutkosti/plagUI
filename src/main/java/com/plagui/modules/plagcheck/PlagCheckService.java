@@ -3,9 +3,11 @@ package com.plagui.modules.plagcheck;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.plagui.config.Constants;
+import com.plagui.domain.User;
 import com.plagui.modules.GenericPostRequest;
 import com.plagui.modules.GenericResponse;
 import com.plagui.modules.UtilService;
+import com.plagui.modules.privatekeymanagement.PrivateKeyManagementService;
 import com.plagui.modules.uploaddocs.PDServersDTO;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpResponse;
@@ -38,9 +40,11 @@ import java.util.List;
 public class PlagCheckService {
     private final Logger log = LoggerFactory.getLogger(PlagCheckService.class);
     private UtilService utilService;
+    private PrivateKeyManagementService privateKeyManagementService;
 
-    public PlagCheckService(UtilService utilService) {
+    public PlagCheckService(UtilService utilService, PrivateKeyManagementService privateKeyManagementService) {
         this.utilService = utilService;
+        this.privateKeyManagementService = privateKeyManagementService;
     }
 
     /**
@@ -50,7 +54,7 @@ public class PlagCheckService {
      * @return {PlagCheckResultDTO} containing the result in JSON string. Will contain all matched along with
      *                              Jaccard similarity
      */
-    public PlagCheckResultDTO plagCheckForDoc(MultipartFile plagCheckDoc, List<PDServersDTO> submitToServers) {
+    public PlagCheckResultDTO plagCheckForDoc(MultipartFile plagCheckDoc, List<PDServersDTO> submitToServers, String userPrivateKey, User loggedInUser) {
         log.info("Forward the df file to PD file for plagiarism check");
         GenericPostRequest requestParams = new GenericPostRequest();
         requestParams.setMultipartFile(plagCheckDoc);
@@ -60,12 +64,15 @@ public class PlagCheckService {
         allResponses.setPlagCheckDocFileName(plagCheckDoc.getOriginalFilename());
 
         for(PDServersDTO server : submitToServers) {
-
             GenericResponse response = utilService.postRequestPDServer(requestParams, server.getCheckSimUrl(), "");
             if(response.getError() != null && response.getError().length() > 0)
                 allResponses.setError(allResponses.getError().concat( "\n" + server.getPdServerName() + " : " + response.getError()));
             else
                 simDocFromServer.put(server.getPdServerName(), response.getResponseText());
+
+            //Transfer the currency
+            privateKeyManagementService.sendCurrencyToPDServer(loggedInUser.getPlagchainAddress(),
+                server.getPlagchainAddressForTransactions(), userPrivateKey, server.getSimCheckPriceInRawUnits());
         }
         allResponses.setResultJsonString(simDocFromServer);
         return allResponses;
