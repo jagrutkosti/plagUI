@@ -24,7 +24,7 @@
         vm.checkPassword = checkPassword;
         vm.currentUserWalletAddress = currentUserWalletAddress;
         vm.results = {};
-        vm.isEmpty = null;
+        vm.resultsLength = null;
         vm.pdServers = pdServers;
         vm.account = account;
         vm.account.realTimeCurrencyBalance = realTimeCurrencyBalance;
@@ -68,15 +68,19 @@
                 PlagCheckService.checkForPlagiarism(vm.data, vm.recaptcha.response).then(function(response) {
                     if(response.success) {
                         vm.results = angular.fromJson(response.resultJsonString);
+
                         for(var key in vm.results) {
                             if(vm.results.hasOwnProperty(key)) {
                                 vm.results[key] = angular.fromJson(vm.results[key]);
+                                vm.results[key].listOfSimilarDocuments.forEach(function (simItem) {
+                                    var temp = getDocCheckPrice(simItem.publisherWalletAddress);
+                                    temp.then(function (response) {
+                                        simItem.docCheckPrice = response;
+                                    })
+                                })
                             }
                         }
-                        if(Object.keys(vm.results).length === 0 && vm.results.constructor === Object)
-                            vm.isEmpty = true;
-                        else
-                            vm.isEmpty = false;
+                        vm.resultsLength = Object.keys(vm.results).length;
                         vm.plagCheckDocFileName = response.plagCheckDocFileName;
                     } else {
                         vm.data = {};
@@ -138,6 +142,9 @@
             vm.recaptcha.response = null;
         }
 
+        /**
+         * Sets stream names whenever it is changed to know if at least one stream is selected
+         */
         function setStreamNames() {
             vm.data.streamNames = [];
             vm.pdServers.forEach(function (item) {
@@ -146,11 +153,17 @@
             });
         }
 
+        /**
+         * If priv key option is 1 i.e. user asked to store priv key in UI db as is, then we simply reassign it
+         */
         function checkPrivKeyOption() {
             if(vm.account.privKeyOption === 1)
                 vm.data.decryptedPrivKey = vm.account.plagchainPrivkey;
         }
 
+        /**
+         * When selecting mutiple pd servers, we calculate if the user has got sufficient balance to perform this check
+         */
         function checkTotal() {
             var total = 0;
             vm.pdServers.forEach(function (item) {
@@ -159,6 +172,16 @@
                 }
             });
             vm.totalPricePdServerExceeded = total > vm.account.realTimeCurrencyBalance;
+        }
+
+        /**
+         * Gets doc price for a given user identified by its plagchain address
+         * @param publisherWalletAddress wallet address for which to fetch the price
+         */
+        function getDocCheckPrice(publisherWalletAddress) {
+            return PlagCheckService.getDocCheckPrice(publisherWalletAddress).then(function (response) {
+                return response;
+            })
         }
     }
 })();

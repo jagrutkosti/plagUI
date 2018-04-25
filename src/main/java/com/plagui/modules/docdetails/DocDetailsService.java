@@ -95,8 +95,8 @@ public class DocDetailsService {
                 docItem.setConfirmationTime(seedDetails.getOriginstampBitcoinConfirmTime());
                 docItem.setFetchedByBitcoinSchedule(dbItem.isSubmittedToOriginstamp());
                 docItem.setPlagchainSeedHash(seedDetails.getPlagchainSeedHash());
-                count++;
             }
+            count++;
             docDetailsList.add(docItem);
         }
         if(count == 0)

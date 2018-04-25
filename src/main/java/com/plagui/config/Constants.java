@@ -21,9 +21,9 @@ public final class Constants {
     public static final String ORIGINSTAMP_API_URL = "http://api.originstamp.org/api/";
     public static final String ORIGINSTAMP_API_KEY = "4c9be75a-f24c-4407-86b3-62e5c9f88aa3";
 
-    public static final String TIMESTAMP_STREAM = "timestamp_test";
+    public static final String TIMESTAMP_STREAM = "timestamp_new1";
     public static final String MINERS_STREAM = "all_miners";
-    public static final String MINERS_USERS_ASSOCIATION_STREAM = "miner_association";
+    public static final String MINERS_USERS_ASSOCIATION_STREAM = "miner_association_new";
     public static final String PD_SERVERS_STREAM = "pd_servers_test";
 
     public static final String GOOGLE_RECAPTCHA_SECRET = "6LfGcycUAAAAAPUaHNoU-jatYvdgj75mjGUeYTzk";

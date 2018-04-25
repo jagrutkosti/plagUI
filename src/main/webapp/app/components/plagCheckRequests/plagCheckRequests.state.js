@@ -31,6 +31,9 @@
                         return PlagCheckRequestsService.getLoggedInUserRequests().then(function(response) {
                             return response;
                         })
+                    }],
+                    realTimeCurrencyBalance: ['PlagCheckService', function (PlagCheckService) {
+                        return PlagCheckService.getRealTimeBalanceForLoggedInUser();
                     }]
                 }
             })

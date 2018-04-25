@@ -6,9 +6,7 @@
                     <h3>Submit Document<br/><small>We calculate SHA-256 fingerprint from your document and publish it to 'Timestamp' stream on Plagchain to get a timestamp on Bitcoin.
                         You can choose with which similarity detection technique(s) you would like to index your document. Original document content is not stored anywhere.</small></h3>
                 </div>
-                <div ng-if="vm.fileData.error">
-                    <jhi-alert>{{vm.fileData.error}}</jhi-alert>
-                </div>
+                <jhi-alert></jhi-alert>
                 <div class="col-sm-10">
                     <p align="left">* Mandatory Fields</p>
                 </div>
@@ -83,7 +81,7 @@
                     </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(1)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
-                    <button type="submit" ng-disabled="pdfForm.$invalid || vm.invalidPassword" class="btn btn-primary">Submit</button>
+                    <button type="submit" ng-disabled="pdfForm.$invalid || (vm.account.privKeyOption === 0 && vm.invalidPassword)" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>
@@ -184,7 +182,7 @@
                     </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(2)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
-                    <button type="submit" ng-disabled="textForm.$invalid" class="btn btn-primary">Submit</button>
+                    <button type="submit" ng-disabled="textForm.$invalid || (vm.account.privKeyOption === 0 && vm.invalidPassword)" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>
@@ -260,7 +258,7 @@
                     </div>
                     <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId(3)" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
                     <br/>
-                    <button type="submit" ng-disabled="imageForm.$invalid" class="btn btn-primary">Submit</button>
+                    <button type="submit" ng-disabled="imageForm.$invalid || (vm.account.privKeyOption === 0 && vm.invalidPassword)" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>

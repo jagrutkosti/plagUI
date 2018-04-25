@@ -120,16 +120,18 @@ public class PlagCheckRequestsREST {
      */
     @PostMapping("/userDocRequest")
     public PlagCheckRequestsDTO userDocRequest(@RequestParam("plagRequest") String plagRequest,
-                                               @RequestParam("plagCheckUserDoc")MultipartFile plagCheckUserDoc) {
+                                               @RequestParam("plagCheckUserDoc")MultipartFile plagCheckUserDoc,
+                                               @RequestParam("decryptedPrivKey")String decryptedPrivKey) {
         log.info("REST request to compare the two document hashes and generate similarity score");
+        User user = userService.getUserWithAuthorities();
         PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
         if(!plagCheckUserDoc.getOriginalFilename().endsWith(".pdf") && !plagCheckUserDoc.getOriginalFilename().endsWith(".txt")) {
             response.setError("File format not supported. Please upload a PDF file");
             return response;
         }
         Gson gson = new GsonBuilder().create();
-        PlagCheckRequests userObject = gson.fromJson(plagRequest, PlagCheckRequests.class);
-        return plagCheckRequestsService.userDocRequest(userObject, plagCheckUserDoc);
+        PlagCheckRequests userReqObject = gson.fromJson(plagRequest, PlagCheckRequests.class);
+        return plagCheckRequestsService.userDocRequest(userReqObject, plagCheckUserDoc, decryptedPrivKey, user.getPlagchainAddress());
     }
 
 }

@@ -64,12 +64,11 @@ public class UploadDocsREST {
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
             if(pdfFile.getOriginalFilename().endsWith(".pdf")) {
-                String result = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainAddress(), pdfFile, contactInfo, streamNamesList, decryptedPrivKey);
-                response.setSuccess(result);
+                response = plagchainUploadService.processAndTimestampDoc(currentUser.getPlagchainAddress(), pdfFile, contactInfo, streamNamesList, decryptedPrivKey);
             } else
                 response.setError("File format not supported.");
         } else {
-            response = new PlagCheckResultDTO();
+            response = new GenericResponse();
             response.setError("Incorrect Recaptcha! Please try again.");
         }
         return response;
@@ -95,17 +94,13 @@ public class UploadDocsREST {
         Type listType = new TypeToken<List<PDServersDTO>>(){}.getType();
         List<PDServersDTO> streamNamesList = gson.fromJson(streamNames, listType);
 
-        GenericResponse response = new GenericResponse();
+        GenericResponse response;
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            String result = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainAddress(), textToHash, contactInfo, streamNamesList, decryptedPrivKey);
-            if(!result.contains(" "))
-                response.setSuccess("success");
-            else
-                response.setError(result);
+            response = plagchainUploadService.processAndTimestampText(fileName, currentUser.getPlagchainAddress(), textToHash, contactInfo, streamNamesList, decryptedPrivKey);
         } else {
-            response = new PlagCheckResultDTO();
+            response = new GenericResponse();
             response.setError("Incorrect Recaptcha! Please try again.");
         }
         return response;
@@ -125,17 +120,13 @@ public class UploadDocsREST {
                                        @RequestParam("decryptedPrivKey")String decryptedPrivKey,
                                        @RequestParam(required = false, value = "contactInfo")String contactInfo) {
         log.info("REST request to timestamp image");
-        GenericResponse response = new GenericResponse();
+        GenericResponse response;
         User currentUser = userService.getUserWithAuthorities();
         boolean recaptchaResponse = utilService.checkGoogleRecaptcha(gRecaptchaResponse);
         if(recaptchaResponse) {
-            String result = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainAddress(), imageFile, contactInfo, decryptedPrivKey);
-            if(!result.contains(" "))
-                response.setSuccess("success");
-            else
-                response.setError(result);
+            response = plagchainUploadService.processAndTimestampImage(currentUser.getPlagchainAddress(), imageFile, contactInfo, decryptedPrivKey);
         } else {
-            response = new PlagCheckResultDTO();
+            response = new GenericResponse();
             response.setError("Incorrect Recaptcha! Please try again.");
         }
         return response;

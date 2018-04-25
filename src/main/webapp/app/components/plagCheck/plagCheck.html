@@ -4,7 +4,7 @@
             <h3>Check Similarity <br/><small>Compare document with other document(s)' features in Plagchain</small></h3>
         </div>
         <jhi-alert></jhi-alert>
-        <div ng-if="vm.isEmpty" class="alert alert-info">
+        <div ng-if="vm.resultsLength === 0" class="alert alert-info">
             <p align="center">No similar documents found!</p>
         </div>
         <div ng-if="vm.totalPricePdServerExceeded" class="alert alert-warning">
@@ -38,7 +38,7 @@
                         <p class="help-block">Please select at least one agorithm.</p>
                     </div>
                     <div ng-if="item.simCheckPriceInRawUnits > vm.account.realTimeCurrencyBalance">
-                        <p class="help-block">You do not have sufficient balance!</p>
+                        <p class="help-block">You do not have sufficient balance! Please wait for next distribution round from your miner.</p>
                     </div>
                 </div>
             </div>
@@ -69,14 +69,14 @@
             </div>
             <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId()" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
             <br/>
-            <button type="submit" ng-disabled="pdfPlagCheck.$invalid || vm.data.streamNames.length === 0 || vm.invalidPassword" class="btn btn-primary">Submit</button>
+            <button type="submit" ng-disabled="pdfPlagCheck.$invalid || vm.data.streamNames.length === 0 || (vm.account.privKeyOption === 0 && vm.invalidPassword)" class="btn btn-primary">Submit</button>
         </form>
     </div>
 </div>
 
 <br/><br/>
 
-<div class="row" ng-if="!vm.isEmpty">
+<div class="row" ng-if="vm.resultsLength > 0">
     <div class="col-md-8 col-md-offset-2">
         <uib-accordion close-others="false">
             <div ng-repeat="(key, value) in vm.results">
@@ -88,6 +88,7 @@
                                     <th>Document</th>
                                     <th>Similarity Percentage</th>
                                     <th>Contact Info</th>
+                                    <th>Document Check Price</th>
                                     <th>*Request Author</th>
                                 </tr>
                             </thead>
@@ -96,6 +97,7 @@
                                     <td>{{simDoc.fileName}}</td>
                                     <td>{{simDoc.similarityScore * 100 | number : 2}}%</td>
                                     <td>{{simDoc.contactInfo}}</td>
+                                    <td>{{simDoc.docCheckPrice}}</td>
                                     <td>
                                         <button class="btn btn-default" type="button" ng-click="vm.createPlagCheckRequest(simDoc)" ng-disabled="simDoc.disabled"
                                             ng-if="vm.currentUserWalletAddress !== simDoc.publisherWalletAddress">
@@ -110,7 +112,7 @@
                 </div>
             </div>
         </uib-accordion>
-        <div class="panel panel-info panel-body" ng-if="vm.results.length > 0">
+        <div class="panel panel-info panel-body">
             <p align="justify">
                 <strong>* Request Author:</strong>
                 You can request the author of the document to upload more hashes of that particular document.

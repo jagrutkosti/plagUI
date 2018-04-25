@@ -9,6 +9,7 @@ import com.plagui.modules.GenericResponse;
 import com.plagui.modules.UtilService;
 import com.plagui.modules.privatekeymanagement.PrivateKeyManagementService;
 import com.plagui.modules.uploaddocs.PDServersDTO;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -56,8 +58,14 @@ public class PlagCheckService {
      */
     public PlagCheckResultDTO plagCheckForDoc(MultipartFile plagCheckDoc, List<PDServersDTO> submitToServers, String userPrivateKey, User loggedInUser) {
         log.info("Forward the df file to PD file for plagiarism check");
+        File file = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + plagCheckDoc.getOriginalFilename());
+        try {
+            plagCheckDoc.transferTo(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         GenericPostRequest requestParams = new GenericPostRequest();
-        requestParams.setMultipartFile(plagCheckDoc);
+        requestParams.setPdfFile(file);
 
         PlagCheckResultDTO allResponses = new PlagCheckResultDTO();
         HashMap<String, String> simDocFromServer = new HashMap<>();
@@ -75,6 +83,7 @@ public class PlagCheckService {
                 server.getPlagchainAddressForTransactions(), userPrivateKey, server.getSimCheckPriceInRawUnits());
         }
         allResponses.setResultJsonString(simDocFromServer);
+        FileUtils.deleteQuietly(file.getParentFile());
         return allResponses;
     }
 

@@ -24,8 +24,43 @@
                         <p class="help-block" ng-show="userDocRequestDocForm.userDocRequest.$error.required">Please select a PDF or TXT file.</p>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="userBalance" class="control-label">Your balance:</label>
+                    <span id="userBalance">{{vm.account.realTimeCurrencyBalance}}</span>
+                </div>
+                <div class="form-group">
+                    <label for="authorDocPrice" class="control-label">Price of author for assisting similarity check:</label>
+                    <span id="authorDocPrice">{{vm.requestDetails.authorDocCheckPrice}}</span>
+                    <p class="alert-danger" ng-if="vm.requestDetails.authorDocCheckPrice > vm.account.realTimeCurrencyBalance">You do not have sufficient balance! Please wait for next distribution cycle of your associated miner.</p>
+                </div>
+                <div class="form-group" ng-if="vm.account.privKeyOption === 0">
+                    <label class="control-label" for="password">Login password to decrypt your private key: *</label>
+                    <input type="password" class="form-control" id="password" name="password" ng-model="vm.userDocModalFormData.password" ng-change="vm.checkPassword()"
+                           placeholder="Your login password.." required>
+                    <div ng-show="userDocRequestDocForm.password.$dirty && userDocRequestDocForm.password.$invalid">
+                        <p class="help-block" ng-show="userDocRequestDocForm.password.$error.required">
+                            Please enter your password.
+                        </p>
+                    </div>
+                    <div ng-show="vm.invalidPassword">
+                        <p class="help-block" style="color: red">
+                            Your password is incorrect.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="vm.account.privKeyOption === 2">
+                    <label class="control-label" for="privKey">Enter your private key: </label>
+                    <input type="text" class="form-control" id="privKey" name="privKey" ng-model="vm.userDocModalFormData.decryptedPrivKey"
+                           placeholder="Your private key.." required>
+                    <div ng-show="userDocRequestDocForm.privKey.$dirty && userDocRequestDocForm.privKey.$invalid">
+                        <p class="help-block" ng-show="userDocRequestDocForm.privKey.$error.required">
+                            Please enter your private key.
+                        </p>
+                    </div>
+                </div>
                 <br/>
-                <button type="submit" ng-disabled="userDocRequestDocForm.$invalid" class="btn btn-primary">Submit</button>
+                <button type="submit" ng-disabled="userDocRequestDocForm.$invalid || (vm.account.privKeyOption === 0 && vm.invalidPassword) ||
+                    (vm.requestDetails.authorDocCheckPrice > vm.account.realTimeCurrencyBalance)" class="btn btn-primary">Submit</button>
                 <button type="button" class="btn btn-default" ng-click="vm.cancel()">Cancel</button>
             </form>
         </div>

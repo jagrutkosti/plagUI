@@ -83,14 +83,16 @@
         /**
          * Call PlagCheckRequestsREST#userDocRequest() to calculate the hashes of the doc and generate similarity score
          * @param plagRequest the plagiarism check request to update
+         * @param decryptedPrivKey private key of logged in user to transfer the currency
          * @param plagCheckUserDoc the doc whose hashes to calculate. Must be the same doc as the request contains
          */
-        service.userDocRequest = function(plagRequest, plagCheckUserDoc) {
+        service.userDocRequest = function(plagRequest, plagCheckUserDoc, decryptedPrivKey) {
             return Upload.upload({
                 url: API_URL + 'userDocRequest',
                 data : {
                     plagRequest: angular.toJson(plagRequest),
-                    plagCheckUserDoc: plagCheckUserDoc
+                    plagCheckUserDoc: plagCheckUserDoc,
+                    decryptedPrivKey: decryptedPrivKey
                 }
             }).then(function(response) {
                 return response.data;

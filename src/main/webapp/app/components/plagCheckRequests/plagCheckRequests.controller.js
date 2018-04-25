@@ -10,14 +10,16 @@
         .module('plagUiApp')
         .controller('PlagCheckRequestsController', PlagCheckRequestsController);
 
-    PlagCheckRequestsController.$inject = ['PlagCheckRequestsService', 'AlertService', 'allRequests', '$uibModal', '$state', '$window'];
+    PlagCheckRequestsController.$inject = ['PlagCheckRequestsService', 'AlertService', 'allRequests', '$uibModal', '$state', '$window', 'realTimeCurrencyBalance', 'account'];
 
-    function PlagCheckRequestsController(PlagCheckRequestsService, AlertService, allRequests, $uibModal, $state, $window) {
+    function PlagCheckRequestsController(PlagCheckRequestsService, AlertService, allRequests, $uibModal, $state, $window, realTimeCurrencyBalance, account) {
         var vm = this;
         vm.allRequests = allRequests;
         vm.acceptRequest = acceptRequest;
         vm.rejectRequest = rejectRequest;
         vm.userPlagCheck = userPlagCheck;
+        vm.account = account;
+        vm.account.realTimeCurrencyBalance = realTimeCurrencyBalance;
         var modalInstance = null;
 
         /**
@@ -32,7 +34,8 @@
                 controller: 'PlagCheckRequestsModalController',
                 controllerAs: 'vm',
                 resolve: {
-                    requestDetails: plagRequest
+                    requestDetails: plagRequest,
+                    account: account
                 }
             }).result.then(function() {
                 plagRequest.status = 1;
@@ -71,7 +74,8 @@
                 controller: 'PlagCheckRequestsModalController',
                 controllerAs: 'vm',
                 resolve: {
-                    requestDetails: plagRequest
+                    requestDetails: plagRequest,
+                    account: account
                 }
             }).result.then(function(response) {
                 plagRequest.status = 3;

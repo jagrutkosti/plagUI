@@ -69,6 +69,25 @@
             });
         };
 
+        /**
+         * Gets the doc check price of the user from UI db
+         * @param plagchainAddress
+         */
+        service.getDocCheckPrice = function (plagchainAddress) {
+            return Upload.upload({
+                url : API_URL + 'getDocCheckPrice',
+                data : {
+                    plagchainAddress : plagchainAddress
+                }
+            }).then(function (response) {
+                return response.data;
+            }, function(response) {
+                if(response.status > 0) {
+                    return response.status + ':' + response.statusText;
+                }
+            })
+        };
+
         return service;
     }
 })();

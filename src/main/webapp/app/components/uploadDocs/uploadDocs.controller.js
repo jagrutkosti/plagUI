@@ -63,16 +63,13 @@
             UploadDocsService.uploadDocForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response){
                 if(response.success) {
                     vm.fileData.success = response.success;
-                    $state.go('showDocDetails');
-                } else {
-                    vm.fileData = {};
-                    if(response.error)
-                        vm.fileData.error = response.error;
-                    else
-                        vm.fileData.error = response;
-                    vm.cbExpiration();
+                    AlertService.success(vm.fileData.success);
+                }
+                if(response.error) {
+                    vm.fileData.error = response.error;
                     AlertService.error(vm.fileData.error);
                 }
+                vm.cbExpiration();
             });
         }
 
@@ -86,15 +83,13 @@
             UploadDocsService.uploadTextForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
-                    $state.go('showDocDetails');
-                } else {
-                    if(response.error)
-                        vm.fileData.error = response.error;
-                    else
-                        vm.fileData.error = response;
-                    vm.cbExpiration();
+                    AlertService.success(vm.fileData.success);
+                }
+                if(response.error) {
+                    vm.fileData.error = response.error;
                     AlertService.error(vm.fileData.error);
                 }
+                vm.cbExpiration();
             });
         }
 
@@ -107,15 +102,13 @@
             UploadDocsService.uploadImageForBlockchain(vm.fileData, vm.recaptcha.response).then(function(response) {
                 if(response.success) {
                     vm.fileData.success = response.success;
-                    $state.go('showDocDetails');
-                } else {
-                    if(response.error)
-                        vm.fileData.error = response.error;
-                    else
-                        vm.fileData.error = response;
-                    vm.cbExpiration();
+                    AlertService.success(vm.fileData.success);
+                }
+                if(response.error) {
+                    vm.fileData.error = response.error;
                     AlertService.error(vm.fileData.error);
                 }
+                vm.cbExpiration();
             });
         }
 

@@ -2,10 +2,12 @@ package com.plagui.modules;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+
 public class GenericPostRequest {
 
     private String contactInfo;
-    private MultipartFile multipartFile;
+    private File pdfFile;
     private String textualContent;
     private String fileName;
 
@@ -17,12 +19,12 @@ public class GenericPostRequest {
         this.contactInfo = contactInfo;
     }
 
-    public MultipartFile getMultipartFile() {
-        return multipartFile;
+    public File getPdfFile() {
+        return pdfFile;
     }
 
-    public void setMultipartFile(MultipartFile multipartFile) {
-        this.multipartFile = multipartFile;
+    public void setPdfFile(File pdfFile) {
+        this.pdfFile = pdfFile;
     }
 
     public String getTextualContent() {

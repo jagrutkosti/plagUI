@@ -3,6 +3,7 @@ package com.plagui.modules.plagcheckrequests;
 import com.plagui.config.Constants;
 import com.plagui.domain.User;
 import com.plagui.modules.UtilService;
+import com.plagui.modules.privatekeymanagement.PrivateKeyManagementService;
 import com.plagui.repository.PlagCheckRequestsRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,10 +24,13 @@ public class PlagCheckRequestsService {
     private final Logger log = LoggerFactory.getLogger(PlagCheckRequestsService.class);
     private final PlagCheckRequestsRepository plagCheckRequestsRepository;
     private final UtilService utilService;
+    private final PrivateKeyManagementService privateKeyManagementService;
 
-    public PlagCheckRequestsService(PlagCheckRequestsRepository plagCheckRequestsRepository, UtilService utilService) {
+    public PlagCheckRequestsService(PlagCheckRequestsRepository plagCheckRequestsRepository, UtilService utilService,
+                                    PrivateKeyManagementService privateKeyManagementService) {
         this.plagCheckRequestsRepository = plagCheckRequestsRepository;
         this.utilService = utilService;
+        this.privateKeyManagementService = privateKeyManagementService;
     }
 
     /**
@@ -55,6 +59,7 @@ public class PlagCheckRequestsService {
             request.setUserLoginId(currentUser.getLogin());
             request.setStatus(Constants.REQUESTS_STATUS_PENDING);
             request.setMinHashSimScore(docDetails.getDouble("similarityScore"));
+            request.setAuthorDocCheckPrice(docDetails.getInt("docCheckPrice"));
             return plagCheckRequestsRepository.save(request);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -159,7 +164,8 @@ public class PlagCheckRequestsService {
      * @param plagCheckUserDoc the document for which the request was generated
      * @return PlagCheckRequestsDTO populated with relevant fields
      */
-    public PlagCheckRequestsDTO userDocRequest(PlagCheckRequests userObject, MultipartFile plagCheckUserDoc) {
+    public PlagCheckRequestsDTO userDocRequest(PlagCheckRequests userObject, MultipartFile plagCheckUserDoc,
+                                               String decryptedPrivKey, String loggedInUserWalletAddress) {
         log.info("Service method to get the db item, calculate similarity and update DB item");
         PlagCheckRequestsDTO response = new PlagCheckRequestsDTO();
         List<Integer> authorDocHashes = userObject.getAuthorHashes();
@@ -191,8 +197,10 @@ public class PlagCheckRequestsService {
             dbItem.setStatus(Constants.REQUESTS_STATUS_COMPLETE);
             dbItem.setUserHashes(userDochashes);
             dbItem.setSimScore(simScore);
-
             response.setSingleRequestObject(plagCheckRequestsRepository.save(dbItem));
+
+            //Transfer the currency to the author after everything was successfully accomplished
+            privateKeyManagementService.sendCurrencyToPDServer(loggedInUserWalletAddress, userObject.getAuthorWalletAddress(), decryptedPrivKey, userObject.getAuthorDocCheckPrice());
             response.setSuccess("Hashes generated and similarity calculated successfully!");
         } catch (NullPointerException e) {
             e.printStackTrace();

@@ -9,14 +9,16 @@
         .module('plagUiApp')
         .controller('PlagCheckRequestsModalController', PlagCheckRequestsModalController);
 
-    PlagCheckRequestsModalController.$inject = ['$uibModalInstance', 'PlagCheckRequestsService', 'AlertService', 'requestDetails', '$state'];
+    PlagCheckRequestsModalController.$inject = ['$uibModalInstance', 'PlagCheckRequestsService', 'AlertService', 'requestDetails', '$state', 'account'];
 
-    function PlagCheckRequestsModalController($uibModalInstance, PlagCheckRequestsService, AlertService, requestDetails, $state) {
+    function PlagCheckRequestsModalController($uibModalInstance, PlagCheckRequestsService, AlertService, requestDetails, $state, account) {
         var vm = this;
         vm.sendAuthorDocument = sendAuthorDocument;
         vm.sendUserDocument = sendUserDocument;
         vm.cancel = cancel;
         vm.isSameFile = isSameFile;
+        vm.checkPassword = checkPassword;
+        vm.account = account;
         vm.acceptModalFormData = {};
         vm.userDocModalFormData = {};
         vm.requestDetails = requestDetails;
@@ -28,6 +30,28 @@
         function cancel() {
             vm.acceptModalFormData = {};
             $uibModalInstance.dismiss('cancel');
+        }
+
+        /**
+         * Checks if password is valid by decrypting the private key of the logged in user.
+         */
+        function checkPassword() {
+            try {
+                var bytes  = CryptoJS.AES.decrypt(vm.account.plagchainPrivkey, vm.userDocModalFormData.password);
+                vm.userDocModalFormData.decryptedPrivKey = bytes.toString(CryptoJS.enc.Utf8);
+            } catch(err) {
+                vm.userDocModalFormData.decryptedPrivKey = '';
+            } finally {
+                vm.invalidPassword = vm.userDocModalFormData.decryptedPrivKey.length <= 5;
+            }
+        }
+
+        /**
+         * If priv key option is 1 i.e. user asked to store priv key in UI db as is, then we simply reassign it
+         */
+        function checkPrivKeyOption() {
+            if(vm.account.privKeyOption === 1)
+                vm.userDocModalFormData.decryptedPrivKey = vm.account.plagchainPrivkey;
         }
 
         /**
@@ -49,7 +73,8 @@
          * Send the accept request user file to the backend and handle call backs.
          */
         function sendUserDocument() {
-            PlagCheckRequestsService.userDocRequest(vm.requestDetails, vm.userDocModalFormData.userDocRequest).then(function(response) {
+            checkPrivKeyOption();
+            PlagCheckRequestsService.userDocRequest(vm.requestDetails, vm.userDocModalFormData.userDocRequest, vm.userDocModalFormData.decryptedPrivKey).then(function(response) {
                 if(response.success) {
                     $uibModalInstance.close(response);
                     $state.reload();

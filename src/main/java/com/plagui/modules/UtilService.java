@@ -255,27 +255,22 @@ public class UtilService {
     }
 
     /**
-     * Initializes the chain and submits the transaction into plagchain with document sha256 hash as key and  hexdata as
-     * value (derived from ChainData)
-     * @param walletAddress the wallet address of the logged in user
-     * @param streamName the name of the stream to publish to
+     * Check if a document was already submitted into the given string by comparing the keys. Keys should be
+     * SHA256 hash of the doc
+     * @param streamName the name of the stream to check
      * @param keyAsDocHash the sha256 hash of the whole document
-     * @param hexData the data to be submitted in hex string format
-     * @return {String} Transaction id
+     * @return boolean, true if exists, false otherwise
      */
-    public String submitToPlagchainFrom(String walletAddress, String streamName, String keyAsDocHash, String hexData) {
-        log.info("Submitting data to plagchain");
-        String response = null;
+    public boolean isDocumentInStream(String streamName, String keyAsDocHash) {
+        log.info("Check if key exists in " + streamName);
         try {
             List<StreamItem> alreadyExistingKeys = StreamCommand.listStreamKeyItems(streamName, keyAsDocHash);
             if(alreadyExistingKeys != null && alreadyExistingKeys.size() > 0)
-                return "Document already exists in " + streamName;
-            response = StreamCommand.publishFromStream(walletAddress, streamName, keyAsDocHash, hexData);
-            log.info("Transaction response: {}", response);
+                return true;
         } catch (MultichainException e) {
             e.printStackTrace();
         }
-        return response;
+        return false;
     }
 
     /**
@@ -480,8 +475,7 @@ public class UtilService {
                 payload = new File(paramsList.getFileName());
                 FileUtils.writeStringToFile(payload, paramsList.getTextualContent(), Charset.defaultCharset());
             } else {
-                payload = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + paramsList.getMultipartFile().getOriginalFilename());
-                paramsList.getMultipartFile().transferTo(payload);
+                payload = paramsList.getPdfFile();
             }
 
             MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);

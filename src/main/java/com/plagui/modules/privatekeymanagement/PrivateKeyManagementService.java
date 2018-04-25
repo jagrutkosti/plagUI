@@ -73,7 +73,7 @@ public class PrivateKeyManagementService {
      */
     public void sendZeroTransaction(String blockchainAddress) {
         try {
-            WalletTransactionCommand.SendToAddress(blockchainAddress, 0);
+            System.out.println(WalletTransactionCommand.SendToAddress(blockchainAddress, 0));
         } catch (MultichainException e) {
             e.printStackTrace();
         }
@@ -120,6 +120,7 @@ public class PrivateKeyManagementService {
                 hexadecimalBlob = RAWTransactionCommand.createRawSendFrom(fromAddress, payload, null);
             else
                 hexadecimalBlob = RAWTransactionCommand.createRawSendFrom(fromAddress, null, payload);
+            System.out.println(hexadecimalBlob);
             SignRawTransactionOut signedHexadecimal = RAWTransactionCommand.signRawTransactionWithPrivKey(hexadecimalBlob,privateKey);
             RAWTransactionCommand.sendRawTransaction(signedHexadecimal.getHex());
         } catch (MultichainException e) {

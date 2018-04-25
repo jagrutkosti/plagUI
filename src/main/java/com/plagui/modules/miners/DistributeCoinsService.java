@@ -37,7 +37,7 @@ public class DistributeCoinsService {
         this.partOfMinedCurrencyForMiner = partOfMinedCurrencyForMiner;
     }
 
-    /*@Scheduled(fixedRate = 86400000)*/
+    @Scheduled(fixedRate = 86400000)
     public void distributeMinedCoins() {
         log.info("DistributeCoinsService # distributeMinedCoins");
         List<MinerBalance> allMinersWithBalances = getMiningAddressesAndCoinQty();

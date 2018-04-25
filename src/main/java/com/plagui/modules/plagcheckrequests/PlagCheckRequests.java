@@ -37,6 +37,10 @@ public class PlagCheckRequests implements Serializable {
     private String authorWalletAddress;
 
     @NotNull
+    @Field("author_docCheck_price")
+    private int authorDocCheckPrice;
+
+    @NotNull
     @Field("user_file_name")
     private String userFileName;
 
@@ -158,6 +162,14 @@ public class PlagCheckRequests implements Serializable {
 
     public void setSimScore(double simScore) {
         this.simScore = simScore;
+    }
+
+    public int getAuthorDocCheckPrice() {
+        return authorDocCheckPrice;
+    }
+
+    public void setAuthorDocCheckPrice(int authorDocCheckPrice) {
+        this.authorDocCheckPrice = authorDocCheckPrice;
     }
 
     @Override

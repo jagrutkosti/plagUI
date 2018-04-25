@@ -24,4 +24,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findOneByLogin(String login);
 
     Page<User> findAllByLoginNot(Pageable pageable, String login);
+
+    Optional<User> findOneByPlagchainAddress(String plagchainAddress);
 }
