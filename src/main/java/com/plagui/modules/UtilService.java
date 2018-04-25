@@ -436,7 +436,7 @@ public class UtilService {
                     pdServer.setSubmitDocUrl(itemData.getString("submitDoc"));
                     pdServer.setCheckSimUrl(itemData.getString("checkSim"));
                     pdServer.setSimCheckPriceInRawUnits(itemData.getInt("simCheckPriceInRawUnits"));
-                    pdServer.setPlagchainAddressForTransactions("plagchainAddress");
+                    pdServer.setPlagchainAddressForTransactions(itemData.getString("plagchainAddress"));
                     pdServersList.add(pdServer);
                 }
             }

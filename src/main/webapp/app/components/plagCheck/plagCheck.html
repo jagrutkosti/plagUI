@@ -26,12 +26,13 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label" for="streamName">Available similarity detection techniques: </label>
+                <label class="control-label" for="streamName">Available similarity detection techniques: *</label>
+                <p class="help-block">Your balance: {{vm.account.realTimeCurrencyBalance}}</p>
                 <div class="checkbox" id="streamName">
                     <label ng-repeat="item in vm.pdServers">
                         <input type="checkbox" value="{{item.pdServerName}}" ng-model="item.selected" ng-change="vm.setStreamNames()"
                                ng-disabled="item.simCheckPriceInRawUnits > vm.account.realTimeCurrencyBalance">
-                        {{item.pdServerName}} - Price : {{item.simCheckPriceInRawUnits}}
+                        <b>{{item.pdServerName}}</b> - Price : {{item.simCheckPriceInRawUnits}}
                     </label>
                     <div ng-if="vm.data.streamNames.length === 0">
                         <p class="help-block">Please select at least one agorithm.</p>
@@ -42,7 +43,7 @@
                 </div>
             </div>
             <div class="form-group" ng-if="vm.account.privKeyOption === 0">
-                <label class="control-label" for="password">Login password to decrypt your private key: </label>
+                <label class="control-label" for="password">Login password to decrypt your private key: *</label>
                 <input type="password" class="form-control" id="password" name="password" ng-model="vm.data.password" ng-change="vm.checkPassword()"
                        placeholder="Your login password.." required>
                 <div ng-show="pdfPlagCheck.password.$dirty && pdfPlagCheck.password.$invalid">
@@ -68,7 +69,7 @@
             </div>
             <div vc-recaptcha key="vm.recaptcha.key" on-create="vm.setWidgetId()" on-success="vm.setResponse(response)" on-expire="vm.cbExpiration()"></div>
             <br/>
-            <button type="submit" ng-disabled="pdfPlagCheck.$invalid || vm.data.streamNames.length === 0" class="btn btn-primary">Submit</button>
+            <button type="submit" ng-disabled="pdfPlagCheck.$invalid || vm.data.streamNames.length === 0 || vm.invalidPassword" class="btn btn-primary">Submit</button>
         </form>
     </div>
 </div>

@@ -57,7 +57,7 @@
                         </div>
                     </div>
                     <div class="form-group" ng-if="vm.account.privKeyOption === 0">
-                        <label class="control-label" for="password">Login password to decrypt your private key: </label>
+                        <label class="control-label" for="password">Login password to decrypt your private key: *</label>
                         <input type="password" class="form-control" id="password" name="password" ng-model="vm.fileData.password" ng-change="vm.checkPassword()"
                                placeholder="Your login password.." required>
                         <div ng-show="pdfForm.password.$dirty && pdfForm.password.$invalid">

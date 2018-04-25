@@ -24,7 +24,7 @@ public final class Constants {
     public static final String TIMESTAMP_STREAM = "timestamp_test";
     public static final String MINERS_STREAM = "all_miners";
     public static final String MINERS_USERS_ASSOCIATION_STREAM = "miner_association";
-    public static final String PD_SERVERS_STREAM = "pd_servers";
+    public static final String PD_SERVERS_STREAM = "pd_servers_test";
 
     public static final String GOOGLE_RECAPTCHA_SECRET = "6LfGcycUAAAAAPUaHNoU-jatYvdgj75mjGUeYTzk";
     public static final String GOOGLE_RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify";

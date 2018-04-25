@@ -143,7 +143,7 @@
             vm.pdServers.forEach(function (item) {
                 if(item.selected)
                     vm.data.streamNames.push(item);
-            })
+            });
         }
 
         function checkPrivKeyOption() {

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,9 +105,9 @@ public class PrivateKeyManagementService {
      * @param amount the amount to send
      */
     public void sendCurrencyToPDServer(String fromAddress, String toAddress, String fromPrivateKey, int amount) {
-        double amountInDouble = amount/100000000;
+        double amountInDouble = (double)amount/100000000;
         Map<String, Object> assetInfo = new HashMap<>();
-        assetInfo.put("", String.format("%8f", amountInDouble));
+        assetInfo.put("", amountInDouble);
         Map<String, Object> transferTo = new HashMap<>();
         transferTo.put(toAddress, assetInfo);
         executeRawStreamCommands(fromAddress, transferTo, fromPrivateKey, true);
