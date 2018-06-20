@@ -56,7 +56,7 @@ public class BitcoinAnchorService {
      * Scheduled task to run which triggers other methods in this class
      * @throws IOException
      */
-    @Scheduled(initialDelay = 10000, fixedRateString = Constants.BITCOIN_ANCHOR_TIME)
+    @Scheduled(initialDelay = 1000, fixedRateString = Constants.BITCOIN_ANCHOR_TIME)
     public void startAnchoring() throws IOException {
         mongoTemplate = new MongoTemplate(new SimpleMongoDbFactory(new MongoClient(), databaseName));
         JaxbAnnotationModule jaxbAnnotationModule = new JaxbAnnotationModule();
