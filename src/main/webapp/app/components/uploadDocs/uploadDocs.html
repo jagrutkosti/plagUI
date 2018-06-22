@@ -44,11 +44,11 @@
                     <div class="form-group">
                         <label class="control-label" for="streamName">Submit to Stream: </label>
                         <p class="help-block">If none selected, the document will only be timestamped.</p>
-                        <div class="checkbox" id="streamName">
-                            <label ng-repeat="item in vm.pdServers">
-                                <input type="checkbox" value="{{item.pdServerName}}" ng-model="item.selected">
-                                {{item.pdServerName}}
-                            </label>
+                        <div class="form-group" id="streamName" ng-repeat="item in vm.pdServers">
+
+                            <input type="checkbox" value="{{item.pdServerName}}" ng-model="item.selected">
+                            {{item.pdServerName}}
+
                         </div>
                         <div ng-show="pdfForm.streamName.$dirty && pdfForm.streamName.$invalid">
                             <p class="help-block" ng-show="pdfForm.streamName.$error.required">Please select a stream to publish the hash.</p>

@@ -28,19 +28,19 @@
             <div class="form-group">
                 <label class="control-label" for="streamName">Available similarity detection techniques: *</label>
                 <p class="help-block">Your balance: {{vm.account.realTimeCurrencyBalance}}</p>
-                <div class="checkbox" id="streamName">
-                    <label ng-repeat="item in vm.pdServers">
-                        <input type="checkbox" value="{{item.pdServerName}}" ng-model="item.selected" ng-change="vm.setStreamNames()"
-                               ng-disabled="item.simCheckPriceInRawUnits > vm.account.realTimeCurrencyBalance">
-                        <b>{{item.pdServerName}}</b> - Price : {{item.simCheckPriceInRawUnits}}
-                    </label>
-                    <div ng-if="vm.data.streamNames.length === 0">
-                        <p class="help-block">Please select at least one agorithm.</p>
-                    </div>
-                    <div ng-if="item.simCheckPriceInRawUnits > vm.account.realTimeCurrencyBalance">
-                        <p class="help-block">You do not have sufficient balance! Please wait for next distribution round from your miner.</p>
-                    </div>
+                <div class="form-group" id="streamName" ng-repeat="item in vm.pdServers">
+
+                    <input type="checkbox" value="{{item.pdServerName}}" ng-model="item.selected" ng-change="vm.setStreamNames()"
+                           ng-disabled="item.simCheckPriceInRawUnits > vm.account.realTimeCurrencyBalance">
+                    <b>{{item.pdServerName}}</b> - Price : {{item.simCheckPriceInRawUnits}}
                 </div>
+                <div ng-if="vm.data.streamNames.length === 0">
+                    <p class="help-block">Please select at least one agorithm.</p>
+                </div>
+                <div ng-if="item.simCheckPriceInRawUnits > vm.account.realTimeCurrencyBalance">
+                    <p class="help-block">You do not have sufficient balance! Please wait for next distribution round from your miner.</p>
+                </div>
+
             </div>
             <div class="form-group" ng-if="vm.account.privKeyOption === 0">
                 <label class="control-label" for="password">Login password to decrypt your private key: *</label>

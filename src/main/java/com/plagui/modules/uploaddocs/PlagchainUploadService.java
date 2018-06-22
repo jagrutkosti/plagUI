@@ -67,6 +67,7 @@ public class PlagchainUploadService {
         GenericPostRequest requestParams = new GenericPostRequest();
         requestParams.setContactInfo(contactInfo);
         requestParams.setPdfFile(file);
+        requestParams.setFileName(pdfFile.getOriginalFilename());
 
         for(PDServersDTO server : submitToServers) {
             GenericResponse responseFromThisServer = utilService.postRequestPDServer(requestParams, server.getSubmitDocUrl(), walletAddress);

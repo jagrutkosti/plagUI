@@ -479,12 +479,21 @@ public class UtilService {
             }
 
             MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-            entity.addPart("file", new FileBody(payload));
+            if(url.contains("8080")) {
+                /*String encoding = Base64.getEncoder().encodeToString(("admin:password").getBytes());
+                postRequest.setHeader("Authorization", "Basic " + encoding);*/
+                entity.addPart("external_id", new StringBody(paramsList.getFileName().substring(0,5)));
+                entity.addPart("multipartFile", new FileBody(payload));
+            } else {
+                entity.addPart("file", new FileBody(payload));
 
-            if(paramsList.getContactInfo() != null && paramsList.getContactInfo().length() > 0)
-                entity.addPart("contactInfo", new StringBody(paramsList.getContactInfo()));
+                if(paramsList.getContactInfo() != null && paramsList.getContactInfo().length() > 0)
+                    entity.addPart("contactInfo", new StringBody(paramsList.getContactInfo()));
 
-            entity.addPart("publisherWalletAddress", new StringBody(publisherWalletAddress));
+                entity.addPart("publisherWalletAddress", new StringBody(publisherWalletAddress));
+            }
+
+
             postRequest.setEntity(entity);
             HttpResponse responseFromServer = httpClient.execute(postRequest);
 
